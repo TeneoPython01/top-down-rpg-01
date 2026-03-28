@@ -54,6 +54,11 @@ class TownState(BaseState):
             spawn=town_data["spawn"],
         )
 
+        # Player: reuse the existing game player and move it to the town spawn
+        spawn_col, spawn_row = town_data["spawn"]
+        self.player = game.player
+        self.player.col = spawn_col
+        self.player.row = spawn_row
         # Player
         spawn_col, spawn_row = town_data["spawn"]
         self.player = Player(spawn_col, spawn_row)
