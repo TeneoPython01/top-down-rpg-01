@@ -7,11 +7,14 @@ sprites are added in a later phase.
 
 from __future__ import annotations
 
-from typing import Dict, List
+import json
+import os
+from typing import Any, Dict, List
 
 import pygame
 
 from settings import (
+    DATA_DIR,
     PLAYER_SPEED,
     PLAYER_SIZE,
     PLAYER_ANIM_FPS,
@@ -24,6 +27,19 @@ from settings import (
     DIR_UP,
 )
 from src.utils.animation import Animation
+
+# Levels data loaded once at module level (lazily).
+        # levels data loaded once at module level (lazily).
+_LEVELS_DATA: List[Dict] | None = None
+
+
+def _get_levels_data() -> List[Dict]:
+    global _LEVELS_DATA
+    if _LEVELS_DATA is None:
+        path = os.path.join(DATA_DIR, "levels.json")
+        with open(path) as f:
+            _LEVELS_DATA = json.load(f)
+    return _LEVELS_DATA
 
 
 def _make_placeholder_frames(color: tuple, direction: int) -> List[pygame.Surface]:
@@ -101,6 +117,29 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(self.rect.topleft)
         self.velocity = pygame.Vector2(0, 0)
 
+        # ── RPG stats ──────────────────────────────────────────────────────────
+        self.name = "White Knight"
+        self.level = 1
+        self.xp = 0
+        self.gold = 0
+        lv_data = _get_levels_data()[0]  # index 0 = level 1
+        self.max_hp: int = lv_data["hp"]
+        self.hp: int = self.max_hp
+        self.max_mp: int = lv_data["mp"]
+        self.mp: int = self.max_mp
+        self.stats: Dict[str, int] = {
+            "str": lv_data["str"],
+            "def": lv_data["def"],
+            "mag": lv_data["mag"],
+            "mdf": lv_data["mdf"],
+            "spd": lv_data["spd"],
+            "lck": lv_data["lck"],
+        }
+        # status effects dict: key = effect name, value = remaining turns
+        self.status: Dict[str, Any] = {}
+        # battle-only flag: halves incoming physical damage for one round
+        self._defending: bool = False
+
     # ── Private helpers ───────────────────────────────────────────────────────
 
     def _handle_input(self) -> None:
@@ -148,6 +187,43 @@ class Player(pygame.sprite.Sprite):
                     self.pos.y = float(self.rect.y)
 
     # ── Public API ────────────────────────────────────────────────────────────
+
+    def take_damage(self, amount: int) -> int:
+        """Apply *amount* damage, clamped so HP never goes below 0.
+
+        Returns the actual HP lost.
+        """
+        actual = min(amount, self.hp)
+        self.hp -= actual
+        return actual
+
+    def gain_xp(self, amount: int) -> List[str]:
+        """Add *amount* XP and process any level-ups.
+
+        Returns a list of level-up message strings (one per level gained).
+        """
+        self.xp += amount
+        messages: List[str] = []
+        levels = _get_levels_data()
+        while self.level < len(levels):
+            # levels is 0-indexed: level 1 data is at index 0, level 2 at index 1, …
+            # To check if the player should advance to level N+1, read index N.
+            next_data = levels[self.level]
+            if self.xp >= next_data["xp_required"]:
+                self.level = next_data["level"]
+                hp_gain = next_data["hp"] - self.max_hp
+                mp_gain = next_data["mp"] - self.max_mp
+                self.max_hp = next_data["hp"]
+                self.max_mp = next_data["mp"]
+                # Restore HP/MP by the amount gained
+                self.hp = min(self.max_hp, self.hp + hp_gain)
+                self.mp = min(self.max_mp, self.mp + mp_gain)
+                for stat in ("str", "def", "mag", "mdf", "spd", "lck"):
+                    self.stats[stat] = next_data[stat]
+                messages.append(f"Level up!  Lv {self.level}!")
+            else:
+                break
+        return messages
 
     def update(self, dt: float, blocked_rects: List[pygame.Rect]) -> None:
         """Update position and animation for this frame."""

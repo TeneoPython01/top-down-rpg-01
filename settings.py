@@ -69,6 +69,7 @@ BASE_HIT_RATE = 0.90
 CRIT_CHANCE_DIVISOR = 256
 DAMAGE_VARIANCE = 0.10
 BLIND_HIT_PENALTY = 0.50       # hit-rate reduction when attacker is blinded
+UNARMED_ATTACK_POWER = 3       # default weapon power when no weapon is equipped
 
 # ── Encounters ────────────────────────────────────────────────────────────────
 ENCOUNTER_RATE_VARIANCE = 0.50  # ±50% of encounter_rate for threshold rolling
