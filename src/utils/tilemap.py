@@ -7,7 +7,7 @@ Each cell holds a tile-ID integer (see settings.TILE_* constants).
 
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import pygame
 
@@ -15,18 +15,18 @@ from settings import TILE_SIZE, TILE_COLORS, TILE_WALL, TILE_WATER, TILE_GRID_CO
 
 
 # Default test map (Ashenvale area). Tile IDs:
-#   0 = grass, 1 = wall, 2 = water, 3 = path
+#   0 = grass, 1 = wall, 2 = water, 3 = path, 4 = town entrance
 DEFAULT_MAP: List[List[int]] = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 3, 0, 3, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 3, 0, 3, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 0, 1],
     [1, 0, 0, 3, 0, 3, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 3, 3, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -56,17 +56,23 @@ class TileMap:
         Map dimensions in native pixels.
     spawn:
         (col, row) of the player spawn tile.
-    blocked:
-        pygame.sprite.Group of Rect-like objects for impassable tiles.
+    blocked_rects:
+        List of pygame.Rect for impassable tiles.
+    town_entrances:
+        Mapping ``(col, row) → town_name`` for TILE_TOWN tiles.
     """
 
     def __init__(
         self,
         data: List[List[int]] | None = None,
         spawn: Tuple[int, int] | None = None,
+        town_entrances: Dict[Tuple[int, int], str] | None = None,
     ) -> None:
         self.data: List[List[int]] = data if data is not None else DEFAULT_MAP
         self.spawn: Tuple[int, int] = spawn if spawn is not None else DEFAULT_SPAWN
+        self.town_entrances: Dict[Tuple[int, int], str] = (
+            town_entrances if town_entrances is not None else {}
+        )
         self.height = len(self.data)
         self.width = max(len(row) for row in self.data)
         self.pixel_width = self.width * TILE_SIZE
