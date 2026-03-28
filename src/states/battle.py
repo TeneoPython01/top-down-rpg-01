@@ -187,7 +187,7 @@ class BattleState(BaseState):
     def _begin_victory(self) -> None:
         self._victory_xp = sum(e.xp_reward for e in self.enemies)
         self._victory_gold = sum(e.gold_reward for e in self.enemies)
-        self.player.gold += self._victory_gold
+        self.game.inventory.gold += self._victory_gold
         self._level_up_msgs = self.player.gain_xp(self._victory_xp)
         self._phase = _Phase.VICTORY
 
