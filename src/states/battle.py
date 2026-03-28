@@ -19,6 +19,8 @@ from src.systems.inventory import load_items
 if TYPE_CHECKING:
     from src.game import Game
 
+_MSG_LINE_LEN = 50  # max characters per message display line
+
 
 class _Phase(Enum):
     PLAYER_CHOOSE_CMD = auto()
@@ -339,18 +341,16 @@ class BattleState(BaseState):
 
         # Enemy area
         alive_enemies = [e for e in self.enemies if e.is_alive()]
+        selected_enemy = (
+            alive_enemies[self._target_cursor % len(alive_enemies)]
+            if alive_enemies and self._phase == _Phase.PLAYER_CHOOSE_TARGET
+            else None
+        )
         ex = 20
-        for i, enemy in enumerate(self.enemies):
+        for enemy in self.enemies:
             if not enemy.is_alive():
                 continue
-            color = RED
-            # Highlight selected target
-            if (
-                self._phase == _Phase.PLAYER_CHOOSE_TARGET
-                and alive_enemies
-                and i == self.enemies.index(alive_enemies[self._target_cursor % len(alive_enemies)])
-            ):
-                color = YELLOW
+            color = YELLOW if enemy is selected_enemy else RED
             pygame.draw.rect(surface, color, (ex, 20, 32, 32))
             lbl = font_sm.render(enemy.name, True, WHITE)
             surface.blit(lbl, (ex, 56))
@@ -406,11 +406,19 @@ class BattleState(BaseState):
 
         elif self._phase == _Phase.SHOW_MESSAGE:
             msg_text = "  ".join(self._messages)
-            # Word-wrap into two lines if long
-            msg_surf = font.render(msg_text[:50], True, WHITE)
+            # Split into up to two lines at word boundaries where possible
+            if len(msg_text) <= _MSG_LINE_LEN:
+                line1, line2 = msg_text, ""
+            else:
+                split_at = msg_text.rfind(" ", 0, _MSG_LINE_LEN)
+                if split_at == -1:
+                    split_at = _MSG_LINE_LEN
+                line1 = msg_text[:split_at]
+                line2 = msg_text[split_at:split_at + _MSG_LINE_LEN].strip()
+            msg_surf = font.render(line1, True, WHITE)
             surface.blit(msg_surf, (4, NATIVE_HEIGHT - 65))
-            if len(msg_text) > 50:
-                msg_surf2 = font.render(msg_text[50:100], True, WHITE)
+            if line2:
+                msg_surf2 = font.render(line2, True, WHITE)
                 surface.blit(msg_surf2, (4, NATIVE_HEIGHT - 55))
             hint = font_sm.render("Press Enter/Z to continue", True, (150, 150, 150))
             surface.blit(hint, (4, NATIVE_HEIGHT - 14))

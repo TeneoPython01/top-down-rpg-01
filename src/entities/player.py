@@ -220,7 +220,7 @@ class Player(pygame.sprite.Sprite):
             lv = entry["level"]
             if lv <= self.level:
                 continue
-            if self.exp >= entry.get("xp_required", entry.get("exp_required", 9999999)):
+            if self.exp >= entry.get("xp_required", 9_999_999):
                 old_max_hp = self.max_hp
                 old_max_mp = self.max_mp
 

@@ -62,9 +62,9 @@ def cast_spell(
 
     # ── Damage spells ─────────────────────────────────────────────────────────
     if effect == "damage":
-        base = caster.stats.get("mag", 1) * power
-        resist = target.stats.get("mdf", 0)
-        base = max(1.0, base - resist / 4.0)
+        caster_mag = effective_stat(caster, "mag")
+        target_mdf = effective_stat(target, "mdf")
+        base = max(1.0, caster_mag * power - target_mdf / 4.0)
         variance = 1.0 + random.uniform(-DAMAGE_VARIANCE, DAMAGE_VARIANCE)
         dmg = base * variance
 
@@ -150,7 +150,8 @@ def tick_status_effects(combatant: Any) -> List[str]:
 
     # Poison: deal 5% max_hp damage each turn
     if combatant.status.get("poison", 0) > 0:
-        poison_dmg = max(1, int(getattr(combatant, "max_hp", 100) * 0.05))
+        max_hp = getattr(combatant, "max_hp", None) or getattr(combatant, "hp", 20)
+        poison_dmg = max(1, int(max_hp * 0.05))
         combatant.take_damage(poison_dmg)
         combatant.status["poison"] -= 1
         if combatant.status["poison"] <= 0:
