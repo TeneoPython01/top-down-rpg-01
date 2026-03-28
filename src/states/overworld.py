@@ -106,8 +106,8 @@ class OverworldState(BaseState):
         self._last_tile = new_tile
 
         tile_id = self.tilemap.tile_at(col, row)
-        if tile_id in (TILE_WALL, TILE_WATER):
-            return  # no encounters on blocked tiles
+        if tile_id in (TILE_WALL, TILE_WATER, TILE_TOWN):
+            return  # no encounters on blocked or town tiles
 
         if self._encounter.step():
             self._trigger_encounter()
