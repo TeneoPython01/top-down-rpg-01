@@ -18,8 +18,10 @@ from settings import (
     DATA_DIR,
     NATIVE_HEIGHT,
     NATIVE_WIDTH,
+    TILE_TOWN,
     TILE_WALL,
     TILE_WATER,
+    TOWN_ENTRY_COOLDOWN,
     WHITE,
     YELLOW,
 )
@@ -28,6 +30,7 @@ from src.entities.player import Player
 from src.systems.camera import Camera
 from src.systems.encounter import EncounterSystem
 from src.utils.tilemap import TileMap
+from src.utils.town_maps import OVERWORLD_TOWN_ENTRANCES
 
 if TYPE_CHECKING:
     from src.game import Game
@@ -47,7 +50,7 @@ class OverworldState(BaseState):
 
     def __init__(self, game: "Game", player: Player | None = None) -> None:
         super().__init__(game)
-        self.tilemap = TileMap()
+        self.tilemap = TileMap(town_entrances=OVERWORLD_TOWN_ENTRANCES)
 
         # Reuse an existing player object (e.g. returning from battle) or
         # create a fresh one for a new game.
@@ -74,11 +77,15 @@ class OverworldState(BaseState):
         self._data_loaded = False
 
         self._paused = False
+        self._town_cooldown = 0.0  # prevents re-entering a town immediately after exit
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
     def enter(self) -> None:
         self._paused = False
+        # Brief cooldown so the player doesn't loop back into the town
+        # the instant they return from it.
+        self._town_cooldown = TOWN_ENTRY_COOLDOWN
 
     # ── Encounter helpers ─────────────────────────────────────────────────────
 
@@ -141,6 +148,19 @@ class OverworldState(BaseState):
         self.camera.update(self.player)
         self._check_encounter()
 
+        # ── Town entrance detection ───────────────────────────────────────────
+        if self._town_cooldown > 0:
+            self._town_cooldown = max(0.0, self._town_cooldown - dt)
+        else:
+            col, row = self.tilemap.pixel_to_tile(
+                self.player.rect.centerx, self.player.rect.centery
+            )
+            if self.tilemap.tile_at(col, row) == TILE_TOWN:
+                town_name = self.tilemap.town_entrances.get((col, row), "")
+                if town_name:
+                    from src.states.town import TownState  # avoid circular import
+                    self.game.push_state(TownState(self.game, town_name))
+
     def draw(self, surface: pygame.Surface) -> None:
         # Draw the tile map
         self.tilemap.draw(surface, self.camera.offset)
@@ -173,6 +193,21 @@ class OverworldState(BaseState):
 
         hint_surf = font.render("WASD/Arrows: move  ESC: pause", True, (160, 160, 160))
         surface.blit(hint_surf, (4, NATIVE_HEIGHT - 10))
+
+        # Show town name hint when player is standing on an entrance tile
+        if self._town_cooldown <= 0:
+            col, row = self.tilemap.pixel_to_tile(
+                self.player.rect.centerx, self.player.rect.centery
+            )
+            if self.tilemap.tile_at(col, row) == TILE_TOWN:
+                town_name = self.tilemap.town_entrances.get((col, row), "")
+                if town_name:
+                    lbl = font.render(
+                        f"Entering {town_name.capitalize()}...", True, YELLOW
+                    )
+                    surface.blit(
+                        lbl, lbl.get_rect(centerx=NATIVE_WIDTH // 2, top=4)
+                    )
 
     def _draw_pause(self, surface: pygame.Surface) -> None:
         """Draw a semi-transparent pause overlay."""

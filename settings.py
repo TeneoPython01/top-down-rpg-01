@@ -21,6 +21,7 @@ TILE_GRASS = 0
 TILE_WALL = 1
 TILE_WATER = 2
 TILE_PATH = 3
+TILE_TOWN = 4  # overworld town-entrance tile
 
 # ── Player ────────────────────────────────────────────────────────────────────
 PLAYER_SPEED = 80        # pixels per second (native resolution)
@@ -56,6 +57,7 @@ TILE_COLORS = {
     TILE_WALL: (80, 60, 50),
     TILE_WATER: (30, 100, 180),
     TILE_PATH: (160, 140, 90),
+    TILE_TOWN: (160, 220, 100),  # bright green — town entrance marker
 }
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -92,3 +94,8 @@ TILE_GRID_COLOR = (0, 0, 0, 40)
 # Title screen
 TITLE_STAR_SEED = 42    # fixed seed for deterministic star field on title screen
 TITLE_STAR_COUNT = 40
+
+# ── Towns ─────────────────────────────────────────────────────────────────────
+INN_COST = 50                # gold charged per night at the inn
+TOWN_ENTRY_COOLDOWN = 0.5    # seconds before re-entering a town after exiting
+TOWN_EVENT_COOLDOWN = 0.3    # seconds before a town event tile can re-trigger
