@@ -29,7 +29,6 @@ from settings import (
 from src.utils.animation import Animation
 
 # Levels data loaded once at module level (lazily).
-        # levels data loaded once at module level (lazily).
 _LEVELS_DATA: List[Dict] | None = None
 
 
