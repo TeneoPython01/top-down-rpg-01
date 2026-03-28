@@ -21,6 +21,7 @@ from settings import (
 )
 from src.states.base_state import BaseState
 from src.systems.inventory import Inventory
+from src.systems.quest_flags import QuestFlags
 
 
 class Game:
@@ -43,6 +44,11 @@ class Game:
         # Shared player inventory / gold (persists across all states)
         self.inventory = Inventory()
         self.inventory.gold = 200  # starting gold
+
+        # Shared game-state objects (set by OverworldState when a game begins)
+        self.player = None                  # type: ignore[assignment]
+        self.quest_flags = QuestFlags()
+        self.current_location = "overworld"
 
         # Kick off with the title screen (imported here to avoid circular deps)
         from src.states.title import TitleState

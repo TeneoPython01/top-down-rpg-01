@@ -53,6 +53,10 @@ class Menu:
     def move_down(self) -> None:
         self._cursor = (self._cursor + 1) % len(self.options)
 
+    def set_cursor(self, index: int) -> None:
+        """Set the cursor to *index* (clamped to valid range)."""
+        self._cursor = index % len(self.options)
+
     def handle_input(self, event: pygame.event.Event) -> str | None:
         """Handle navigation keys.  Returns the selected option label on confirm."""
         if event.type != pygame.KEYDOWN:

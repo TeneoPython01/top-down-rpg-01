@@ -107,3 +107,6 @@ INTRO_SPRITE_FOOT_COLOR = (30, 30, 90)  # colour for humanoid sprite feet
 INN_COST = 50                # gold charged per night at the inn
 TOWN_ENTRY_COOLDOWN = 0.5    # seconds before re-entering a town after exiting
 TOWN_EVENT_COOLDOWN = 0.3    # seconds before a town event tile can re-trigger
+
+# ── Save / Load ───────────────────────────────────────────────────────────────
+NUM_SAVE_SLOTS = 5           # number of save-game slots available to the player

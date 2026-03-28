@@ -202,6 +202,69 @@ class Player(pygame.sprite.Sprite):
     def is_alive(self) -> bool:
         return self.hp > 0
 
+    # ── Serialization ─────────────────────────────────────────────────────────
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Serialize the player to a JSON-compatible dict for saving."""
+        return {
+            "name": self.name,
+            "level": self.level,
+            "exp": self.exp,
+            "hp": self.hp,
+            "max_hp": self.max_hp,
+            "mp": self.mp,
+            "max_mp": self.max_mp,
+            "base_stats": dict(self.base_stats),
+            "status": dict(self.status),
+            "buffs": {k: list(v) for k, v in self.buffs.items()},
+            "known_spells": list(self.known_spells),
+            "gold": self.inventory.gold,
+            "inventory_items": dict(self.inventory.items),
+            "equipment": {k: v for k, v in self.inventory.equipment.items()},
+            "pos_x": float(self.pos.x),
+            "pos_y": float(self.pos.y),
+            "direction": self.direction,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Player":
+        """Restore a ``Player`` from a save-data dict produced by :meth:`to_dict`."""
+        pos_x = float(data.get("pos_x", 0.0))
+        pos_y = float(data.get("pos_y", 0.0))
+        spawn_col = max(0, int(pos_x / TILE_SIZE))
+        spawn_row = max(0, int(pos_y / TILE_SIZE))
+
+        player = cls(spawn_col, spawn_row)
+        player.name = data.get("name", "White Knight")
+        player.level = data.get("level", 1)
+        player.exp = data.get("exp", 0)
+        player.max_hp = data.get("max_hp", 120)
+        player.hp = min(data.get("hp", player.max_hp), player.max_hp)
+        player.max_mp = data.get("max_mp", 30)
+        player.mp = min(data.get("mp", player.max_mp), player.max_mp)
+        player.base_stats = dict(data.get("base_stats", player.base_stats))
+        player.status = dict(data.get("status", {}))
+        player.buffs = {k: list(v) for k, v in data.get("buffs", {}).items()}
+        player.known_spells = list(data.get("known_spells", ["cure", "scan"]))
+
+        # Restore inventory
+        player.inventory = Inventory()
+        player.inventory.gold = data.get("gold", 0)
+        for item_id, count in data.get("inventory_items", {}).items():
+            player.inventory.add(item_id, int(count))
+        for slot, item_id in data.get("equipment", {}).items():
+            if slot in Inventory.SLOTS:
+                player.inventory.equipment[slot] = item_id
+
+        player.recalculate_stats()
+
+        # Restore exact sub-pixel position and facing direction
+        player.pos = pygame.Vector2(pos_x, pos_y)
+        player.rect.topleft = (round(pos_x), round(pos_y))
+        player.direction = data.get("direction", DIR_DOWN)
+
+        return player
+
     def take_damage(self, amount: int) -> int:
         """Apply damage and return actual HP lost."""
         actual = min(amount, self.hp)
