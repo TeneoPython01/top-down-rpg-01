@@ -14,21 +14,24 @@ from typing import TYPE_CHECKING, List, Dict, Any
 
 import pygame
 
-from settings import NATIVE_WIDTH, NATIVE_HEIGHT, WHITE, YELLOW, DARK_GRAY, LIGHT_GRAY, CYAN, GREEN, RED
+from settings import NATIVE_WIDTH, NATIVE_HEIGHT, WHITE, YELLOW, DARK_GRAY, LIGHT_GRAY, CYAN, GREEN, RED, NUM_SAVE_SLOTS
 from src.states.base_state import BaseState
 from src.ui.menu import Menu
 from src.systems.inventory import load_items, Inventory
 from src.systems.magic import load_spells
+from src.systems.save_load import get_slot_info, save_to_slot
 
 if TYPE_CHECKING:
     from src.game import Game
 
 
-_TABS = ["Items", "Equipment", "Magic", "Stats"]
+_TABS = ["Items", "Equipment", "Magic", "Stats", "Save"]
 
 
 class PauseMenuState(BaseState):
-    """Out-of-battle pause menu with tabs: Items, Equipment, Magic, Stats."""
+    """Out-of-battle pause menu with tabs: Items, Equipment, Magic, Stats, Save."""
+
+    is_overlay = True
 
     def __init__(self, game: "Game", player: Any) -> None:
         super().__init__(game)
@@ -40,12 +43,14 @@ class PauseMenuState(BaseState):
         self._items_cursor = 0
         self._equip_cursor = 0
         self._magic_cursor = 0
+        self._save_cursor = 0
 
         self._message = ""
         self._message_timer = 0.0
 
         self._all_items: Dict[str, Any] = {}
         self._all_spells: Dict[str, Any] = {}
+        self._slot_infos: List[Any] = []
 
         # Which pane has focus: "tabs" or "content"
         self._focus = "tabs"
@@ -56,6 +61,7 @@ class PauseMenuState(BaseState):
         self._message = ""
         self._message_timer = 0.0
         self._focus = "tabs"
+        self._slot_infos = [get_slot_info(i) for i in range(1, NUM_SAVE_SLOTS + 1)]
 
     def handle_input(self, event: pygame.event.Event) -> None:
         if event.type != pygame.KEYDOWN:
@@ -69,13 +75,22 @@ class PauseMenuState(BaseState):
             return
 
         if self._focus == "tabs":
-            result = self._tab_menu.handle_input(event)
-            self._tab_idx = self._tab_menu.selected
-            if result:
-                self._focus = "content"
-                self._items_cursor = 0
-                self._equip_cursor = 0
-                self._magic_cursor = 0
+            # Left/right arrow keys navigate the horizontal tab bar directly.
+            if event.key in (pygame.K_LEFT, pygame.K_a):
+                self._tab_idx = (self._tab_idx - 1) % len(_TABS)
+                self._tab_menu._cursor = self._tab_idx
+            elif event.key in (pygame.K_RIGHT, pygame.K_d):
+                self._tab_idx = (self._tab_idx + 1) % len(_TABS)
+                self._tab_menu._cursor = self._tab_idx
+            else:
+                result = self._tab_menu.handle_input(event)
+                self._tab_idx = self._tab_menu.selected
+                if result:
+                    self._focus = "content"
+                    self._items_cursor = 0
+                    self._equip_cursor = 0
+                    self._magic_cursor = 0
+                    self._save_cursor = 0
         else:
             self._handle_content_input(event)
 
@@ -121,6 +136,22 @@ class PauseMenuState(BaseState):
                 self._magic_cursor = (self._magic_cursor - 1) % len(known)
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self._magic_cursor = (self._magic_cursor + 1) % len(known)
+
+        elif tab == "Save":
+            if event.key in (pygame.K_UP, pygame.K_w):
+                self._save_cursor = (self._save_cursor - 1) % NUM_SAVE_SLOTS
+            elif event.key in (pygame.K_DOWN, pygame.K_s):
+                self._save_cursor = (self._save_cursor + 1) % NUM_SAVE_SLOTS
+            elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
+                slot = self._save_cursor + 1
+                success = save_to_slot(self.game, slot)
+                if success:
+                    self._message = f"Game saved to slot {slot}."
+                    # Refresh slot info after saving
+                    self._slot_infos[self._save_cursor] = get_slot_info(slot)
+                else:
+                    self._message = "Save failed!"
+                self._message_timer = 2.5
 
     def _open_equip_submenu(self, slot: str) -> None:
         """Find items in inventory matching the slot type and equip the selected one."""
@@ -188,9 +219,15 @@ class PauseMenuState(BaseState):
 
         # Focus hint
         if self._focus == "tabs":
-            hint = font_sm.render("←/→/Enter: select tab  ESC: close", True, (130, 130, 160))
+            hint = font_sm.render(
+                "Left/Right or Up/Down: select tab  Enter: open  ESC: close",
+                True, (130, 130, 160),
+            )
         else:
-            hint = font_sm.render("↑/↓: navigate  Enter: use/equip  ESC: back", True, (130, 130, 160))
+            hint = font_sm.render(
+                "Up/Down: navigate  Enter: use/equip/save  ESC: back",
+                True, (130, 130, 160),
+            )
         surface.blit(hint, (8, NATIVE_HEIGHT - 14))
 
         # Status message
@@ -210,6 +247,8 @@ class PauseMenuState(BaseState):
             self._draw_magic_tab(surface, font, font_sm, content_y)
         elif tab == "Stats":
             self._draw_stats_tab(surface, font, font_sm, content_y)
+        elif tab == "Save":
+            self._draw_save_tab(surface, font, font_sm, content_y)
 
     def _draw_items_tab(self, surface: pygame.Surface, font: pygame.font.Font, font_sm: pygame.font.Font, y: int) -> None:
         items = self._get_healing_items()
@@ -295,3 +334,35 @@ class PauseMenuState(BaseState):
         ]
         for i, line in enumerate(lines):
             surface.blit(font_sm.render(line, True, WHITE), (12, y + i * 11))
+
+    def _draw_save_tab(
+        self,
+        surface: pygame.Surface,
+        font: pygame.font.Font,
+        font_sm: pygame.font.Font,
+        y: int,
+    ) -> None:
+        """Render the five save-slot rows."""
+        for i in range(NUM_SAVE_SLOTS):
+            info = self._slot_infos[i] if i < len(self._slot_infos) else None
+            is_selected = self._focus == "content" and i == self._save_cursor
+            color = YELLOW if is_selected else WHITE
+            prefix = ">" if is_selected else " "
+
+            if info is not None:
+                slot_text = (
+                    f"{prefix} Slot {i + 1}  {info['name']}"
+                    f"  Lv.{info['level']}"
+                    f"  {info['location']}"
+                    f"  {info['timestamp']}"
+                )
+            else:
+                slot_text = f"{prefix} Slot {i + 1}  (empty)"
+
+            surface.blit(font_sm.render(slot_text, True, color), (12, y + i * 12))
+
+        if self._focus == "content":
+            hint2 = font_sm.render(
+                "Enter: save to selected slot", True, (130, 130, 160)
+            )
+            surface.blit(hint2, (12, NATIVE_HEIGHT - 35))

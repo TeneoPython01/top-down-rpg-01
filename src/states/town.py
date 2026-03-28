@@ -16,6 +16,7 @@ import pygame
 from settings import (
     NATIVE_WIDTH,
     NATIVE_HEIGHT,
+    PLAYER_SIZE,
     TILE_SIZE,
     TOWN_EVENT_COOLDOWN,
     FONT_NAME,
@@ -54,14 +55,19 @@ class TownState(BaseState):
             spawn=town_data["spawn"],
         )
 
-        # Player: reuse the existing game player and move it to the town spawn
+        # Player: reuse the overworld player and teleport it to the town spawn.
         spawn_col, spawn_row = town_data["spawn"]
-        self.player = game.player
-        self.player.col = spawn_col
-        self.player.row = spawn_row
-        # Player
-        spawn_col, spawn_row = town_data["spawn"]
-        self.player = Player(spawn_col, spawn_row)
+        if game.player is not None:
+            self.player = game.player
+        else:
+            self.player = Player(spawn_col, spawn_row)
+            game.player = self.player
+        # Move player to town spawn position.
+        _margin = (TILE_SIZE - PLAYER_SIZE) // 2
+        _px = spawn_col * TILE_SIZE + _margin
+        _py = spawn_row * TILE_SIZE + _margin
+        self.player.pos = pygame.Vector2(_px, _py)
+        self.player.rect.topleft = (round(_px), round(_py))
 
         # Camera
         self.camera = Camera(
@@ -89,6 +95,7 @@ class TownState(BaseState):
         # Brief cooldown prevents the exit tile from immediately retriggering
         # if e.g. a sub-state (dialog, shop) just popped back to this state.
         self._event_cooldown = TOWN_EVENT_COOLDOWN
+        self.game.current_location = f"town:{self.town_name}"
 
     # ── Input ─────────────────────────────────────────────────────────────────
 
