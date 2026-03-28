@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Game settings / constants
 
 # Display
@@ -38,4 +39,37 @@ TILE_PROPERTIES = {
     TILE_WALL:  (GRAY,       False),
     TILE_WATER: (BLUE,       False),
     TILE_PATH:  (BROWN,      True),
+=======
+# Screen
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+TITLE = "Top-Down RPG"
+FPS = 60
+
+# Tiles
+TILE_SIZE = 32
+
+# Player
+PLAYER_SPEED = 4
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (34, 139, 34)
+DARK_GREEN = (0, 100, 0)
+GRAY = (128, 128, 128)
+DARK_GRAY = (64, 64, 64)
+BLUE = (70, 130, 180)
+
+# Tile types
+TILE_GRASS = "."
+TILE_WALL = "#"
+TILE_WATER = "~"
+
+# Tile colors
+TILE_COLORS = {
+    TILE_GRASS: GREEN,
+    TILE_WALL: DARK_GRAY,
+    TILE_WATER: BLUE,
+>>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
 }

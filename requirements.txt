@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 pygame==2.5.2
+=======
+pygame>=2.5.0
+>>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade

@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+<<<<<<< HEAD
 *.egg-info/
 dist/
 build/
@@ -21,10 +22,29 @@ env/
 *.swp
 *.swo
 *~
+=======
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# IDEs
+.vscode/
+.idea/
+>>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
 
 # OS
 .DS_Store
 Thumbs.db
+<<<<<<< HEAD
 
 # Pygame / game
 *.log
+=======
+>>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
