@@ -96,6 +96,13 @@ TILE_GRID_COLOR = (0, 0, 0, 40)
 TITLE_STAR_SEED = 42    # fixed seed for deterministic star field on title screen
 TITLE_STAR_COUNT = 40
 
+# ── Intro cutscene ────────────────────────────────────────────────────────────
+INTRO_MOVE_SPEED = 50       # pixels/second for scripted character movement
+INTRO_FADE_SPEED = 180      # alpha units/second for fade transitions
+INTRO_OVERLAY_ALPHA = 160   # alpha for the semi-transparent dark overlay during scene narration
+INTRO_HINT_COLOR = (100, 100, 140)   # colour for the "[\\] Skip intro" hint
+INTRO_ELDER_COLOR = (200, 150, 80)   # colour for the Village Elder sprite
+INTRO_SPRITE_FOOT_COLOR = (30, 30, 90)  # colour for humanoid sprite feet
 # ── Towns ─────────────────────────────────────────────────────────────────────
 INN_COST = 50                # gold charged per night at the inn
 TOWN_ENTRY_COOLDOWN = 0.5    # seconds before re-entering a town after exiting

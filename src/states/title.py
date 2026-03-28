@@ -45,8 +45,8 @@ class TitleState(BaseState):
     def handle_input(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN:
             if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
-                from src.states.overworld import OverworldState
-                self.game.change_state(OverworldState(self.game))
+                from src.states.intro import IntroState
+                self.game.change_state(IntroState(self.game))
             elif event.key == pygame.K_ESCAPE:
                 self.game.running = False
 
