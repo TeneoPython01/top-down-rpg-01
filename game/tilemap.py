@@ -15,7 +15,7 @@ class TileMap:
         self._load(filename)
 
     def _load(self, filename):
-        with open(filename) as f:
+        with open(filename, encoding="utf-8") as f:
             rows = [line.rstrip("\n") for line in f.readlines()]
         self.height = len(rows)
         self.width = max(len(row) for row in rows) if rows else 0

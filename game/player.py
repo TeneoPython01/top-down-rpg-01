@@ -1,5 +1,5 @@
 import pygame
-from game.settings import TILE_SIZE, PLAYER_SPEED, WHITE
+from game.settings import TILE_SIZE, PLAYER_SPEED
 
 
 class Player(pygame.sprite.Sprite):
@@ -7,8 +7,7 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((TILE_SIZE - 4, TILE_SIZE - 4))
-        self.image.fill(WHITE)
+        self.image = pygame.Surface((TILE_SIZE - 4, TILE_SIZE - 4), pygame.SRCALPHA)
         # Draw a simple face so orientation is clear
         pygame.draw.circle(self.image, (255, 200, 100), (14, 14), 14)
         pygame.draw.circle(self.image, (0, 0, 0), (9, 10), 3)

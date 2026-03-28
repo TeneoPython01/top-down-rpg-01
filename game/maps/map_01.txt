@@ -1,5 +1,5 @@
 ##############################################################
-#  map_01.txt  –  sample map for top-down-rpg-01
+#  map_01.txt  --  sample map for top-down-rpg-01
 #
 #  Legend:
 #    #  wall tile
