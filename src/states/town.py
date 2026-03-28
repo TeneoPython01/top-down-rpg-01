@@ -59,6 +59,9 @@ class TownState(BaseState):
         self.player = game.player
         self.player.col = spawn_col
         self.player.row = spawn_row
+        # Player
+        spawn_col, spawn_row = town_data["spawn"]
+        self.player = Player(spawn_col, spawn_row)
 
         # Camera
         self.camera = Camera(

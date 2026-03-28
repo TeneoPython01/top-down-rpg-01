@@ -21,6 +21,8 @@ from settings import (
     TILE_TOWN,
     TILE_WALL,
     TILE_WATER,
+    TILE_SIZE,
+    TILE_TOWN,
     TOWN_ENTRY_COOLDOWN,
     WHITE,
     YELLOW,
@@ -60,6 +62,8 @@ class OverworldState(BaseState):
         else:
             self.player = player
 
+        spawn_col, spawn_row = self.tilemap.spawn
+        self.player = Player(spawn_col, spawn_row)
         self.camera = Camera(
             self.tilemap.pixel_width,
             self.tilemap.pixel_height,
@@ -147,6 +151,19 @@ class OverworldState(BaseState):
         self.player.update(dt, self.tilemap.blocked_rects)
         self.camera.update(self.player)
         self._check_encounter()
+
+        # ── Town entrance detection ───────────────────────────────────────────
+        if self._town_cooldown > 0:
+            self._town_cooldown = max(0.0, self._town_cooldown - dt)
+        else:
+            col, row = self.tilemap.pixel_to_tile(
+                self.player.rect.centerx, self.player.rect.centery
+            )
+            if self.tilemap.tile_at(col, row) == TILE_TOWN:
+                town_name = self.tilemap.town_entrances.get((col, row), "")
+                if town_name:
+                    from src.states.town import TownState  # avoid circular import
+                    self.game.push_state(TownState(self.game, town_name))
 
         # ── Town entrance detection ───────────────────────────────────────────
         if self._town_cooldown > 0:
