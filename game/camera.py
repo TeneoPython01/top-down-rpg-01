@@ -1,13 +1,21 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 """Camera class that keeps the player centered on screen."""
 
 =======
 >>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
+=======
+"""
+game/camera.py - Camera class that keeps the player centered on screen.
+"""
+
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df
 import pygame
 from game.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 class Camera:
+<<<<<<< HEAD
 <<<<<<< HEAD
     """Tracks a target sprite and provides an offset for rendering.
 
@@ -71,3 +79,14 @@ class Camera:
         self.offset.x = x
         self.offset.y = y
 >>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
+=======
+    """Computes a world-to-screen offset so the player stays centered."""
+
+    def __init__(self) -> None:
+        self.offset = pygame.Vector2(0, 0)
+
+    def update(self, target: pygame.sprite.Sprite) -> None:
+        """Recalculate the offset based on the target's position."""
+        self.offset.x = SCREEN_WIDTH // 2 - target.rect.centerx
+        self.offset.y = SCREEN_HEIGHT // 2 - target.rect.centery
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df

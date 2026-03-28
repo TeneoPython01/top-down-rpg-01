@@ -4,16 +4,21 @@ __pycache__/
 *.pyo
 *.pyd
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.egg-info/
 dist/
 build/
 .eggs/
 *.egg
+=======
+.Python
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df
 
 # Virtual environments
 venv/
 .venv/
 env/
+<<<<<<< HEAD
 .env/
 
 # IDE / editor
@@ -30,21 +35,34 @@ venv/
 env/
 
 # Distribution
+=======
+
+# Distribution / packaging
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df
 dist/
 build/
 *.egg-info/
 
+<<<<<<< HEAD
 # IDEs
 .vscode/
 .idea/
 >>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
+=======
+# IDE
+.vscode/
+.idea/
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df
 
 # OS
 .DS_Store
 Thumbs.db
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 # Pygame / game
 *.log
 =======
 >>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
+=======
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df

@@ -2,6 +2,7 @@
 
 ## Project Overview
 <<<<<<< HEAD
+<<<<<<< HEAD
 This is a top-down RPG game built with Python and Pygame. The game features tile-based maps, a player character with movement, a camera that follows the player, and collision detection.
 
 ## Tech Stack
@@ -64,10 +65,38 @@ This is a top-down RPG game built with Python and Pygame. The game features tile
 
 ## Running the Game
 >>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
+=======
+This is a top-down RPG game built with Python and pygame.
+
+## Project Structure
+- `main.py` - Entry point; initializes and runs the game
+- `game/` - Main game package
+  - `settings.py` - Game constants and configuration (screen size, FPS, tile size, colors)
+  - `player.py` - Player class with movement and animation
+  - `tile.py` - Tile class representing individual map tiles
+  - `tilemap.py` - TileMap class for loading and rendering the map
+  - `camera.py` - Camera class that follows the player
+  - `game.py` - Main Game class containing the game loop
+  - `maps/` - Map data files (`.txt` format)
+
+## Coding Conventions
+- Use Python 3.10+
+- Follow PEP 8 style guidelines
+- Keep game logic in the `game/` package; `main.py` should only bootstrap the game
+- Use `pygame.Vector2` for positions and velocities
+- All game constants belong in `game/settings.py`
+- Map files use single-character codes: `W` = wall, `.` = floor, `P` = player spawn
+
+## Dependencies
+- pygame (see `requirements.txt`)
+
+## Running the Game
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df
 ```bash
 pip install -r requirements.txt
 python main.py
 ```
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 ## Controls
@@ -82,3 +111,5 @@ When adding new features:
 4. Keep game logic separate from rendering logic where possible
 =======
 >>>>>>> 1a56f8a7b0d6d654abe6ca6160113bb2029dbade
+=======
+>>>>>>> b7662c8ece33af2e7f642e242f5b74f5ad2a04df
