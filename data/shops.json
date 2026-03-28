@@ -1,0 +1,18 @@
+{
+  "ashenvale": {
+    "name": "Ashenvale General Store",
+    "items": ["potion", "antidote", "eye_drops", "echo_herb", "short_sword", "leather_shield", "leather_helm", "cloth_armor"]
+  },
+  "ironhaven": {
+    "name": "Ironhaven Armory",
+    "items": ["hi_potion", "ether", "antidote", "tent", "long_sword", "broad_sword", "iron_shield", "iron_helm", "chain_mail"]
+  },
+  "willowmere": {
+    "name": "Willowmere Magic Shop",
+    "items": ["hi_potion", "ether", "hi_ether", "echo_herb", "phoenix_down", "tent", "knight_sword", "plate_armor"]
+  },
+  "subterra": {
+    "name": "Merchant Dax — Subterra",
+    "items": ["nano_potion", "plasma_grenade", "stasis_field", "elixir", "phoenix_down"]
+  }
+}

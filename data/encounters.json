@@ -1,0 +1,53 @@
+{
+  "zones": {
+    "grasslands": {
+      "encounter_rate": 20,
+      "groups": [
+        ["dire_wolf"],
+        ["giant_rat", "giant_rat"],
+        ["feral_boar"],
+        ["venomous_viper"],
+        ["dire_wolf", "giant_rat"],
+        ["venomous_viper", "venomous_viper"]
+      ]
+    },
+    "forest": {
+      "encounter_rate": 18,
+      "groups": [
+        ["shadow_panther"],
+        ["thunder_hawk"],
+        ["iron_bear"],
+        ["poison_toad", "poison_toad"],
+        ["shadow_panther", "poison_toad"]
+      ]
+    },
+    "mountains": {
+      "encounter_rate": 15,
+      "groups": [
+        ["rock_golem"],
+        ["storm_drake"],
+        ["crystal_stag"],
+        ["fire_lizard"],
+        ["storm_drake", "fire_lizard"]
+      ]
+    },
+    "dark_lands": {
+      "encounter_rate": 12,
+      "groups": [
+        ["bk_soldier"],
+        ["corrupted_wolf"],
+        ["nightmare_stallion"],
+        ["dark_mage"],
+        ["bk_soldier", "dark_mage"]
+      ]
+    },
+    "subterra_passage": {
+      "encounter_rate": 16,
+      "groups": [
+        ["cave_crawler"],
+        ["pale_lurker", "pale_lurker"],
+        ["cave_crawler", "pale_lurker"]
+      ]
+    }
+  }
+}

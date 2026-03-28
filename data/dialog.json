@@ -1,0 +1,87 @@
+{
+  "village_elder_before": {
+    "lines": [
+      "White Knight! Strange beast attacks have been increasing near the village.",
+      "The creatures seem almost... driven. As if something is pushing them toward us.",
+      "Please, investigate the Silverwood Forest to the north.",
+      "I fear for our people if this continues."
+    ]
+  },
+  "village_elder_after_wolf": {
+    "lines": [
+      "You defeated the Dire Wolf Alpha? Remarkable.",
+      "But you found evidence of deliberate interference...",
+      "This is more serious than I feared. Travel east to warn Ironhaven.",
+      "Be careful, White Knight. The world grows dangerous."
+    ]
+  },
+  "farmer_ashenvale": {
+    "lines": [
+      "Haven't slept right in weeks. The wolves howl all night now.",
+      "My crops are half-eaten. Something's different about these beasts — they seem angrier."
+    ]
+  },
+  "healer_npc": {
+    "lines": [
+      "Magic has returned to this world. I can feel it in the air.",
+      "100 years ago, the pandemic took nearly everything. But magic faded with the people.",
+      "Now... it's coming back. The beasts feel it. Someone is harnessing it.",
+      "I've heard rumours of a dark figure in the northern mountains. The Black Knight, they call him."
+    ]
+  },
+  "ironhaven_blacksmith": {
+    "lines": [
+      "Finest steel in the region, forged right here in Ironhaven.",
+      "You look like you could use an upgrade. Check the armory next door."
+    ]
+  },
+  "willowmere_traveler": {
+    "lines": [
+      "The mountains breathe. I swear I felt warm air from solid stone.",
+      "I wrote it in my journal — somewhere in the Stormcrag range, there's something strange.",
+      "Maybe I'm imagining things. Or maybe not."
+    ]
+  },
+  "elder_marek": {
+    "lines": [
+      "A surface dweller... We haven't had visitors in decades.",
+      "I am Elder Marek. Welcome to Subterra — the city beneath the stone.",
+      "Our ancestors fled underground 100 years ago when the pandemic swept the surface.",
+      "We have built a life here. A good life. But we are not yet ready to face the surface world.",
+      "Please, keep our existence secret for now. The time will come when we can emerge.",
+      "But that time is not yet."
+    ]
+  },
+  "archivist_lena": {
+    "lines": [
+      "You're interested in the old records? Few visitors ask about history.",
+      "Our archives go back to the founding — 100 years ago when the first settlers arrived.",
+      "Hmm... I see here that two families left Subterra 60 years ago.",
+      "They believed the surface was safe. The records show one family's surname...",
+      "Wait. That matches yours, doesn't it? The White Knight family.",
+      "There's more in the old residential quarter. Your ancestors lived there."
+    ]
+  },
+  "merchant_dax": {
+    "lines": [
+      "Welcome, surface dweller! You've come a long way.",
+      "I have wares that can't be found anywhere above ground.",
+      "Pre-pandemic technology, repurposed for the modern adventurer.",
+      "Interested?"
+    ]
+  },
+  "journal_grandmother": {
+    "lines": [
+      "Journal of Elena, Year 40 of Subterra.",
+      "",
+      "Tomorrow we leave. After all these years underground, we're going up.",
+      "The others think we're foolish. Maybe we are.",
+      "But I have looked at the sky through the ventilation shafts.",
+      "It is blue, White Knight. Impossibly blue.",
+      "Our children will see the sky. And if the world is broken,",
+      "I believe they will be the ones to mend it.",
+      "We leave behind our old tools — we won't need weapons where we're going.",
+      "We go in peace."
+    ]
+  }
+}

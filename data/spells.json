@@ -1,0 +1,18 @@
+[
+  {"id": "cure",      "name": "Cure",      "mp": 4,  "power": 100, "element": null, "target": "ally_single",  "effect": "heal_hp",       "learn_level": 1,  "type": "white", "description": "Heals ~100 HP."},
+  {"id": "protect",   "name": "Protect",   "mp": 6,  "power": 0,   "element": null, "target": "ally_single",  "effect": "buff_def",      "learn_level": 5,  "type": "white", "description": "+50% DEF for 5 turns."},
+  {"id": "cura",      "name": "Cura",      "mp": 12, "power": 400, "element": null, "target": "ally_single",  "effect": "heal_hp",       "learn_level": 12, "type": "white", "description": "Heals ~400 HP."},
+  {"id": "shell",     "name": "Shell",     "mp": 8,  "power": 0,   "element": null, "target": "ally_single",  "effect": "buff_mdf",      "learn_level": 15, "type": "white", "description": "+50% MDF for 5 turns."},
+  {"id": "raise",     "name": "Raise",     "mp": 20, "power": 0,   "element": null, "target": "ally_single",  "effect": "revive",        "learn_level": 20, "type": "white", "description": "Revive ally at 50% HP."},
+  {"id": "holy",      "name": "Holy",      "mp": 30, "power": 180, "element": "holy","target": "enemy_single", "effect": "damage",        "learn_level": 30, "type": "white", "description": "Heavy Holy damage."},
+  {"id": "fire",      "name": "Fire",      "mp": 5,  "power": 40,  "element": "fire","target": "enemy_single", "effect": "damage",        "learn_level": 3,  "type": "black", "description": "Fire damage to one enemy."},
+  {"id": "blizzard",  "name": "Blizzard",  "mp": 5,  "power": 40,  "element": "ice", "target": "enemy_single", "effect": "damage",        "learn_level": 6,  "type": "black", "description": "Ice damage to one enemy."},
+  {"id": "thunder",   "name": "Thunder",   "mp": 5,  "power": 40,  "element": "lightning","target":"enemy_single","effect":"damage",      "learn_level": 9,  "type": "black", "description": "Lightning damage to one enemy."},
+  {"id": "fira",      "name": "Fira",      "mp": 15, "power": 120, "element": "fire","target": "enemy_single", "effect": "damage",        "learn_level": 18, "type": "black", "description": "Heavy Fire damage."},
+  {"id": "blizzara",  "name": "Blizzara",  "mp": 15, "power": 120, "element": "ice", "target": "enemy_single", "effect": "damage",        "learn_level": 22, "type": "black", "description": "Heavy Ice damage."},
+  {"id": "thundara",  "name": "Thundara",  "mp": 15, "power": 120, "element": "lightning","target":"enemy_single","effect":"damage",      "learn_level": 26, "type": "black", "description": "Heavy Lightning damage."},
+  {"id": "scan",      "name": "Scan",      "mp": 2,  "power": 0,   "element": null, "target": "enemy_single", "effect": "reveal_stats",  "learn_level": 1,  "type": "support","description": "Reveals enemy stats."},
+  {"id": "haste",     "name": "Haste",     "mp": 8,  "power": 0,   "element": null, "target": "ally_single",  "effect": "buff_spd",      "learn_level": 10, "type": "support","description": "+50% SPD for 5 turns."},
+  {"id": "slow",      "name": "Slow",      "mp": 6,  "power": 0,   "element": null, "target": "enemy_single", "effect": "debuff_spd",    "learn_level": 8,  "type": "support","description": "-50% SPD for 3 turns."},
+  {"id": "dispel",    "name": "Dispel",    "mp": 10, "power": 0,   "element": null, "target": "any_single",   "effect": "remove_buffs",  "learn_level": 16, "type": "support","description": "Remove buffs/debuffs."}
+]
