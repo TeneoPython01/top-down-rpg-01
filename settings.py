@@ -48,6 +48,7 @@ CYAN = (0, 200, 200)
 DARK_BLUE = (20, 40, 100)
 DARK_BROWN = (60, 40, 20)
 WATER_BLUE = (30, 100, 180)
+NPC_SKIN_COLOR = (220, 180, 140)   # humanoid skin tone used for NPC placeholder sprites
 PATH_TAN = (180, 155, 100)
 
 # Tile colours (used until real tilesets are added)

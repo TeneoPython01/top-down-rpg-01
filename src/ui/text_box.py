@@ -18,6 +18,7 @@ from settings import (
     BLACK,
     DARK_GRAY,
     LIGHT_GRAY,
+    YELLOW,
 )
 
 
@@ -31,12 +32,15 @@ class TextBox:
     ----------
     text:
         Full text to display.
+    speaker:
+        Optional name of the speaker shown as a banner above the box.
     width:
         Width of the text box in native pixels (defaults to full screen width).
     """
 
-    def __init__(self, text: str, width: int = NATIVE_WIDTH) -> None:
+    def __init__(self, text: str, speaker: str = "", width: int = NATIVE_WIDTH) -> None:
         self._full_text = text
+        self._speaker = speaker
         self._chars_shown = 0
         self._timer = 0.0
         self._done = False
@@ -68,13 +72,27 @@ class TextBox:
                 self._done = True
 
     def draw(self, surface: pygame.Surface) -> None:
+        font = pygame.font.SysFont(FONT_NAME, FONT_SIZE_NORMAL)
+
+        # Speaker name banner (drawn just above the main box)
+        if self._speaker:
+            name_w = font.size(self._speaker)[0] + DIALOG_PADDING * 2
+            name_h = FONT_SIZE_NORMAL + DIALOG_PADDING
+            name_rect = pygame.Rect(4, self.y - name_h - 1, name_w, name_h)
+            pygame.draw.rect(surface, DARK_GRAY, name_rect)
+            pygame.draw.rect(surface, LIGHT_GRAY, name_rect, 1)
+            name_surf = font.render(self._speaker, True, YELLOW)
+            surface.blit(
+                name_surf,
+                (name_rect.x + DIALOG_PADDING, name_rect.y + DIALOG_PADDING // 2),
+            )
+
         # Box background
         box_rect = pygame.Rect(4, self.y, self.width - 8, self.height)
         pygame.draw.rect(surface, DARK_GRAY, box_rect)
         pygame.draw.rect(surface, LIGHT_GRAY, box_rect, 2)
 
         # Text
-        font = pygame.font.SysFont(FONT_NAME, FONT_SIZE_NORMAL)
         visible = self._full_text[: self._chars_shown]
         x = box_rect.x + DIALOG_PADDING
         y = box_rect.y + DIALOG_PADDING

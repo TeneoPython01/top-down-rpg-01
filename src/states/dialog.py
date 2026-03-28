@@ -18,19 +18,37 @@ if TYPE_CHECKING:
 class DialogState(BaseState):
     """Overlay state that displays dialog text line-by-line.
 
-    Pressing Z/Enter advances the dialog; ESC skips to the end.
+    This is an *overlay* — the game loop will keep drawing the state below it
+    so the world remains visible behind the dialog box.
+
+    Pressing Z/Enter/Space advances the dialog; ESC skips to the end.
+
+    Parameters
+    ----------
+    lines:
+        Sequence of text strings to display, one at a time.
+    speaker:
+        Optional name shown in a banner above the text box.
     """
 
-    def __init__(self, game: "Game", lines: list[str]) -> None:
+    is_overlay: bool = True
+
+    def __init__(
+        self,
+        game: "Game",
+        lines: list[str],
+        speaker: str = "",
+    ) -> None:
         super().__init__(game)
         self._lines = lines
+        self._speaker = speaker
         self._index = 0
         self._text_box: TextBox | None = None
 
     def enter(self) -> None:
         self._index = 0
         if self._lines:
-            self._text_box = TextBox(self._lines[0])
+            self._text_box = TextBox(self._lines[0], speaker=self._speaker)
         else:
             self.game.pop_state()
 
@@ -48,7 +66,9 @@ class DialogState(BaseState):
     def _next_line(self) -> None:
         self._index += 1
         if self._index < len(self._lines):
-            self._text_box = TextBox(self._lines[self._index])
+            self._text_box = TextBox(
+                self._lines[self._index], speaker=self._speaker
+            )
         else:
             self.game.pop_state()
 
@@ -57,6 +77,7 @@ class DialogState(BaseState):
             self._text_box.update(dt)
 
     def draw(self, surface: pygame.Surface) -> None:
-        # The underlying state is already drawn; we just add the text box.
+        # The underlying state(s) are drawn by the game loop because
+        # is_overlay=True.  We only need to render the text box on top.
         if self._text_box:
             self._text_box.draw(surface)

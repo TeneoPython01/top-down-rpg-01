@@ -92,8 +92,15 @@ class Game:
                 self.current_state.update(dt)
 
             self.screen.fill(BLACK)
-            if self.current_state is not None:
-                self.current_state.draw(self.screen)
+            if self._state_stack:
+                # Find the lowest state that must be drawn.  Overlay states
+                # (e.g. dialog boxes) are transparent — we still need to show
+                # whatever is beneath them.
+                start = len(self._state_stack) - 1
+                while start > 0 and self._state_stack[start].is_overlay:
+                    start -= 1
+                for state in self._state_stack[start:]:
+                    state.draw(self.screen)
 
             # Scale native surface → window
             scaled = pygame.transform.scale(self.screen, (SCREEN_WIDTH, SCREEN_HEIGHT))
