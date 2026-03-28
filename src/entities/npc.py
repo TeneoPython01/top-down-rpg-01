@@ -8,21 +8,34 @@ from typing import Dict, Any
 
 import pygame
 
-from settings import TILE_SIZE, LIGHT_GRAY, BLACK
+from settings import TILE_SIZE, LIGHT_GRAY, BLACK, WHITE
 
 
 class NPC(pygame.sprite.Sprite):
     """A non-player character with a dialog reference and sprite.
 
-    Fully implemented in Phase 4.
+    Parameters
+    ----------
+    data:
+        Dict with keys: name, dialog_id, and optional color (RGB tuple).
+    col, row:
+        Tile-grid position of the NPC.
     """
 
     def __init__(self, data: Dict[str, Any], col: int, row: int) -> None:
         super().__init__()
         self.name: str = data.get("name", "NPC")
         self.dialog_id: str = data.get("dialog_id", "")
+        color = data.get("color", LIGHT_GRAY)
+
         self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
-        self.image.fill(LIGHT_GRAY)
+        self.image.fill(color)
+        # Simple face: two dark eye dots
+        pygame.draw.rect(self.image, BLACK, (4, 5, 2, 2))
+        pygame.draw.rect(self.image, BLACK, (10, 5, 2, 2))
+        # White highlight on top half to suggest a head shape
+        pygame.draw.rect(self.image, WHITE, (5, 1, 6, 3))
+
         self.rect = self.image.get_rect(
             topleft=(col * TILE_SIZE, row * TILE_SIZE)
         )

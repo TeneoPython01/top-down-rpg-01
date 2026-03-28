@@ -20,6 +20,7 @@ from settings import (
     BLACK,
 )
 from src.states.base_state import BaseState
+from src.systems.inventory import Inventory
 
 
 class Game:
@@ -38,6 +39,10 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self._state_stack: List[BaseState] = []
+
+        # Shared player inventory / gold (persists across all states)
+        self.inventory = Inventory()
+        self.inventory.gold = 200  # starting gold
 
         # Kick off with the title screen (imported here to avoid circular deps)
         from src.states.title import TitleState
