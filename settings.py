@@ -21,6 +21,7 @@ TILE_GRASS = 0
 TILE_WALL = 1
 TILE_WATER = 2
 TILE_PATH = 3
+TILE_TOWN = 4  # overworld town-entrance tile
 
 # ── Player ────────────────────────────────────────────────────────────────────
 PLAYER_SPEED = 80        # pixels per second (native resolution)
@@ -48,6 +49,7 @@ CYAN = (0, 200, 200)
 DARK_BLUE = (20, 40, 100)
 DARK_BROWN = (60, 40, 20)
 WATER_BLUE = (30, 100, 180)
+NPC_SKIN_COLOR = (220, 180, 140)   # humanoid skin tone used for NPC placeholder sprites
 PATH_TAN = (180, 155, 100)
 
 # Tile colours (used until real tilesets are added)
@@ -56,6 +58,7 @@ TILE_COLORS = {
     TILE_WALL: (80, 60, 50),
     TILE_WATER: (30, 100, 180),
     TILE_PATH: (160, 140, 90),
+    TILE_TOWN: (160, 220, 100),  # bright green — town entrance marker
 }
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -69,6 +72,7 @@ BASE_HIT_RATE = 0.90
 CRIT_CHANCE_DIVISOR = 256
 DAMAGE_VARIANCE = 0.10
 BLIND_HIT_PENALTY = 0.50       # hit-rate reduction when attacker is blinded
+UNARMED_ATTACK_POWER = 3       # default weapon power when no weapon is equipped
 
 # ── Encounters ────────────────────────────────────────────────────────────────
 ENCOUNTER_RATE_VARIANCE = 0.50  # ±50% of encounter_rate for threshold rolling
@@ -99,3 +103,7 @@ INTRO_OVERLAY_ALPHA = 160   # alpha for the semi-transparent dark overlay during
 INTRO_HINT_COLOR = (100, 100, 140)   # colour for the "[\\] Skip intro" hint
 INTRO_ELDER_COLOR = (200, 150, 80)   # colour for the Village Elder sprite
 INTRO_SPRITE_FOOT_COLOR = (30, 30, 90)  # colour for humanoid sprite feet
+# ── Towns ─────────────────────────────────────────────────────────────────────
+INN_COST = 50                # gold charged per night at the inn
+TOWN_ENTRY_COOLDOWN = 0.5    # seconds before re-entering a town after exiting
+TOWN_EVENT_COOLDOWN = 0.3    # seconds before a town event tile can re-trigger

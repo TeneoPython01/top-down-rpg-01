@@ -19,7 +19,15 @@ class BaseState(abc.ABC):
     The Game class calls ``handle_input``, ``update``, and ``draw`` once per
     frame for the currently active state.  ``enter`` and ``exit`` are called
     when the state is pushed onto / popped off the state stack.
+
+    Attributes
+    ----------
+    is_overlay:
+        When ``True`` the game loop will also draw all states beneath this one
+        so that the underlying scene remains visible (e.g. dialog boxes).
     """
+
+    is_overlay: bool = False
 
     def __init__(self, game: "Game") -> None:
         self.game = game

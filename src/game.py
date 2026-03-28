@@ -20,6 +20,7 @@ from settings import (
     BLACK,
 )
 from src.states.base_state import BaseState
+from src.systems.inventory import Inventory
 
 
 class Game:
@@ -38,6 +39,10 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self._state_stack: List[BaseState] = []
+
+        # Shared player inventory / gold (persists across all states)
+        self.inventory = Inventory()
+        self.inventory.gold = 200  # starting gold
 
         # Kick off with the title screen (imported here to avoid circular deps)
         from src.states.title import TitleState
@@ -92,8 +97,15 @@ class Game:
                 self.current_state.update(dt)
 
             self.screen.fill(BLACK)
-            if self.current_state is not None:
-                self.current_state.draw(self.screen)
+            if self._state_stack:
+                # Find the lowest state that must be drawn.  Overlay states
+                # (e.g. dialog boxes) are transparent — we still need to show
+                # whatever is beneath them.
+                start = len(self._state_stack) - 1
+                while start > 0 and self._state_stack[start].is_overlay:
+                    start -= 1
+                for state in self._state_stack[start:]:
+                    state.draw(self.screen)
 
             # Scale native surface → window
             scaled = pygame.transform.scale(self.screen, (SCREEN_WIDTH, SCREEN_HEIGHT))
