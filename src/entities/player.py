@@ -24,6 +24,7 @@ from settings import (
     DIR_UP,
 )
 from src.utils.animation import Animation
+from src.systems.inventory import Inventory
 
 
 def _make_placeholder_frames(color: tuple, direction: int) -> List[pygame.Surface]:
@@ -74,12 +75,69 @@ class Player(pygame.sprite.Sprite):
         Current facing direction (DIR_DOWN, DIR_UP, DIR_LEFT, DIR_RIGHT).
     velocity:
         Current movement vector in native pixels per second.
+    name:
+        Character name.
+    level / exp:
+        Current level and accumulated experience points.
+    hp / max_hp:
+        Current and maximum HP.
+    mp / max_mp:
+        Current and maximum MP.
+    base_stats:
+        Core stats before equipment bonuses (str, def, mag, mdf, spd, lck).
+    stats:
+        Effective stats after equipment bonuses.
+    status:
+        Active status effects: mapping effect_name → turns_remaining (int).
+    buffs:
+        Active combat buffs/debuffs: mapping stat_key → (multiplier, turns_remaining).
+    inventory:
+        The player's Inventory instance.
+    known_spells:
+        List of spell IDs the player has learned.
+    gold:
+        Convenience alias for inventory.gold.
     """
 
     def __init__(self, spawn_col: int, spawn_row: int) -> None:
         super().__init__()
         self.direction = DIR_DOWN
         self._moving = False
+
+        # ── RPG stats ─────────────────────────────────────────────────────────
+        self.name = "White Knight"
+        self.level = 1
+        self.exp = 0
+
+        self.max_hp = 120
+        self.hp = self.max_hp
+        self.max_mp = 30
+        self.mp = self.max_mp
+
+        # Base stats (before equipment)
+        self.base_stats: Dict[str, int] = {
+            "str": 10,
+            "def": 5,
+            "mag": 6,
+            "mdf": 4,
+            "spd": 8,
+            "lck": 5,
+        }
+        # Effective stats (recalculated when equipment changes)
+        self.stats: Dict[str, int] = dict(self.base_stats)
+
+        # Status effects: name → turns remaining
+        self.status: Dict[str, int] = {}
+        # Combat buffs/debuffs: stat → (multiplier, turns remaining)
+        self.buffs: Dict[str, list] = {}
+
+        # Inventory and equipment
+        self.inventory = Inventory()
+        # Start with a couple of potions
+        self.inventory.add("potion", 3)
+
+        # Spells known at level 1
+        self.known_spells: List[str] = ["cure", "scan"]
 
         # Build placeholder animation sets
         self._animations: Dict[int, Animation] = {
@@ -100,6 +158,94 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(px, py))
         self.pos = pygame.Vector2(self.rect.topleft)
         self.velocity = pygame.Vector2(0, 0)
+
+    # ── RPG stat helpers ──────────────────────────────────────────────────────
+
+    @property
+    def gold(self) -> int:
+        return self.inventory.gold
+
+    @gold.setter
+    def gold(self, value: int) -> None:
+        self.inventory.gold = value
+
+    def recalculate_stats(self) -> None:
+        """Recompute effective stats from base stats + equipped gear bonuses."""
+        from src.systems.inventory import load_items
+        all_items = load_items()
+
+        self.stats = dict(self.base_stats)
+        for slot, item_id in self.inventory.equipment.items():
+            if item_id is None:
+                continue
+            item_data = all_items.get(item_id)
+            if item_data is None:
+                continue
+            for key in ("str", "def", "mag", "mdf", "spd", "lck"):
+                self.stats[key] = self.stats.get(key, 0) + item_data.get(key, 0)
+
+    def is_alive(self) -> bool:
+        return self.hp > 0
+
+    def take_damage(self, amount: int) -> int:
+        """Apply damage and return actual HP lost."""
+        actual = min(amount, self.hp)
+        self.hp -= actual
+        return actual
+
+    def heal(self, amount: int) -> int:
+        """Restore HP up to max_hp; return actual amount healed."""
+        before = self.hp
+        self.hp = min(self.max_hp, self.hp + amount)
+        return self.hp - before
+
+    def restore_mp(self, amount: int) -> int:
+        """Restore MP up to max_mp; return actual amount restored."""
+        before = self.mp
+        self.mp = min(self.max_mp, self.mp + amount)
+        return self.mp - before
+
+    def gain_exp(self, amount: int, levels_data: List[Dict]) -> List[str]:
+        """Add exp, level up if threshold met; return list of level-up messages.
+
+        levels_data entries have keys: level, xp_required, hp, mp, str, def,
+        mag, mdf, spd, lck (absolute values for that level).
+        """
+        messages: List[str] = []
+        self.exp += amount
+        from src.systems.magic import load_spells
+        all_spells = load_spells()
+
+        for entry in sorted(levels_data, key=lambda e: e["level"]):
+            lv = entry["level"]
+            if lv <= self.level:
+                continue
+            if self.exp >= entry.get("xp_required", entry.get("exp_required", 9999999)):
+                old_max_hp = self.max_hp
+                old_max_mp = self.max_mp
+
+                self.level = lv
+                # Set stats to absolute values from the levels table
+                for k in ("str", "def", "mag", "mdf", "spd", "lck"):
+                    if k in entry:
+                        self.base_stats[k] = entry[k]
+                self.max_hp = entry.get("hp", self.max_hp)
+                self.max_mp = entry.get("mp", self.max_mp)
+                hp_gain = self.max_hp - old_max_hp
+                mp_gain = self.max_mp - old_max_mp
+                self.hp = min(self.hp + max(0, hp_gain), self.max_hp)
+                self.mp = min(self.mp + max(0, mp_gain), self.max_mp)
+                self.recalculate_stats()
+                messages.append(
+                    f"Level up! Now Lv {self.level}. "
+                    f"HP+{hp_gain} MP+{mp_gain}"
+                )
+                # Learn new spells at this level
+                for sid, sdata in all_spells.items():
+                    if sdata.get("learn_level", 99) == lv and sid not in self.known_spells:
+                        self.known_spells.append(sid)
+                        messages.append(f"Learned {sdata['name']}!")
+        return messages
 
     # ── Private helpers ───────────────────────────────────────────────────────
 
