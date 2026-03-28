@@ -69,6 +69,9 @@ class OverworldState(BaseState):
             self.tilemap.pixel_height,
         )
 
+    def enter(self) -> None:
+        pass
+
         # ── Encounter system ──────────────────────────────────────────────────
         self._zone = "grasslands"
         self._encounter = EncounterSystem(encounter_rate=20)
@@ -143,11 +146,11 @@ class OverworldState(BaseState):
     def handle_input(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
+                from src.states.pause_menu import PauseMenuState
+                self.game.push_state(PauseMenuState(self.game, self.player))
                 self._paused = not self._paused
 
     def update(self, dt: float) -> None:
-        if self._paused:
-            return
         self.player.update(dt, self.tilemap.blocked_rects)
         self.camera.update(self.player)
         self._check_encounter()
@@ -191,18 +194,20 @@ class OverworldState(BaseState):
         # ── Minimal HUD ───────────────────────────────────────────────────────
         self._draw_hud(surface)
 
-        # ── Pause overlay ─────────────────────────────────────────────────────
-        if self._paused:
-            self._draw_pause(surface)
-
     # ── Private helpers ───────────────────────────────────────────────────────
 
     def _draw_hud(self, surface: pygame.Surface) -> None:
+        """Draw a minimal heads-up display (area name, HP/MP, controls hint)."""
         """Draw a minimal heads-up display."""
         font = pygame.font.SysFont("monospace", 7)
         area_surf = font.render("Ashenvale", True, WHITE)
         surface.blit(area_surf, (4, 4))
 
+        # Player HP/MP
+        p = self.player
+        hud_text = f"HP:{p.hp}/{p.max_hp}  MP:{p.mp}/{p.max_mp}  G:{p.gold}"
+        hud_surf = font.render(hud_text, True, (180, 255, 180))
+        surface.blit(hud_surf, (4, 14))
         # HP / MP
         p = self.player
         hp_surf = font.render(f"HP {p.hp}/{p.max_hp}  MP {p.mp}/{p.max_mp}", True, WHITE)
@@ -232,18 +237,5 @@ class OverworldState(BaseState):
         overlay.fill((0, 0, 0, 140))
         surface.blit(overlay, (0, 0))
 
-        font = pygame.font.SysFont("monospace", 14, bold=True)
-        pause_surf = font.render("PAUSED", True, YELLOW)
-        surface.blit(
-            pause_surf,
-            pause_surf.get_rect(center=(NATIVE_WIDTH // 2, NATIVE_HEIGHT // 2)),
-        )
-        font_sm = pygame.font.SysFont("monospace", 8)
-        hint_surf = font_sm.render("Press ESC to resume", True, WHITE)
-        surface.blit(
-            hint_surf,
-            hint_surf.get_rect(
-                centerx=NATIVE_WIDTH // 2,
-                top=NATIVE_HEIGHT // 2 + 14,
-            ),
-        )
+        hint_surf = font.render("WASD/Arrows: move  ESC: menu", True, (160, 160, 160))
+        surface.blit(hint_surf, (4, NATIVE_HEIGHT - 10))
