@@ -82,10 +82,19 @@ class BattleState(BaseState):
     menu; enemies execute AI automatically.
     """
 
-    def __init__(self, game: "Game", enemies: List[Any], player: Any) -> None:
+    def __init__(
+        self,
+        game: "Game",
+        enemies: List[Any],
+        player: Any,
+        victory_flags: Optional[List[str]] = None,
+        on_victory: Optional[Callable] = None,
+    ) -> None:
         super().__init__(game)
         self.enemies = enemies
         self.player = player
+        self._victory_flags: List[str] = victory_flags or []
+        self._on_victory: Optional[Callable] = on_victory
 
         self._cmd_menu = Menu(_CMD_LABELS, x=NATIVE_WIDTH - 70, y=NATIVE_HEIGHT - 55)
 
@@ -481,30 +490,303 @@ class BattleState(BaseState):
     # ── Enemy AI ──────────────────────────────────────────────────────────────
 
     def _execute_enemy_turn(self, enemy: Any) -> None:
-        """Basic enemy AI: physical attack against the player."""
+        """Dispatch to AI based on enemy.ai field."""
+        ai = getattr(enemy, "ai", None) or getattr(enemy, "_data", {}).get("ai", "basic_attack")
+        # Initialise per-enemy AI state lazily
+        if not hasattr(enemy, "_ai_turn"):
+            enemy._ai_turn = 0
+        enemy._ai_turn += 1
+
+        if ai == "boss_wolf":
+            self._ai_boss_wolf(enemy)
+        elif ai == "boss_lieutenant":
+            self._ai_boss_lieutenant(enemy)
+        elif ai == "boss_beast_king":
+            self._ai_boss_beast_king(enemy)
+        elif ai == "boss_sentinel":
+            self._ai_boss_sentinel(enemy)
+        elif ai == "boss_black_knight":
+            self._ai_boss_black_knight(enemy)
+        elif ai == "poison_attack":
+            self._ai_poison_attack(enemy)
+        elif ai == "status_attack":
+            self._ai_status_attack(enemy)
+        elif ai == "elemental_attack":
+            self._ai_elemental_attack(enemy)
+        elif ai == "spellcaster":
+            self._ai_spellcaster(enemy)
+        elif ai == "self_buff":
+            self._ai_self_buff(enemy)
+        else:
+            self._ai_basic_attack(enemy)
+
+    # -- Basic AI helpers -------------------------------------------------------
+
+    def _ai_physical_hit(self, enemy: Any, power_mult: float = 1.0) -> tuple:
+        """Attempt a physical attack.  Returns (hit, msg)."""
         if check_hit(enemy, self.player):
             crit = check_crit(enemy)
             dmg = physical_damage(enemy, self.player, attack_power=UNARMED_ATTACK_POWER)
+            dmg = int(dmg * power_mult)
             if crit:
                 dmg *= 3
-            if self.player._defending:
+            if getattr(self.player, "_defending", False):
                 dmg = max(1, dmg // 2)
             actual = self.player.take_damage(dmg)
             self.game.audio.play_sfx("attack_hit")
             msg = f"{enemy.name} attacks!  -{actual} HP"
             if crit:
                 msg = "CRITICAL HIT!  " + msg
-        else:
-            msg = f"{enemy.name} misses!"
+            return True, msg
+        return False, f"{enemy.name} misses!"
+
+    def _ai_basic_attack(self, enemy: Any) -> None:
+        _, msg = self._ai_physical_hit(enemy)
         self._show_msg(msg, callback=self._after_action)
 
-    # ── Victory / defeat ──────────────────────────────────────────────────────
+    # -- Boss AI ----------------------------------------------------------------
+
+    def _ai_boss_wolf(self, enemy: Any) -> None:
+        """Dire Wolf Alpha: multi-hit on odd turns, rallying howl on every 3rd turn."""
+        turn = enemy._ai_turn
+        hp_pct = enemy.hp / max(1, enemy.max_hp)
+
+        if turn % 3 == 0:
+            # Rallying howl — buffs own STR temporarily
+            if not hasattr(enemy, "buffs"):
+                enemy.buffs = {}
+            enemy.buffs["str"] = (1.5, 2)  # 1.5× STR for 2 turns
+            self._show_msg(
+                f"{enemy.name} lets out a fearsome howl!  Its strength rises!",
+                callback=self._after_action,
+            )
+            return
+
+        # Phase 2 (< 50% HP): double hit
+        if hp_pct < 0.5:
+            hit1, msg1 = self._ai_physical_hit(enemy, power_mult=0.7)
+            hit2, msg2 = self._ai_physical_hit(enemy, power_mult=0.7)
+            combined = f"{msg1}  {msg2}"
+            self._show_msg(combined, callback=self._after_action)
+        else:
+            self._ai_basic_attack(enemy)
+
+    def _ai_boss_lieutenant(self, enemy: Any) -> None:
+        """BK Lieutenant: alternates physical sword and dark magic attacks."""
+        turn = enemy._ai_turn
+        hp_pct = enemy.hp / max(1, enemy.max_hp)
+
+        # Phase 2 (< 40% HP): prefer magic 2/3 of the time
+        use_magic = (turn % 2 == 0) or (hp_pct < 0.4 and turn % 3 != 0)
+
+        if use_magic:
+            mag = enemy.stats.get("mag", 20)
+            from src.systems import battle_engine as be
+            dmg = int(be.magical_damage(enemy, self.player, spell_power=20))
+            if getattr(self.player, "_defending", False):
+                dmg = max(1, dmg // 2)
+            actual = self.player.take_damage(dmg)
+            self.game.audio.play_sfx("spell_cast")
+            msg = f"{enemy.name} casts Dark Slash!  -{actual} MP"
+            msg = f"{enemy.name} unleashes Dark Slash!  -{actual} HP"
+            self._show_msg(msg, callback=self._after_action)
+        else:
+            _, msg = self._ai_physical_hit(enemy, power_mult=1.2)
+            self._show_msg(msg, callback=self._after_action)
+
+    def _ai_boss_beast_king(self, enemy: Any) -> None:
+        """Corrupted Beast King: three phases based on HP."""
+        hp_pct = enemy.hp / max(1, enemy.max_hp)
+
+        if hp_pct > 0.5:
+            # Phase 1: heavy physical
+            _, msg = self._ai_physical_hit(enemy, power_mult=1.5)
+            self._show_msg(msg, callback=self._after_action)
+        elif hp_pct > 0.25:
+            # Phase 2: alternate physical / magic
+            turn = enemy._ai_turn
+            if turn % 2 == 0:
+                from src.systems import battle_engine as be
+                dmg = int(be.magical_damage(enemy, self.player, spell_power=30))
+                actual = self.player.take_damage(dmg)
+                self.game.audio.play_sfx("spell_cast")
+                self._show_msg(
+                    f"{enemy.name} bellows with corrupted magic!  -{actual} HP",
+                    callback=self._after_action,
+                )
+            else:
+                _, msg = self._ai_physical_hit(enemy, power_mult=1.3)
+                self._show_msg(msg, callback=self._after_action)
+        else:
+            # Phase 3: magic + attempt sleep status
+            from src.systems import battle_engine as be
+            dmg = int(be.magical_damage(enemy, self.player, spell_power=35))
+            actual = self.player.take_damage(dmg)
+            self.game.audio.play_sfx("spell_cast")
+            # Chance to inflict Sleep
+            if random.random() < 0.35:
+                if not hasattr(self.player, "status"):
+                    self.player.status = {}
+                self.player.status["sleep"] = 2
+                msg = f"{enemy.name} casts Nightmare!  -{actual} HP  Player falls asleep!"
+            else:
+                msg = f"{enemy.name} casts Nightmare!  -{actual} HP"
+            self._show_msg(msg, callback=self._after_action)
+
+    def _ai_boss_sentinel(self, enemy: Any) -> None:
+        """Crystal Sentinel: physical-only (immune to magic), high power."""
+        turn = enemy._ai_turn
+        if turn % 4 == 0:
+            # Crystalline slam: very heavy hit
+            _, msg = self._ai_physical_hit(enemy, power_mult=2.0)
+            self._show_msg(f"CRYSTAL SLAM!  {msg}", callback=self._after_action)
+        else:
+            _, msg = self._ai_physical_hit(enemy, power_mult=1.2)
+            self._show_msg(msg, callback=self._after_action)
+
+    def _ai_boss_black_knight(self, enemy: Any) -> None:
+        """The Black Knight: multi-phase, heals once at 50% HP, full spell kit."""
+        hp_pct = enemy.hp / max(1, enemy.max_hp)
+
+        # Heal once at 50% HP
+        if hp_pct <= 0.5 and not getattr(enemy, "_bk_healed", False):
+            enemy._bk_healed = True
+            heal = min(enemy.max_hp // 3, enemy.max_hp - enemy.hp)
+            enemy.hp = min(enemy.max_hp, enemy.hp + heal)
+            self.game.audio.play_sfx("item_use")
+            self._show_msg(
+                f"{enemy.name} drinks a dark elixir!  +{heal} HP!",
+                callback=self._after_action,
+            )
+            return
+
+        turn = enemy._ai_turn
+        action = turn % 5
+
+        if action == 0:
+            # Dark magic burst
+            from src.systems import battle_engine as be
+            dmg = int(be.magical_damage(enemy, self.player, spell_power=50))
+            actual = self.player.take_damage(dmg)
+            self.game.audio.play_sfx("spell_cast")
+            self._show_msg(
+                f"{enemy.name} casts Void Strike!  -{actual} HP",
+                callback=self._after_action,
+            )
+        elif action == 1:
+            # Sword combo: two hits
+            hit1, msg1 = self._ai_physical_hit(enemy, power_mult=0.8)
+            hit2, msg2 = self._ai_physical_hit(enemy, power_mult=0.8)
+            self._show_msg(f"Sword Combo!  {msg1}  {msg2}", callback=self._after_action)
+        elif action == 2:
+            # Dark flame
+            from src.systems import battle_engine as be
+            dmg = int(be.magical_damage(enemy, self.player, spell_power=40))
+            actual = self.player.take_damage(dmg)
+            self.game.audio.play_sfx("spell_cast")
+            self._show_msg(
+                f"{enemy.name} unleashes Black Flame!  -{actual} HP",
+                callback=self._after_action,
+            )
+        elif action == 3:
+            # Attempt Blind
+            from src.systems import magic as magic_sys
+            if random.random() < 0.5:
+                if not hasattr(self.player, "status"):
+                    self.player.status = {}
+                self.player.status["blind"] = 3
+                self._show_msg(
+                    f"{enemy.name} casts Shadow Shroud!  Player is Blinded!",
+                    callback=self._after_action,
+                )
+            else:
+                self._ai_basic_attack(enemy)
+        else:
+            _, msg = self._ai_physical_hit(enemy, power_mult=1.3)
+            self._show_msg(msg, callback=self._after_action)
+
+    # -- Elemental and status AI -----------------------------------------------
+
+    def _ai_poison_attack(self, enemy: Any) -> None:
+        """Attack and try to poison."""
+        _, msg = self._ai_physical_hit(enemy)
+        if random.random() < 0.4:
+            if not hasattr(self.player, "status"):
+                self.player.status = {}
+            self.player.status["poison"] = 3
+            msg += "  Player is Poisoned!"
+        self._show_msg(msg, callback=self._after_action)
+
+    def _ai_status_attack(self, enemy: Any) -> None:
+        """Alternate between attack and inflicting a status."""
+        turn = enemy._ai_turn
+        if turn % 3 == 0:
+            if not hasattr(self.player, "status"):
+                self.player.status = {}
+            effect = random.choice(["blind", "poison"])
+            self.player.status[effect] = 2
+            self._show_msg(
+                f"{enemy.name} uses a Status attack!  Player is {effect.capitalize()}ed!",
+                callback=self._after_action,
+            )
+        else:
+            self._ai_basic_attack(enemy)
+
+    def _ai_elemental_attack(self, enemy: Any) -> None:
+        """Magic elemental attack."""
+        from src.systems import battle_engine as be
+        dmg = int(be.magical_damage(enemy, self.player, spell_power=15))
+        actual = self.player.take_damage(dmg)
+        self.game.audio.play_sfx("spell_cast")
+        self._show_msg(
+            f"{enemy.name} uses an elemental attack!  -{actual} HP",
+            callback=self._after_action,
+        )
+
+    def _ai_spellcaster(self, enemy: Any) -> None:
+        """Random spell from the enemy's kit."""
+        from src.systems import battle_engine as be
+        dmg = int(be.magical_damage(enemy, self.player, spell_power=20))
+        actual = self.player.take_damage(dmg)
+        self.game.audio.play_sfx("spell_cast")
+        self._show_msg(
+            f"{enemy.name} casts a spell!  -{actual} HP",
+            callback=self._after_action,
+        )
+
+    def _ai_self_buff(self, enemy: Any) -> None:
+        """Buff self on first turn, attack on subsequent turns."""
+        if enemy._ai_turn == 1:
+            if not hasattr(enemy, "buffs"):
+                enemy.buffs = {}
+            enemy.buffs["spd"] = (2.0, 3)
+            self._show_msg(
+                f"{enemy.name} charges with dark energy!  Speed rises!",
+                callback=self._after_action,
+            )
+        else:
+            self._ai_basic_attack(enemy)
+
+
 
     def _begin_victory(self) -> None:
         self._victory_xp = sum(e.xp_reward for e in self.enemies)
         self._victory_gold = sum(e.gold_reward for e in self.enemies)
         self.game.inventory.gold += self._victory_gold
         self._level_up_msgs = self.player.gain_xp(self._victory_xp)
+
+        # Process loot drops from each enemy's loot table
+        for enemy in self.enemies:
+            for loot_entry in getattr(enemy, "loot_table", []):
+                if random.random() < loot_entry.get("chance", 0):
+                    item_id = loot_entry.get("id", "")
+                    if item_id:
+                        self.game.inventory.add(item_id, 1)
+
+        # Set quest flags for this battle (e.g. boss defeated)
+        for flag in self._victory_flags:
+            self.game.quest_flags.set(flag)
+
         self.game.audio.play_music("victory", loops=0)
         self._phase = _Phase.VICTORY
 
@@ -569,6 +851,10 @@ class BattleState(BaseState):
                     self._phase = _Phase.LEVEL_UP
                 else:
                     self.game.pop_state()
+                    if self._on_victory is not None:
+                        cb = self._on_victory
+                        self._on_victory = None
+                        cb()
 
         elif self._phase == _Phase.LEVEL_UP:
             if event.type == pygame.KEYDOWN and event.key in (

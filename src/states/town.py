@@ -164,12 +164,47 @@ class TownState(BaseState):
         elif etype == "inn":
             from src.states.inn import InnState
             self.game.push_state(InnState(self.game))
+        elif etype == "journal":
+            # Ancestral home in Subterra: show the journal + give Exo items
+            self._trigger_journal_event()
 
     def _start_dialog(self, dialog_id: str) -> None:
         entry = self._dialog.get(dialog_id, {})
         lines: List[str] = entry.get("lines", ["..."])
         from src.states.dialog import DialogState
         self.game.push_state(DialogState(self.game, lines))
+
+    def _trigger_journal_event(self) -> None:
+        """Show the grandmother's journal and grant Exo Weapon + Exo Armor."""
+        entry = self._dialog.get("journal_grandmother", {})
+        lines: List[str] = entry.get("lines", ["A journal, worn with age."])
+
+        already_found = self.game.quest_flags.get("journal_found")
+
+        def _on_journal_close() -> None:
+            if not already_found:
+                self.game.quest_flags.set("journal_found")
+                # Grant the Exo Weapon and Exo Armor
+                inv = self.game.inventory
+                inv.add("exo_weapon", 1)
+                inv.add("exo_armor", 1)
+                reward_entry = self._dialog.get("journal_reward", {})
+                reward_lines = reward_entry.get(
+                    "lines",
+                    [
+                        "You found the Exo Weapon and Exo Armor hidden behind the journal!",
+                        "These ancient tools have been waiting for the right hands.",
+                    ],
+                )
+                from src.states.dialog import DialogState
+                self.game.push_state(
+                    DialogState(self.game, reward_lines, speaker="Discovery")
+                )
+
+        from src.states.dialog import DialogState
+        self.game.push_state(
+            DialogState(self.game, lines, speaker="Journal of Elena", callback=_on_journal_close)
+        )
 
     def _load_dialog(self) -> Dict[str, Any]:
         path = os.path.join(DATA_DIR, "dialog.json")

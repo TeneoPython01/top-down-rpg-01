@@ -4,7 +4,7 @@ src/states/dialog.py - NPC dialog overlay state (Phase 4).
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Optional
 
 import pygame
 
@@ -29,6 +29,8 @@ class DialogState(BaseState):
         Sequence of text strings to display, one at a time.
     speaker:
         Optional name shown in a banner above the text box.
+    callback:
+        Optional callable invoked after the dialog is closed (all lines shown).
     """
 
     is_overlay: bool = True
@@ -38,12 +40,14 @@ class DialogState(BaseState):
         game: "Game",
         lines: list[str],
         speaker: str = "",
+        callback: Optional[Callable] = None,
     ) -> None:
         super().__init__(game)
         self._lines = lines
         self._speaker = speaker
         self._index = 0
-        self._text_box: TextBox | None = None
+        self._text_box: Optional[TextBox] = None
+        self._callback = callback
 
     def enter(self) -> None:
         self._index = 0
@@ -51,7 +55,7 @@ class DialogState(BaseState):
         if self._lines:
             self._text_box = TextBox(self._lines[0], speaker=self._speaker)
         else:
-            self.game.pop_state()
+            self._finish()
 
     def handle_input(self, event: pygame.event.Event) -> None:
         if event.type != pygame.KEYDOWN:
@@ -62,8 +66,7 @@ class DialogState(BaseState):
             else:
                 self._next_line()
         elif event.key == pygame.K_ESCAPE:
-            self.game.audio.play_sfx("dialog_close")
-            self.game.pop_state()
+            self._finish()
 
     def _next_line(self) -> None:
         self._index += 1
@@ -72,15 +75,19 @@ class DialogState(BaseState):
                 self._lines[self._index], speaker=self._speaker
             )
         else:
-            self.game.audio.play_sfx("dialog_close")
-            self.game.pop_state()
+            self._finish()
+
+    def _finish(self) -> None:
+        self.game.audio.play_sfx("dialog_close")
+        self.game.pop_state()
+        if self._callback is not None:
+            self._callback()
 
     def update(self, dt: float) -> None:
         if self._text_box:
             self._text_box.update(dt)
 
     def draw(self, surface: pygame.Surface) -> None:
-        # The underlying state(s) are drawn by the game loop because
-        # is_overlay=True.  We only need to render the text box on top.
         if self._text_box:
             self._text_box.draw(surface)
+
