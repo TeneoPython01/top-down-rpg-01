@@ -110,3 +110,10 @@ TOWN_EVENT_COOLDOWN = 0.3    # seconds before a town event tile can re-trigger
 
 # ── Save / Load ───────────────────────────────────────────────────────────────
 NUM_SAVE_SLOTS = 5           # number of save-game slots available to the player
+
+# ── Audio ─────────────────────────────────────────────────────────────────────
+MUSIC_VOLUME = 0.5           # default BGM volume (0.0 – 1.0)
+SFX_VOLUME = 0.7             # default SFX volume (0.0 – 1.0)
+MUSIC_FADE_MS = 800          # crossfade duration in milliseconds
+MUSIC_DIR = os.path.join(ASSETS_DIR, "music")
+SFX_DIR = os.path.join(ASSETS_DIR, "sfx")

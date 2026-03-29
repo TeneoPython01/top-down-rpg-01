@@ -60,6 +60,7 @@ class TitleState(BaseState):
         self._cursor = 0
         self._load_cursor = 0
         self._slot_infos = []
+        self.game.audio.play_music("title")
 
     # ── Input ─────────────────────────────────────────────────────────────────
 
@@ -75,13 +76,17 @@ class TitleState(BaseState):
     def _handle_main_input(self, event: pygame.event.Event) -> None:
         if event.key in (pygame.K_UP, pygame.K_w):
             self._cursor = (self._cursor - 1) % len(_MAIN_OPTIONS)
+            self.game.audio.play_sfx("cursor")
         elif event.key in (pygame.K_DOWN, pygame.K_s):
             self._cursor = (self._cursor + 1) % len(_MAIN_OPTIONS)
+            self.game.audio.play_sfx("cursor")
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
             choice = _MAIN_OPTIONS[self._cursor]
             if choice == "New Game":
+                self.game.audio.play_sfx("confirm")
                 self._start_new_game()
             elif choice == "Load Game":
+                self.game.audio.play_sfx("confirm")
                 self._open_load_menu()
             elif choice == "Quit":
                 self.game.running = False
@@ -93,17 +98,22 @@ class TitleState(BaseState):
         num_opts = NUM_SAVE_SLOTS + 1
         if event.key in (pygame.K_UP, pygame.K_w):
             self._load_cursor = (self._load_cursor - 1) % num_opts
+            self.game.audio.play_sfx("cursor")
         elif event.key in (pygame.K_DOWN, pygame.K_s):
             self._load_cursor = (self._load_cursor + 1) % num_opts
+            self.game.audio.play_sfx("cursor")
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
             if self._load_cursor == NUM_SAVE_SLOTS:
                 # "Back" option
+                self.game.audio.play_sfx("cancel")
                 self._mode = "main"
             else:
                 slot = self._load_cursor + 1
                 if self._slot_infos[self._load_cursor] is not None:
+                    self.game.audio.play_sfx("confirm")
                     self._load_slot(slot)
         elif event.key == pygame.K_ESCAPE:
+            self.game.audio.play_sfx("cancel")
             self._mode = "main"
 
     # ── Transitions ───────────────────────────────────────────────────────────

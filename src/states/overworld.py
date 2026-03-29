@@ -111,6 +111,7 @@ class OverworldState(BaseState):
     def enter(self) -> None:
         self._town_cooldown = TOWN_ENTRY_COOLDOWN
         self.game.current_location = "overworld"
+        self.game.audio.play_music("overworld")
         # Show the intro scene the first time the player enters the overworld.
         if not self._intro_shown:
             self._intro_shown = True
