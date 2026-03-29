@@ -167,12 +167,19 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self._idle[DIR_DOWN]
         # Centre the sprite within its spawn tile
-        margin = (TILE_SIZE - PLAYER_SIZE) // 2
-        px = spawn_col * TILE_SIZE + margin
-        py = spawn_row * TILE_SIZE + margin
+        self._margin = (TILE_SIZE - PLAYER_SIZE) // 2
+        px = spawn_col * TILE_SIZE + self._margin
+        py = spawn_row * TILE_SIZE + self._margin
         self.rect = self.image.get_rect(topleft=(px, py))
         self.pos = pygame.Vector2(self.rect.topleft)
         self.velocity = pygame.Vector2(0, 0)
+
+        # Grid-based movement state
+        self._tile_col: int = spawn_col
+        self._tile_row: int = spawn_row
+        self._target_col: int = spawn_col
+        self._target_row: int = spawn_row
+        self._grid_moving: bool = False
 
     # ── RPG stat helpers ──────────────────────────────────────────────────────
 
@@ -258,9 +265,16 @@ class Player(pygame.sprite.Sprite):
 
         player.recalculate_stats()
 
-        # Restore exact sub-pixel position and facing direction
-        player.pos = pygame.Vector2(pos_x, pos_y)
-        player.rect.topleft = (round(pos_x), round(pos_y))
+        # Restore grid-aligned position (grid movement requires tile alignment).
+        player.pos = pygame.Vector2(
+            spawn_col * TILE_SIZE + player._margin,
+            spawn_row * TILE_SIZE + player._margin,
+        )
+        player.rect.topleft = (round(player.pos.x), round(player.pos.y))
+        player._tile_col = spawn_col
+        player._tile_row = spawn_row
+        player._target_col = spawn_col
+        player._target_row = spawn_row
         player.direction = data.get("direction", DIR_DOWN)
 
         return player
@@ -327,8 +341,8 @@ class Player(pygame.sprite.Sprite):
 
     # ── Private helpers ───────────────────────────────────────────────────────
 
-    def _handle_input(self) -> None:
-        """Read keyboard state and set velocity + direction."""
+    def _handle_input(self) -> tuple:
+        """Read keyboard state, update facing direction, return (dx, dy) for next step."""
         keys = pygame.key.get_pressed()
         dx = dy = 0
 
@@ -338,38 +352,39 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             dx = 1
             self.direction = DIR_RIGHT
-
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
+        elif keys[pygame.K_UP] or keys[pygame.K_w]:
             dy = -1
             self.direction = DIR_UP
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             dy = 1
             self.direction = DIR_DOWN
 
-        vec = pygame.Vector2(dx, dy)
-        if vec.length() > 0:
-            vec = vec.normalize()
-        self.velocity = vec * PLAYER_SPEED
-        self._moving = vec.length() > 0
+        return dx, dy
 
-    def _resolve_collisions(
-        self, blocked_rects: List[pygame.Rect], axis: str
+    def _is_tile_blocked(
+        self, col: int, row: int, blocked_rects: List[pygame.Rect]
+    ) -> bool:
+        """Return True if the tile at (col, row) overlaps any blocked rect."""
+        target_rect = pygame.Rect(
+            col * TILE_SIZE + self._margin,
+            row * TILE_SIZE + self._margin,
+            PLAYER_SIZE,
+            PLAYER_SIZE,
+        )
+        return any(target_rect.colliderect(wall) for wall in blocked_rects)
+
+    def _try_start_step(
+        self, dx: int, dy: int, blocked_rects: List[pygame.Rect]
     ) -> None:
-        """Push the player out of any overlapping blocked tile rects."""
-        for wall in blocked_rects:
-            if self.rect.colliderect(wall):
-                if axis == "x":
-                    if self.velocity.x > 0:
-                        self.rect.right = wall.left
-                    elif self.velocity.x < 0:
-                        self.rect.left = wall.right
-                    self.pos.x = float(self.rect.x)
-                else:
-                    if self.velocity.y > 0:
-                        self.rect.bottom = wall.top
-                    elif self.velocity.y < 0:
-                        self.rect.top = wall.bottom
-                    self.pos.y = float(self.rect.y)
+        """Begin a one-tile step in direction (dx, dy) if the target tile is free."""
+        if dx == 0 and dy == 0:
+            return
+        next_col = self._tile_col + dx
+        next_row = self._tile_row + dy
+        if not self._is_tile_blocked(next_col, next_row, blocked_rects):
+            self._target_col = next_col
+            self._target_row = next_row
+            self._grid_moving = True
 
     # ── Public API ────────────────────────────────────────────────────────────
 
@@ -401,18 +416,49 @@ class Player(pygame.sprite.Sprite):
         return messages
 
     def update(self, dt: float, blocked_rects: List[pygame.Rect]) -> None:
-        """Update position and animation for this frame."""
-        self._handle_input()
+        """Update position and animation for this frame (grid-based movement)."""
+        dx, dy = self._handle_input()
 
-        # Move X
-        self.pos.x += self.velocity.x * dt
-        self.rect.x = round(self.pos.x)
-        self._resolve_collisions(blocked_rects, "x")
+        if self._grid_moving:
+            # Advance toward the target tile.
+            target_x = float(self._target_col * TILE_SIZE + self._margin)
+            target_y = float(self._target_row * TILE_SIZE + self._margin)
+            diff_x = target_x - self.pos.x
+            diff_y = target_y - self.pos.y
+            dist_sq = diff_x ** 2 + diff_y ** 2
+            step = PLAYER_SPEED * dt
 
-        # Move Y
-        self.pos.y += self.velocity.y * dt
-        self.rect.y = round(self.pos.y)
-        self._resolve_collisions(blocked_rects, "y")
+            if dist_sq <= step ** 2:
+                # Arrived — snap exactly to the target tile.
+                self.pos.x = target_x
+                self.pos.y = target_y
+                self._tile_col = self._target_col
+                self._tile_row = self._target_row
+                self._grid_moving = False
+                # Immediately continue if a direction key is still held.
+                self._try_start_step(dx, dy, blocked_rects)
+            else:
+                dist = dist_sq ** 0.5
+                if dist > 0:
+                    self.pos.x += (diff_x / dist) * step
+                    self.pos.y += (diff_y / dist) * step
+
+            self.rect.x = round(self.pos.x)
+            self.rect.y = round(self.pos.y)
+        else:
+            self._try_start_step(dx, dy, blocked_rects)
+
+        # Keep velocity in sync for any external code that reads it.
+        self.velocity = (
+            pygame.Vector2(
+                self._target_col - self._tile_col,
+                self._target_row - self._tile_row,
+            ) * PLAYER_SPEED
+            if self._grid_moving
+            else pygame.Vector2(0, 0)
+        )
+
+        self._moving = self._grid_moving
 
         # Animate
         anim = self._animations[self.direction]
