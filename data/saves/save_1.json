@@ -1,0 +1,45 @@
+{
+  "slot": 1,
+  "timestamp": "2026-03-28 20:07",
+  "location": "overworld",
+  "player_name": "White Knight",
+  "player_level": 1,
+  "player": {
+    "name": "White Knight",
+    "level": 1,
+    "exp": 0,
+    "hp": 120,
+    "max_hp": 120,
+    "mp": 30,
+    "max_mp": 30,
+    "base_stats": {
+      "str": 10,
+      "def": 5,
+      "mag": 6,
+      "mdf": 4,
+      "spd": 8,
+      "lck": 5
+    },
+    "status": {},
+    "buffs": {},
+    "known_spells": [
+      "cure",
+      "scan"
+    ],
+    "gold": 0,
+    "inventory_items": {
+      "potion": 2
+    },
+    "equipment": {
+      "weapon": null,
+      "shield": null,
+      "helmet": null,
+      "armor": null,
+      "accessory": null
+    },
+    "pos_x": 64.0,
+    "pos_y": 144.0,
+    "direction": 0
+  },
+  "quest_flags": {}
+}
