@@ -20,6 +20,7 @@ from settings import (
     NATIVE_HEIGHT,
     NATIVE_WIDTH,
     PLAYER_SIZE,
+    TILE_CHEST,
     TILE_DUNGEON,
     TILE_HIDDEN,
     TILE_SIZE,
@@ -97,6 +98,7 @@ class OverworldState(BaseState):
             zone_exits=zone_data["zone_exits"],
             dungeon_entries=zone_data["dungeon_entries"],
             hidden_walls=zone_data["hidden_walls"],
+            chest_tiles=zone_data.get("chest_tiles", {}),
         )
 
         # Reuse an existing player or create a fresh one.
@@ -131,6 +133,7 @@ class OverworldState(BaseState):
         self._data_loaded = False
 
         self._town_cooldown = 0.0
+        self._last_chest_tile: tuple = (-1, -1)  # prevents chest re-trigger while standing on tile
         # Only show the intro scene once per OverworldState instance.
         self._intro_shown = player is not None or zone_name != "verdant_plains"
         # When set, enter() will reposition the player just outside this tile
@@ -216,6 +219,13 @@ class OverworldState(BaseState):
             dungeon_data = self.tilemap.dungeon_entries.get((col, row))
             if dungeon_data:
                 self._check_dungeon_entry(dungeon_data)
+
+        elif tile_id == TILE_CHEST:
+            if (col, row) != self._last_chest_tile:
+                self._last_chest_tile = (col, row)
+                chest_data = self.tilemap.chest_tiles.get((col, row))
+                if chest_data:
+                    self._trigger_chest(chest_data)
 
     # ── Draw ──────────────────────────────────────────────────────────────────
 
@@ -459,6 +469,38 @@ class OverworldState(BaseState):
             )
 
         self.game.push_state(battle)
+
+    def _trigger_chest(self, chest_data: Dict[str, Any]) -> None:
+        """Open a treasure chest: award items/gold or display 'Empty!' if already opened."""
+        from src.systems.inventory import load_items
+
+        chest_id = chest_data.get("chest_id", "")
+        flag = f"chest_opened_{chest_id}"
+
+        if self.game.quest_flags.get(flag):
+            self._push_scene_dialog(["Empty!"], speaker="Chest")
+            return
+
+        self.game.quest_flags.set(flag)
+        items_data = load_items()
+        lines: List[str] = []
+
+        for item_entry in chest_data.get("items", []):
+            item_id = item_entry["item_id"]
+            count = item_entry.get("count", 1)
+            self.game.inventory.add(item_id, count)
+            item_name = items_data.get(item_id, {}).get("name", item_id)
+            lines.append(f"Found {count}x {item_name}!" if count > 1 else f"Found {item_name}!")
+
+        gold = chest_data.get("gold", 0)
+        if gold > 0:
+            self.game.inventory.gold += gold
+            lines.append(f"Found {gold} gold!")
+
+        if not lines:
+            lines = ["The chest is empty..."]
+
+        self._push_scene_dialog(lines, speaker="Treasure Chest")
 
     def _ensure_data_loaded(self) -> None:
         if self._data_loaded:
