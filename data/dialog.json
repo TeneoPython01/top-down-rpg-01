@@ -42,6 +42,14 @@
       "Maybe I'm imagining things. Or maybe not."
     ]
   },
+  "willowmere_elder": {
+    "lines": [
+      "Welcome to Willowmere, traveler. Our little hamlet is peaceful, but the world beyond grows dark.",
+      "The Black Knight's forces have been seen north of the Stormcrag Mountains.",
+      "If you're heading that way, stock up and rest well. The mountain pass is treacherous.",
+      "And... if you see anything unusual in the rock faces up there, trust your instincts."
+    ]
+  },
   "elder_marek": {
     "lines": [
       "A surface dweller... We haven't had visitors in decades.",
@@ -83,5 +91,69 @@
       "We leave behind our old tools — we won't need weapons where we're going.",
       "We go in peace."
     ]
+  },
+  "journal_reward": {
+    "lines": [
+      "You found the Exo Weapon and Exo Armor hidden behind the journal!",
+      "These ancient tools have been waiting for the right hands."
+    ]
+  },
+  "quest_start_beast_menace": {
+    "lines": [
+      "Quest accepted: The Growing Threat.",
+      "Travel to the Silverwood Forest and defeat the Dire Wolf Alpha."
+    ]
+  },
+  "quest_start_poisoned_crops": {
+    "lines": [
+      "Quest accepted: Poisoned Fields.",
+      "Defeat the Viper Queen lurking in the eastern Verdant Plains."
+    ]
+  },
+  "quest_start_healers_research": {
+    "lines": [
+      "Quest accepted: The Healer's Research.",
+      "Travel north into the Silverwood Forest."
+    ]
+  },
+  "quest_start_wanderers_secret": {
+    "lines": [
+      "Quest accepted: The Wanderer's Secret.",
+      "Seek a hidden passage somewhere in the Stormcrag Mountains."
+    ]
+  },
+  "quest_start_blacksmith_commission": {
+    "lines": [
+      "Quest accepted: The Blacksmith's Commission.",
+      "Defeat the Thunder Hawk King deep in the Silverwood Forest."
+    ]
+  },
+  "quest_start_family_history": {
+    "lines": [
+      "Quest accepted: Family History.",
+      "Find the ancestral home within Subterra and read the old journal."
+    ]
+  },
+  "quest_start_into_darkness": {
+    "lines": [
+      "Quest accepted: Into the Darkness.",
+      "Defeat the BK Lieutenant at the Stormcrag Mountain Pass."
+    ]
+  },
+  "quest_start_corrupted_throne": {
+    "lines": [
+      "Quest accepted: The Corrupted Throne.",
+      "Defeat the Corrupted Beast King at the Black Fortress in the Dark Lands."
+    ]
+  },
+  "ironhaven_blacksmith_quest": {
+    "lines": [
+      "Finest steel in the region, forged right here in Ironhaven.",
+      "You look like you could use an upgrade. Check the armory next door.",
+      "Actually... I have a commission for a warrior like you.",
+      "Bring me the storm-feathers of the Thunder Hawk King that nests deep in the Silverwood.",
+      "In return I'll forge you the finest blade I've ever made."
+    ]
   }
 }
+

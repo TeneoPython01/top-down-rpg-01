@@ -21,7 +21,10 @@ TILE_GRASS = 0
 TILE_WALL = 1
 TILE_WATER = 2
 TILE_PATH = 3
-TILE_TOWN = 4  # overworld town-entrance tile
+TILE_TOWN = 4       # overworld town-entrance tile
+TILE_ZONE_EXIT = 5  # transition to another overworld zone
+TILE_DUNGEON = 6    # dungeon / boss arena entrance
+TILE_HIDDEN = 7     # hidden interactable tile (e.g. Subterra secret wall)
 
 # ── Player ────────────────────────────────────────────────────────────────────
 PLAYER_SPEED = 80        # pixels per second (native resolution)
@@ -58,7 +61,10 @@ TILE_COLORS = {
     TILE_WALL: (80, 60, 50),
     TILE_WATER: (30, 100, 180),
     TILE_PATH: (160, 140, 90),
-    TILE_TOWN: (160, 220, 100),  # bright green — town entrance marker
+    TILE_TOWN: (160, 220, 100),    # bright green — town entrance marker
+    TILE_ZONE_EXIT: (220, 220, 80),  # pale yellow — zone transition
+    TILE_DUNGEON: (120, 30, 30),     # dark red — dungeon entrance
+    TILE_HIDDEN: (80, 60, 50),       # same as wall — visually blends in
 }
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -69,7 +75,8 @@ MAPS_DIR = os.path.join(ASSETS_DIR, "maps")
 
 # ── Battle ────────────────────────────────────────────────────────────────────
 BASE_HIT_RATE = 0.90
-CRIT_CHANCE_DIVISOR = 256
+PLAYER_CRIT_DIVISOR = 25   # player crit chance = lck / PLAYER_CRIT_DIVISOR (20% at lck 5, 60% at max lck 15)
+ENEMY_CRIT_CHANCE = 0.01   # enemies and bosses always have a 1% crit chance
 DAMAGE_VARIANCE = 0.10
 BLIND_HIT_PENALTY = 0.50       # hit-rate reduction when attacker is blinded
 UNARMED_ATTACK_POWER = 3       # default weapon power when no weapon is equipped

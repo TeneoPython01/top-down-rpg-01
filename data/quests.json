@@ -1,0 +1,132 @@
+{
+  "quest_beast_menace": {
+    "title": "The Growing Threat",
+    "description": "The Village Elder has asked you to investigate the beast attacks near Ashenvale.",
+    "objective": "Defeat the Dire Wolf Alpha lurking in the Silverwood Forest.",
+    "start_trigger": {"type": "dialog", "dialog_id": "village_elder_before"},
+    "complete_flag": "wolf_alpha_defeated",
+    "reward": {
+      "gold": 300,
+      "items": [{"id": "hi_potion", "qty": 2}],
+      "equipment": [{"id": "hunters_sigil"}],
+      "spells": []
+    }
+  },
+  "quest_poisoned_crops": {
+    "title": "Poisoned Fields",
+    "description": "The Farmer's crops are being destroyed by unusually aggressive vipers. Find and defeat their queen.",
+    "objective": "Defeat the Viper Queen lurking in the eastern Verdant Plains.",
+    "start_trigger": {"type": "dialog", "dialog_id": "farmer_ashenvale"},
+    "complete_flag": "viper_queen_defeated",
+    "reward": {
+      "gold": 200,
+      "items": [{"id": "antidote", "qty": 5}],
+      "equipment": [{"id": "viper_fang_ring"}],
+      "spells": []
+    }
+  },
+  "quest_healers_research": {
+    "title": "The Healer's Research",
+    "description": "The village Healer senses rising magical energy in the forest and asks you to explore it.",
+    "objective": "Travel north into the Silverwood Forest.",
+    "start_trigger": {"type": "dialog", "dialog_id": "healer_npc"},
+    "complete_flag": "silverwood_reached",
+    "reward": {
+      "gold": 300,
+      "items": [],
+      "equipment": [{"id": "forest_cloak"}],
+      "spells": []
+    }
+  },
+  "quest_wanderers_secret": {
+    "title": "The Wanderer's Secret",
+    "description": "A wanderer swears the mountains breathe warm air. There may be a hidden passage in the Stormcrag range.",
+    "objective": "Discover the hidden passage in the Stormcrag Mountains.",
+    "start_trigger": {"type": "dialog", "dialog_id": "willowmere_traveler"},
+    "complete_flag": "subterra_reached",
+    "reward": {
+      "gold": 500,
+      "items": [],
+      "equipment": [{"id": "moonstone_helm"}],
+      "spells": []
+    }
+  },
+  "quest_blacksmith_commission": {
+    "title": "The Blacksmith's Commission",
+    "description": "The Ironhaven blacksmith needs rare feathers from the forest's Thunder Hawk King to forge a masterwork blade.",
+    "objective": "Defeat the Thunder Hawk King deep in the Silverwood Forest.",
+    "start_trigger": {"type": "dialog", "dialog_id": "ironhaven_blacksmith"},
+    "complete_flag": "thunder_hawk_king_defeated",
+    "reward": {
+      "gold": 600,
+      "items": [],
+      "equipment": [{"id": "thunder_blade"}],
+      "spells": []
+    }
+  },
+  "quest_family_history": {
+    "title": "Family History",
+    "description": "Archivist Lena has records about families who left Subterra 60 years ago — possibly including yours. Seek your ancestral home.",
+    "objective": "Find and read the journal in your ancestral home in Subterra.",
+    "start_trigger": {"type": "dialog", "dialog_id": "archivist_lena"},
+    "complete_flag": "journal_found",
+    "reward": {
+      "gold": 800,
+      "items": [],
+      "equipment": [{"id": "ancestral_shield"}, {"id": "subterra_boots"}],
+      "spells": []
+    }
+  },
+  "quest_into_darkness": {
+    "title": "Into the Darkness",
+    "description": "The Elder of Willowmere warns that the Black Knight's forces are massing in the Stormcrag Mountains. Stop them.",
+    "objective": "Defeat the BK Lieutenant at the Stormcrag Mountain Pass.",
+    "start_trigger": {"type": "dialog", "dialog_id": "willowmere_elder"},
+    "complete_flag": "bk_lieutenant_defeated",
+    "reward": {
+      "gold": 1500,
+      "items": [],
+      "equipment": [{"id": "dark_iron_sword"}],
+      "spells": []
+    }
+  },
+  "quest_crystal_colossus": {
+    "title": "The Crystal Colossus",
+    "description": "A massive crystal golem guards the path deep in the Stormcrag Mountains. Defeat it to claim its power.",
+    "objective": "Defeat the Crystal Sentinel guarding the path to Subterra.",
+    "start_trigger": {"type": "zone", "zone_name": "stormcrag_mountains"},
+    "complete_flag": "crystal_sentinel_defeated",
+    "reward": {
+      "gold": 800,
+      "items": [{"id": "hi_ether", "qty": 3}],
+      "equipment": [{"id": "crystal_gauntlets"}],
+      "spells": []
+    }
+  },
+  "quest_corrupted_throne": {
+    "title": "The Corrupted Throne",
+    "description": "Elder Marek believes the surface darkness stems from the Corrupted Beast King serving the Black Knight. Strike at its source.",
+    "objective": "Defeat the Corrupted Beast King at the Black Fortress in the Dark Lands.",
+    "start_trigger": {"type": "dialog", "dialog_id": "elder_marek"},
+    "complete_flag": "beast_king_defeated",
+    "reward": {
+      "gold": 1200,
+      "items": [{"id": "nano_potion", "qty": 3}],
+      "equipment": [],
+      "spells": ["flare"]
+    }
+  },
+  "quest_final_stand": {
+    "title": "The Final Stand",
+    "description": "With his forces broken, the Black Knight himself awaits at the Black Fortress. End this conflict once and for all.",
+    "objective": "Defeat the Black Knight at the Black Fortress.",
+    "start_trigger": {"type": "flag", "flag": "bk_lieutenant_defeated"},
+    "complete_flag": "black_knight_defeated",
+    "reward": {
+      "gold": 3000,
+      "items": [{"id": "elixir", "qty": 2}],
+      "equipment": [{"id": "radiant_armor"}],
+      "spells": ["curaga"]
+    }
+  }
+}

@@ -171,5 +171,21 @@
     "xp": 5000, "gold": 15000, "loot": [{"id": "elixir", "chance": 1.0}],
     "sprite": "black_knight", "zone": "boss", "ai": "boss_black_knight",
     "phases": 2, "heal_at_phase_2": true
+  },
+  {
+    "id": "viper_queen", "name": "Viper Queen", "boss": true,
+    "hp": 500, "mp": 20, "str": 18, "def": 10, "mag": 10, "mdf": 12, "spd": 11, "lck": 8,
+    "weaknesses": ["fire"], "resistances": [],
+    "xp": 300, "gold": 250, "loot": [{"id": "antidote", "chance": 1.0}, {"id": "hi_potion", "chance": 0.5}],
+    "sprite": "viper_queen", "zone": "boss", "ai": "poison_attack",
+    "status_moves": [{"effect": "poison", "chance": 0.6}]
+  },
+  {
+    "id": "thunder_hawk_king", "name": "Thunder Hawk King", "boss": true,
+    "hp": 600, "mp": 60, "str": 20, "def": 10, "mag": 22, "mdf": 14, "spd": 15, "lck": 9,
+    "weaknesses": ["earth"], "resistances": ["lightning"],
+    "xp": 400, "gold": 320, "loot": [{"id": "hi_ether", "chance": 1.0}],
+    "sprite": "thunder_hawk_king", "zone": "boss", "ai": "elemental_attack",
+    "spells": [{"id": "thunder", "chance": 0.5}, {"id": "thundara", "chance": 0.3}]
   }
 ]

@@ -11,7 +11,7 @@ import math
 import random
 from typing import List, Any, Dict
 
-from settings import BASE_HIT_RATE, CRIT_CHANCE_DIVISOR, DAMAGE_VARIANCE, BLIND_HIT_PENALTY
+from settings import BASE_HIT_RATE, PLAYER_CRIT_DIVISOR, ENEMY_CRIT_CHANCE, DAMAGE_VARIANCE, BLIND_HIT_PENALTY
 
 
 def physical_damage(
@@ -99,9 +99,20 @@ def check_hit(attacker: Any, target: Any) -> bool:
 
 
 def check_crit(attacker: Any) -> bool:
-    """Return True if the attack is a critical hit."""
-    lck = attacker.stats.get("lck", 5)
-    return random.random() < (lck / CRIT_CHANCE_DIVISOR)
+    """Return True if the attack is a critical hit.
+
+    Players use ``lck / PLAYER_CRIT_DIVISOR`` (20 % at base lck 5, scales to
+    60 % at max lck 15 by level 30).  Enemies and bosses have a fixed 1 %
+    chance.  Player vs. enemy is distinguished by the presence of an
+    ``inventory`` attribute, consistent with the duck-typing conventions used
+    throughout this module.
+    """
+    if hasattr(attacker, "inventory"):
+        # Player character – crit chance scales with the LCK stat
+        lck = attacker.stats.get("lck", 5)
+        return random.random() < (lck / PLAYER_CRIT_DIVISOR)
+    # Enemy / boss – fixed low chance
+    return random.random() < ENEMY_CRIT_CHANCE
 
 
 def flee_chance(party: List[Any], enemies: List[Any]) -> float:

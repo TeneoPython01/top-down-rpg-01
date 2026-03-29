@@ -123,6 +123,120 @@ IRONHAVEN_EVENTS: Dict[Tuple[int, int], Dict[str, Any]] = {
     (10, 14): {"type": "exit"},
 }
 
+# ── Willowmere Town (20 cols × 15 rows) ──────────────────────────────────────
+#
+#  A lakeside hamlet with a magic shop and inn.
+#  Buildings (rows 2-4):
+#    cols 2-5  — Magic Shop     interior at (3, 3)  → shop trigger
+#    cols 8-10 — Healer         (NPC only)
+#    cols 13-16 — Willowmere Inn interior at (14, 3) → inn trigger
+#  Lake: rows 9-12, cols 8-14
+#  Exit: (10, 14)
+#
+WILLOWMERE_TILES: List[List[int]] = [
+    [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 0
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 1
+    [_W, _G, _W, _W, _W, _W, _G, _G, _W, _W, _W, _G, _G, _W, _W, _W, _W, _G, _G, _W],  # 2  buildings
+    [_W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _G, _W],  # 3  interiors
+    [_W, _G, _W, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _W],  # 4  doors open
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 5
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 6
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 7
+    [_W, _G, _P, _P, _P, _P, _P, _P, _G, _G, _G, _G, _G, _P, _P, _P, _P, _G, _G, _W],  # 8  paths around lake
+    [_W, _G, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _T, _G, _G, _G, _G, _G, _G, _W],  # 9  lake
+    [_W, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _T, _T, _T, _G, _G, _G, _G, _G, _W],  # 10
+    [_W, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _T, _T, _T, _G, _G, _G, _G, _G, _W],  # 11
+    [_W, _G, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _T, _G, _G, _G, _G, _G, _G, _W],  # 12
+    [_W, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _W],  # 13 south path
+    [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _G, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 14 exit
+]
+
+WILLOWMERE_SPAWN: Tuple[int, int] = (10, 12)
+
+WILLOWMERE_NPCS: List[Dict[str, Any]] = [
+    {
+        "name": "Traveler",
+        "dialog_id": "willowmere_traveler",
+        "col": 6,
+        "row": 7,
+        "color": (140, 160, 200),  # blue-grey
+    },
+    {
+        "name": "Willowmere Elder",
+        "dialog_id": "willowmere_elder",
+        "col": 17,
+        "row": 7,
+        "color": (200, 200, 100),  # pale gold
+    },
+]
+
+WILLOWMERE_EVENTS: Dict[Tuple[int, int], Dict[str, Any]] = {
+    (3, 3): {"type": "shop", "shop_id": "willowmere"},
+    (14, 3): {"type": "inn"},
+    (10, 14): {"type": "exit"},
+}
+
+# ── Subterra (20 cols × 15 rows) ──────────────────────────────────────────────
+#
+#  Hidden underground city. No random encounters.
+#  Buildings:
+#    cols 2-5  — Archivist's Library  NPC Archivist Lena at (3, 7)
+#    cols 8-10 — Merchant Dax's Shop  interior at (9, 3) → shop trigger
+#    cols 13-16 — Ancestral Home      interior at (14, 3) → journal event
+#  Elder Marek wanders the central plaza.
+#  No inn (Subterra provides free rest at the ancestral home).
+#  Exit: (10, 14) → back to Subterra Passage
+#
+SUBTERRA_TILES: List[List[int]] = [
+    [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 0
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 1
+    [_W, _G, _W, _W, _W, _W, _G, _G, _W, _W, _W, _G, _G, _W, _W, _W, _W, _G, _G, _W],  # 2
+    [_W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _G, _W],  # 3
+    [_W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _W],  # 4
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 5
+    [_W, _G, _G, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _G, _G, _W],  # 6 central plaza
+    [_W, _G, _G, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _P, _G, _G, _G, _W],  # 7
+    [_W, _G, _G, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _P, _G, _G, _G, _W],  # 8
+    [_W, _G, _G, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _G, _G, _W],  # 9
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 10
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 11
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 12
+    [_W, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _W],  # 13
+    [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _G, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 14 exit
+]
+
+SUBTERRA_SPAWN: Tuple[int, int] = (10, 12)
+
+SUBTERRA_NPCS: List[Dict[str, Any]] = [
+    {
+        "name": "Elder Marek",
+        "dialog_id": "elder_marek",
+        "col": 9,
+        "row": 7,
+        "color": (180, 220, 180),  # pale green (bioluminescent glow)
+    },
+    {
+        "name": "Archivist Lena",
+        "dialog_id": "archivist_lena",
+        "col": 3,
+        "row": 7,
+        "color": (200, 180, 230),  # pale purple
+    },
+    {
+        "name": "Merchant Dax",
+        "dialog_id": "merchant_dax",
+        "col": 16,
+        "row": 7,
+        "color": (200, 160, 80),   # golden
+    },
+]
+
+SUBTERRA_EVENTS: Dict[Tuple[int, int], Dict[str, Any]] = {
+    (9, 3): {"type": "shop", "shop_id": "subterra"},
+    (14, 3): {"type": "journal"},   # ancestral home — show journal dialog
+    (10, 14): {"type": "exit"},
+}
+
 # ── Registry ──────────────────────────────────────────────────────────────────
 
 _TOWN_REGISTRY: Dict[str, Dict[str, Any]] = {
@@ -139,6 +253,20 @@ _TOWN_REGISTRY: Dict[str, Dict[str, Any]] = {
         "npcs": IRONHAVEN_NPCS,
         "events": IRONHAVEN_EVENTS,
         "display_name": "Ironhaven",
+    },
+    "willowmere": {
+        "tiles": WILLOWMERE_TILES,
+        "spawn": WILLOWMERE_SPAWN,
+        "npcs": WILLOWMERE_NPCS,
+        "events": WILLOWMERE_EVENTS,
+        "display_name": "Willowmere",
+    },
+    "subterra": {
+        "tiles": SUBTERRA_TILES,
+        "spawn": SUBTERRA_SPAWN,
+        "npcs": SUBTERRA_NPCS,
+        "events": SUBTERRA_EVENTS,
+        "display_name": "Subterra",
     },
 }
 
