@@ -1,17 +1,17 @@
 {
   "slot": 1,
-  "timestamp": "2026-03-28 21:33",
-  "location": "overworld",
+  "timestamp": "2026-03-29 10:50",
+  "location": "overworld:silverwood_forest",
   "player_name": "White Knight",
-  "player_level": 1,
+  "player_level": 2,
   "player": {
     "name": "White Knight",
-    "level": 1,
-    "exp": 35,
-    "hp": 53,
-    "max_hp": 120,
-    "mp": 30,
-    "max_mp": 30,
+    "level": 2,
+    "exp": 105,
+    "hp": 140,
+    "max_hp": 140,
+    "mp": 36,
+    "max_mp": 36,
     "base_stats": {
       "str": 10,
       "def": 5,
@@ -37,9 +37,23 @@
       "armor": null,
       "accessory": null
     },
-    "pos_x": 317.3589349065813,
-    "pos_y": 125.78445594178172,
-    "direction": 0
+    "pos_x": 192.0,
+    "pos_y": 286.64,
+    "direction": 3
   },
-  "quest_flags": {}
+  "quest_flags": {
+    "silverwood_reached": true
+  },
+  "quest_log": {
+    "quest_beast_menace": "active",
+    "quest_poisoned_crops": "active",
+    "quest_healers_research": "complete",
+    "quest_wanderers_secret": "inactive",
+    "quest_blacksmith_commission": "inactive",
+    "quest_family_history": "inactive",
+    "quest_into_darkness": "inactive",
+    "quest_crystal_colossus": "inactive",
+    "quest_corrupted_throne": "inactive",
+    "quest_final_stand": "inactive"
+  }
 }

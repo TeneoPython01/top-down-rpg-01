@@ -236,13 +236,8 @@ class OverworldState(BaseState):
                         player = self.player
                         def on_close() -> None:  # type: ignore[misc]
                             player.hp = player.max_hp
-                    self._push_npc_dialog(lines, speaker=npc.name, on_close=on_close)
-                    return
-
-    def _push_npc_dialog(self, lines: List[str], speaker: str, on_close=None) -> None:
-        from src.states.dialog import DialogState
-        self.game.push_state(DialogState(self.game, lines, speaker=speaker, on_close=on_close))
-                    self._push_npc_dialog(lines, speaker=npc.name, dialog_id=npc.dialog_id)
+                            player.mp = player.max_mp
+                    self._push_npc_dialog(lines, speaker=npc.name, dialog_id=npc.dialog_id, on_close=on_close)
                     return
 
         # Hidden wall interaction
@@ -283,7 +278,7 @@ class OverworldState(BaseState):
         from src.states.dialog import DialogState
         self.game.push_state(DialogState(self.game, lines, speaker=speaker, callback=callback))
 
-    def _push_npc_dialog(self, lines: List[str], speaker: str, dialog_id: str = "") -> None:
+    def _push_npc_dialog(self, lines: List[str], speaker: str, dialog_id: str = "", on_close=None) -> None:
         """Push NPC dialog and activate a quest if this dialog triggers one."""
         from src.states.dialog import DialogState
 
@@ -294,6 +289,8 @@ class OverworldState(BaseState):
                     newly_active = self.game.quest_log.activate(quest_id)
                     if newly_active:
                         self._show_quest_notice(quest_id)
+            if on_close:
+                on_close()
 
         self.game.push_state(DialogState(self.game, lines, speaker=speaker, callback=_on_close))
 

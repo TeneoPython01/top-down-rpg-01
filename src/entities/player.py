@@ -418,13 +418,11 @@ class Player(pygame.sprite.Sprite):
             next_data = levels[self.level]
             if self.exp >= next_data["xp_required"]:
                 self.level = next_data["level"]
-                hp_gain = next_data["hp"] - self.max_hp
-                mp_gain = next_data["mp"] - self.max_mp
                 self.max_hp = next_data["hp"]
                 self.max_mp = next_data["mp"]
-                # Restore HP/MP by the amount gained
-                self.hp = min(self.max_hp, self.hp + hp_gain)
-                self.mp = min(self.max_mp, self.mp + mp_gain)
+                # Full restore on level up
+                self.hp = self.max_hp
+                self.mp = self.max_mp
                 for stat in ("str", "def", "mag", "mdf", "spd", "lck"):
                     self.stats[stat] = next_data[stat]
                 messages.append(f"Level up!  Lv {self.level}!")

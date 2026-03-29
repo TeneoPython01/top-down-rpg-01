@@ -7,22 +7,6 @@ Each cell holds a tile-ID integer (see settings.TILE_* constants).
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
-
-import pygame
-
-from settings import TILE_SIZE, TILE_COLORS, TILE_WALL, TILE_WATER, TILE_GRID_COLOR
-
-
-"""
-src/utils/tilemap.py - Simple 2-D array tilemap for Phase 1.
-
-Phase 4 will upgrade this to a pytmx/pyscroll TMX-based loader.
-Each cell holds a tile-ID integer (see settings.TILE_* constants).
-"""
-
-from __future__ import annotations
-
 from typing import Any, Dict, List, Optional, Tuple
 
 import pygame

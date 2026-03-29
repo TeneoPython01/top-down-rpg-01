@@ -12,6 +12,7 @@ Phase 6 additions
 from __future__ import annotations
 
 import enum
+from enum import Enum, auto
 import random
 from typing import TYPE_CHECKING, Any, Callable, List, Optional
 
@@ -114,7 +115,7 @@ class _Anim:
 
     @property
     def alpha(self) -> int:
-        return int(200 * (self.remaining / max(0.001, self.duration)))
+        return max(0, int(200 * (self.remaining / max(0.001, self.duration))))
 
 
 class BattleState(BaseState):

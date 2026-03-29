@@ -17,6 +17,7 @@ from typing import Dict, List, Tuple, Any
 # Tile-ID shortcuts
 _G = 0  # grass (walkable floor)
 _W = 1  # wall  (blocked)
+_T = 2  # water (blocked)
 _P = 3  # path  (walkable, cosmetic)
 
 # ── Ashenvale Town (20 cols × 15 rows) ───────────────────────────────────────

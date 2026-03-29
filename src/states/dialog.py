@@ -73,7 +73,6 @@ class DialogState(BaseState):
         elif event.key == pygame.K_ESCAPE:
             self.game.audio.play_sfx("dialog_close")
             self._close()
-            self._finish()
 
     def _next_line(self) -> None:
         self._index += 1
@@ -89,13 +88,11 @@ class DialogState(BaseState):
         if self._on_close:
             self._on_close()
         self.game.pop_state()
-            self._finish()
-
-    def _finish(self) -> None:
-        self.game.audio.play_sfx("dialog_close")
-        self.game.pop_state()
         if self._callback is not None:
             self._callback()
+
+    def _finish(self) -> None:
+        self._close()
 
     def update(self, dt: float) -> None:
         if self._text_box:

@@ -172,7 +172,13 @@ class TownState(BaseState):
         entry = self._dialog.get(dialog_id, {})
         lines: List[str] = entry.get("lines", ["..."])
         from src.states.dialog import DialogState
-        self.game.push_state(DialogState(self.game, lines))
+        on_close = None
+        if dialog_id == "healer_npc":
+            player = self.game.player
+            def on_close() -> None:  # type: ignore[misc]
+                player.hp = player.max_hp
+                player.mp = player.max_mp
+        self.game.push_state(DialogState(self.game, lines, on_close=on_close))
 
     def _trigger_journal_event(self) -> None:
         """Show the grandmother's journal and grant Exo Weapon + Exo Armor."""
