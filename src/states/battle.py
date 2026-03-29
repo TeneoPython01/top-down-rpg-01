@@ -12,7 +12,6 @@ Phase 6 additions
 from __future__ import annotations
 
 import enum
-from enum import Enum, auto
 import random
 from typing import TYPE_CHECKING, Any, Callable, List, Optional
 
@@ -48,20 +47,6 @@ if TYPE_CHECKING:
     from src.game import Game
 
 _MSG_LINE_LEN = 50  # max characters per message display line
-_COMMANDS = ["Attack", "Defend", "Flee", "Magic", "Item"]
-
-
-class _Phase(Enum):
-    PLAYER_CHOOSE_CMD = auto()
-    PLAYER_CHOOSE_TARGET = auto()
-    PLAYER_CHOOSE_SPELL = auto()
-    PLAYER_CHOOSE_ITEM = auto()
-    EXECUTE_PLAYER = auto()
-    ENEMY_TURN = auto()
-    SHOW_MESSAGE = auto()
-    VICTORY = auto()
-    DEFEAT = auto()
-
 
 _CMD_LABELS = ["Attack", "Magic", "Item", "Defend", "Flee"]
 
@@ -143,8 +128,6 @@ class BattleState(BaseState):
         self._victory_flags: List[str] = victory_flags or []
         self._on_victory: Optional[Callable] = on_victory
 
-        self._menu = Menu(_COMMANDS, x=NATIVE_WIDTH - 72, y=NATIVE_HEIGHT - 52, item_height=10)
-        self._phase = _Phase.PLAYER_MENU
         self._menu = Menu(_CMD_LABELS, x=NATIVE_WIDTH - 72, y=NATIVE_HEIGHT - 52, item_height=10)
 
         # Spell submenu
@@ -176,14 +159,9 @@ class BattleState(BaseState):
         # Cached fonts (initialised lazily)
         self._font: Optional[pygame.font.Font] = None
         self._font_sm: Optional[pygame.font.Font] = None
-        self._turn_queue: List[Any] = []
-        self._queue_idx = 0
 
         # Phase-6: active battle animations
         self._anims: List[_Anim] = []
-
-        self._font: Optional[pygame.font.Font] = None
-        self._font_sm: Optional[pygame.font.Font] = None
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 

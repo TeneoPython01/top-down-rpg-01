@@ -324,28 +324,6 @@ class Player(pygame.sprite.Sprite):
                         self.known_spells.append(sid)
                         messages.append(f"Learned {sdata['name']}!")
         return messages
-        # ── RPG stats ──────────────────────────────────────────────────────────
-        self.name = "White Knight"
-        self.level = 1
-        self.xp = 0
-        self.gold = 0
-        lv_data = _get_levels_data()[0]  # index 0 = level 1
-        self.max_hp: int = lv_data["hp"]
-        self.hp: int = self.max_hp
-        self.max_mp: int = lv_data["mp"]
-        self.mp: int = self.max_mp
-        self.stats: Dict[str, int] = {
-            "str": lv_data["str"],
-            "def": lv_data["def"],
-            "mag": lv_data["mag"],
-            "mdf": lv_data["mdf"],
-            "spd": lv_data["spd"],
-            "lck": lv_data["lck"],
-        }
-        # status effects dict: key = effect name, value = remaining turns
-        self.status: Dict[str, Any] = {}
-        # battle-only flag: halves incoming physical damage for one round
-        self._defending: bool = False
 
     # ── Private helpers ───────────────────────────────────────────────────────
 
@@ -395,15 +373,6 @@ class Player(pygame.sprite.Sprite):
 
     # ── Public API ────────────────────────────────────────────────────────────
 
-    def take_damage(self, amount: int) -> int:
-        """Apply *amount* damage, clamped so HP never goes below 0.
-
-        Returns the actual HP lost.
-        """
-        actual = min(amount, self.hp)
-        self.hp -= actual
-        return actual
-
     def gain_xp(self, amount: int) -> List[str]:
         """Add *amount* XP and process any level-ups.
 
@@ -424,7 +393,8 @@ class Player(pygame.sprite.Sprite):
                 self.hp = self.max_hp
                 self.mp = self.max_mp
                 for stat in ("str", "def", "mag", "mdf", "spd", "lck"):
-                    self.stats[stat] = next_data[stat]
+                    self.base_stats[stat] = next_data[stat]
+                self.recalculate_stats()
                 messages.append(f"Level up!  Lv {self.level}!")
             else:
                 break
