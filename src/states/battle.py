@@ -261,8 +261,8 @@ class BattleState(BaseState):
                 is_crit = battle_engine.check_crit(self.player)
                 dmg = battle_engine.physical_damage(self.player, target)
                 if is_crit:
-                    dmg *= 2
-                    msgs.append("Critical hit!")
+                    dmg *= 3
+                    msgs.append("CRITICAL HIT!")
                 actual = target.take_damage(dmg)
                 msgs.append(f"{self.player.name} attacks {target.name} for {actual} damage!")
             else:
@@ -457,12 +457,12 @@ class BattleState(BaseState):
             crit = check_crit(self.player)
             dmg = physical_damage(self.player, target, attack_power=UNARMED_ATTACK_POWER)
             if crit:
-                dmg *= 2
+                dmg *= 3
             actual = target.take_damage(dmg)
             self.game.audio.play_sfx("attack_hit")
             msg = f"{self.player.name} attacks!  -{actual} HP"
             if crit:
-                msg = "Critical!  " + msg
+                msg = "CRITICAL HIT!  " + msg
         else:
             msg = f"{self.player.name} misses!"
         self._show_msg(msg, callback=self._after_action)
@@ -486,14 +486,14 @@ class BattleState(BaseState):
             crit = check_crit(enemy)
             dmg = physical_damage(enemy, self.player, attack_power=UNARMED_ATTACK_POWER)
             if crit:
-                dmg *= 2
+                dmg *= 3
             if self.player._defending:
                 dmg = max(1, dmg // 2)
             actual = self.player.take_damage(dmg)
             self.game.audio.play_sfx("attack_hit")
             msg = f"{enemy.name} attacks!  -{actual} HP"
             if crit:
-                msg = "Critical!  " + msg
+                msg = "CRITICAL HIT!  " + msg
         else:
             msg = f"{enemy.name} misses!"
         self._show_msg(msg, callback=self._after_action)
