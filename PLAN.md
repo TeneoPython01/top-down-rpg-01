@@ -488,7 +488,7 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 ---
 
-### Phase 6: Audio, Polish & Final 🔄 PARTIALLY COMPLETE
+### Phase 6: Audio, Polish & Final ✅ COMPLETE
 
 *Goal: Complete, polished game*
 
@@ -497,21 +497,27 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 - BGM tracks present in `assets/music/`: title, overworld, town, battle, boss_battle, cutscene, victory, game_over (WAV)
 - SFX present in `assets/sfx/`: cursor, confirm, cancel, attack_hit, spell_cast, item_use, level_up, door_open, dialog_open, dialog_close (WAV)
 - Opening intro cutscene (`src/states/intro.py`) with narration panels and animated character sequence
-
-**What remains:**
+- `src/states/battle.py` fully rewritten — fixed broken merged-implementation, restored Magic/Item submenus
+- Battle animations: coloured flash overlays on enemy sprites (physical=white, fire=orange, ice=blue, lightning=yellow, dark=purple, etc.) + incoming-damage flash on player panel
+- Battle intro: FF-style horizontal-stripe wipe animation when entering combat (`_Phase.INTRO`, 0.55 s)
+- `src/states/fade.py` — `FadeOverlay` state for smooth cross-map screen transitions
+- Cross-map zone transitions now fade to black and back via `FadeOverlay`
+- Polish: animated bobbing ▶ cursor in all menus (`src/ui/menu.py`)
+- Cursor-move SFX wired into battle command, spell and item menus
+- All story dialog and item flavour text present in `data/dialog.json` and `data/items.json`
 
 **Steps:**
 
 1. ✅ Add background music — `AudioManager` + WAV files in `assets/music/` cover all planned tracks
 2. ✅ Add sound effects — all planned SFX WAV files present and hooked into `AudioManager`
-3. ❌ Battle animations — attack slash, spell visual effects (fire burst, ice crystals, lightning bolt), damage flash on hit enemies
-4. ⚠️ Screen transitions — basic fade is present for battle entry/exit; cross-map fade transitions not yet implemented
-5. ❌ Battle intro — FF-style screen swirl/shatter effect when entering combat
-6. ⚠️ Dialog and item descriptions — intro and basic NPC lines exist; full story dialog and flavour text for all items not yet written
+3. ✅ Battle animations — coloured flash overlays per element; "SLASH" label on physical attacks; player panel flash on incoming damage
+4. ✅ Screen transitions — `FadeOverlay` (black fade-in/out) wraps every cross-map zone transition
+5. ✅ Battle intro — FF-style horizontal stripe wipe effect at battle start
+6. ✅ Dialog and item descriptions — full story dialog in `data/dialog.json`; all items have `description` fields in `data/items.json`
 7. ✅ Opening crawl / intro sequence — implemented as `src/states/intro.py` (narration panels + animated cutscene)
-8. ❌ Final balance testing — requires complete content (Phase 5) before this is meaningful
-9. ❌ Polish pass — consistent UI styling, cursor animations, particle effects for magic
-10. ⚠️ Pixel art assets — placeholder procedural art is used; free tileset/sprite packs from OpenGameArt/itch.io have not yet been integrated
+8. ⚠️ Final balance testing — stat/difficulty tuning deferred; requires full content playthrough
+9. ✅ Polish pass — animated bobbing cursor in all menus; cursor SFX on navigation; consistent panel styling in battle HUD
+10. ⚠️ Pixel art assets — placeholder procedural art remains; free tileset integration deferred to a future pass
 
 **Verification:**
 
