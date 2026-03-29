@@ -200,6 +200,8 @@ class TownState(BaseState):
 
         if not lines:
             lines = ["The chest is empty..."]
+        else:
+            self.game.audio.play_sfx("item_get")
 
         self.game.push_state(DialogState(self.game, lines, speaker="Treasure Chest"))
 
@@ -221,6 +223,7 @@ class TownState(BaseState):
             def callback() -> None:  # type: ignore[misc]
                 self.game.quest_flags.set("old_man_sword_given")
                 self.game.inventory.add("old_sword", 1)
+                self.game.audio.play_sfx("item_get")
                 from src.systems.inventory import load_items
                 items_data = load_items()
                 sword_name = items_data.get("old_sword", {}).get("name", "Old Sword")
@@ -243,6 +246,7 @@ class TownState(BaseState):
                 inv = self.game.inventory
                 inv.add("exo_weapon", 1)
                 inv.add("exo_armor", 1)
+                self.game.audio.play_sfx("item_get")
                 reward_entry = self._dialog.get("journal_reward", {})
                 reward_lines = reward_entry.get(
                     "lines",

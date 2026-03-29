@@ -463,6 +463,46 @@ def gen_dialog_close() -> list[int]:
     return envelope(s, attack=0.003, decay=0.01, sustain=0.2, release=0.07)
 
 
+def gen_item_get() -> list[int]:
+    """Bright ascending three-note chime — item/gold received."""
+    steps = [
+        ("C5", 0.07), ("E5", 0.07), ("G5", 0.14),
+    ]
+    out: list[int] = []
+    for name, dur in steps:
+        freq = NOTE[name]
+        n = int(SR * dur)
+        s = triangle(freq, _t(n), amp=16000)
+        s = envelope(s, attack=0.005, decay=0.02, sustain=0.6, release=0.06)
+        out.extend(s)
+    return out
+
+
+def gen_quest_start() -> list[int]:
+    """Two rising tones with a brief pause — new quest accepted."""
+    n1 = int(SR * 0.09)
+    n2 = int(SR * 0.13)
+    s1 = envelope(triangle(440, _t(n1), 12000), 0.005, 0.02, 0.4, 0.06)
+    gap = [0] * int(SR * 0.03)
+    s2 = envelope(triangle(660, _t(n2), 14000), 0.005, 0.02, 0.5, 0.08)
+    return s1 + gap + s2
+
+
+def gen_quest_complete() -> list[int]:
+    """Short triumphant ascending arpeggio — quest completed."""
+    steps = [
+        ("C4", 0.07), ("E4", 0.07), ("G4", 0.07), ("C5", 0.20),
+    ]
+    out: list[int] = []
+    for name, dur in steps:
+        freq = NOTE[name]
+        n = int(SR * dur)
+        s = triangle(freq, _t(n), amp=18000)
+        s = envelope(s, attack=0.005, decay=0.02, sustain=0.65, release=0.07)
+        out.extend(s)
+    return out
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 
@@ -486,16 +526,19 @@ def main() -> None:
 
     print("\nGenerating sound effects …")
     sfx = {
-        "cursor":       gen_cursor,
-        "confirm":      gen_confirm,
-        "cancel":       gen_cancel,
-        "attack_hit":   gen_attack_hit,
-        "spell_cast":   gen_spell_cast,
-        "item_use":     gen_item_use,
-        "level_up":     gen_level_up,
-        "door_open":    gen_door_open,
-        "dialog_open":  gen_dialog_open,
-        "dialog_close": gen_dialog_close,
+        "cursor":         gen_cursor,
+        "confirm":        gen_confirm,
+        "cancel":         gen_cancel,
+        "attack_hit":     gen_attack_hit,
+        "spell_cast":     gen_spell_cast,
+        "item_use":       gen_item_use,
+        "level_up":       gen_level_up,
+        "door_open":      gen_door_open,
+        "dialog_open":    gen_dialog_open,
+        "dialog_close":   gen_dialog_close,
+        "item_get":       gen_item_get,
+        "quest_start":    gen_quest_start,
+        "quest_complete": gen_quest_complete,
     }
     for name, fn in sfx.items():
         save(os.path.join(SFX_DIR, f"{name}.wav"), fn())

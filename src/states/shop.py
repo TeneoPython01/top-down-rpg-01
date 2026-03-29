@@ -182,6 +182,7 @@ class ShopState(BaseState):
         if self.game.inventory.gold >= price:
             self.game.inventory.gold -= price
             self.game.inventory.add(item["id"])
+            self.game.audio.play_sfx("item_get")
             self._show_message(f"Bought {item['name']}!")
         else:
             self._show_message("Not enough gold!", is_error=True)
