@@ -347,7 +347,7 @@ class OverworldState(BaseState):
         messages = self.game.quest_log.check_completions(
             self.game.quest_flags,
             self.game.player,
-            self.game.inventory,
+            self.game.player.inventory,
         )
         if messages:
             self._push_scene_dialog(messages, speaker="Quest Complete")
