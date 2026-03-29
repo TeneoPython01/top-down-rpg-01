@@ -19,6 +19,7 @@ _G = 0  # grass (walkable floor)
 _W = 1  # wall  (blocked)
 _T = 2  # water (blocked)
 _P = 3  # path  (walkable, cosmetic)
+_C = 8  # chest (walkable, triggers chest event)
 
 # ── Ashenvale Town (20 cols × 15 rows) ───────────────────────────────────────
 #
@@ -40,7 +41,7 @@ ASHENVALE_TILES: List[List[int]] = [
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 7
     [_W, _G, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _W],  # 8  main street
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 9
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 10
+    [_W, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _W],  # 10 chests
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 11
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 12
     [_W, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _W],  # 13 south path
@@ -77,6 +78,8 @@ ASHENVALE_NPCS: List[Dict[str, Any]] = [
 ASHENVALE_EVENTS: Dict[Tuple[int, int], Dict[str, Any]] = {
     (3, 3): {"type": "shop", "shop_id": "ashenvale"},
     (8, 3): {"type": "inn"},
+    (2, 10): {"type": "chest", "chest_id": "ashenvale_1", "items": [{"item_id": "potion", "count": 2}], "gold": 100},
+    (17, 10): {"type": "chest", "chest_id": "ashenvale_2", "items": [{"item_id": "leather_shield", "count": 1}], "gold": 80},
     (10, 14): {"type": "exit"},
 }
 
@@ -92,11 +95,11 @@ IRONHAVEN_TILES: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 0
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 1
     [_W, _G, _W, _W, _W, _W, _G, _G, _W, _W, _W, _G, _G, _W, _W, _W, _W, _W, _G, _W],  # 2
-    [_W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _W, _G, _G, _W, _G, _G, _G, _W, _G, _W],  # 3
+    [_W, _G, _W, _G, _G, _W, _G, _G, _W, _C, _W, _G, _G, _W, _G, _G, _G, _W, _G, _W],  # 3 chest in smithy
     [_W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _W, _G, _G, _W],  # 4  doors open
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 5
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 6
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 7
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _W],  # 7 chest in open area
     [_W, _G, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _W],  # 8  main street
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 9
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 10
@@ -121,6 +124,8 @@ IRONHAVEN_NPCS: List[Dict[str, Any]] = [
 IRONHAVEN_EVENTS: Dict[Tuple[int, int], Dict[str, Any]] = {
     (3, 3): {"type": "shop", "shop_id": "ironhaven"},
     (15, 3): {"type": "inn"},
+    (9, 3): {"type": "chest", "chest_id": "ironhaven_1", "items": [{"item_id": "short_sword", "count": 1}], "gold": 200},
+    (16, 7): {"type": "chest", "chest_id": "ironhaven_2", "items": [{"item_id": "iron_helm", "count": 1}], "gold": 150},
     (10, 14): {"type": "exit"},
 }
 
@@ -138,7 +143,7 @@ WILLOWMERE_TILES: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 0
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 1
     [_W, _G, _W, _W, _W, _W, _G, _G, _W, _W, _W, _G, _G, _W, _W, _W, _W, _G, _G, _W],  # 2  buildings
-    [_W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _G, _W],  # 3  interiors
+    [_W, _G, _W, _G, _G, _W, _G, _G, _W, _C, _W, _G, _G, _W, _G, _G, _W, _C, _G, _W],  # 3  chests
     [_W, _G, _W, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _W],  # 4  doors open
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 5
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 6
@@ -174,6 +179,8 @@ WILLOWMERE_NPCS: List[Dict[str, Any]] = [
 WILLOWMERE_EVENTS: Dict[Tuple[int, int], Dict[str, Any]] = {
     (3, 3): {"type": "shop", "shop_id": "willowmere"},
     (14, 3): {"type": "inn"},
+    (9, 3): {"type": "chest", "chest_id": "willowmere_1", "items": [{"item_id": "hi_potion", "count": 2}, {"item_id": "ether", "count": 1}], "gold": 300},
+    (17, 3): {"type": "chest", "chest_id": "willowmere_2", "items": [{"item_id": "broad_sword", "count": 1}], "gold": 400},
     (10, 14): {"type": "exit"},
 }
 
@@ -192,7 +199,7 @@ SUBTERRA_TILES: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 0
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 1
     [_W, _G, _W, _W, _W, _W, _G, _G, _W, _W, _W, _G, _G, _W, _W, _W, _W, _G, _G, _W],  # 2
-    [_W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _W, _G, _G, _W, _G, _G, _W, _G, _G, _W],  # 3
+    [_W, _G, _W, _C, _G, _W, _G, _G, _W, _G, _W, _G, _G, _W, _G, _G, _W, _C, _G, _W],  # 3  chests
     [_W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _W],  # 4
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # 5
     [_W, _G, _G, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _G, _G, _G, _W],  # 6 central plaza
@@ -235,6 +242,8 @@ SUBTERRA_NPCS: List[Dict[str, Any]] = [
 SUBTERRA_EVENTS: Dict[Tuple[int, int], Dict[str, Any]] = {
     (9, 3): {"type": "shop", "shop_id": "subterra"},
     (14, 3): {"type": "journal"},   # ancestral home — show journal dialog
+    (3, 3): {"type": "chest", "chest_id": "subterra_1", "items": [{"item_id": "nano_potion", "count": 2}], "gold": 800},
+    (17, 3): {"type": "chest", "chest_id": "subterra_2", "items": [{"item_id": "plasma_grenade", "count": 1}, {"item_id": "stasis_field", "count": 1}], "gold": 1000},
     (10, 14): {"type": "exit"},
 }
 

@@ -20,6 +20,7 @@ from settings import (
     TILE_ZONE_EXIT,
     TILE_DUNGEON,
     TILE_HIDDEN,
+    TILE_CHEST,
 )
 
 
@@ -34,6 +35,7 @@ _E = 4   # TILE_TOWN — town entrance
 _Z = 5   # TILE_ZONE_EXIT — zone transition
 _D = 6   # TILE_DUNGEON — boss arena entrance
 _H = 7   # TILE_HIDDEN — secret wall (Subterra)
+_C = 8   # TILE_CHEST — treasure chest
 
 # ---------------------------------------------------------------------------
 # Default map (Verdant Plains / Ashenvale area).  Tile IDs:
@@ -45,7 +47,7 @@ DEFAULT_MAP: List[List[int]] = [
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _P, _G, _P, _G, _G, _G, _W, _W, _W, _W, _G, _G, _G, _G, _G, _G, _G, _P, _P, _E, _G, _W],
-    [_W, _G, _G, _P, _G, _P, _G, _G, _G, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _P, _G, _P, _G, _C, _G, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _P, _P, _P, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
@@ -54,7 +56,7 @@ DEFAULT_MAP: List[List[int]] = [
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _P, _P, _P, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _P, _P, _P, _P, _P, _P, _P, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _P, _P, _G, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _D, _G, _G, _G, _W],
@@ -78,18 +80,18 @@ SILVERWOOD_MAP: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _Z, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # north→stormcrag
     [_W, _G, _W, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _D, _G, _G, _G, _W],
     [_W, _G, _W, _G, _G, _G, _W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _W, _W, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _C, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
     [_W, _W, _G, _G, _D, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # D=Silverwood Clearing
     [_W, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _W, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _W, _G, _W],
+    [_W, _G, _W, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _C, _W, _G, _W],
     [_W, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _W, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _E, _G, _G, _G, _G, _G, _W],  # E=Willowmere
     [_W, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # lake
     [_W, _G, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _T, _T, _T, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _T, _T, _T, _T, _T, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _W],
+    [_W, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _W],
     [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _P, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _W],
@@ -128,20 +130,20 @@ STORMCRAG_MAP: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _Z, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # north→dark_lands
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _W, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _G, _G, _W, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _W, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _C, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _W, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _W, _W, _G, _G, _W],
+    [_W, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _C, _G, _W, _W, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _D, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _W],  # D=Mountain Pass boss
     [_W, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
-    [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
+    [_W, _G, _G, _W, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _H, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # H=hidden Subterra wall
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
-    [_W, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _G, _W],
+    [_W, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _W, _W, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _W, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _G, _W],
+    [_W, _W, _G, _G, _W, _W, _G, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _P, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _Z, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # south→silverwood
@@ -177,20 +179,20 @@ STORMCRAG_HIDDEN_WALLS: Dict[Tuple[int, int], Dict[str, Any]] = {
 DARK_LANDS_MAP: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # no further north
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _D, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # D=Black Fortress
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _W],
     [_W, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _P, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
@@ -221,15 +223,15 @@ SUBTERRA_PASSAGE_MAP: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _E, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # E=Subterra
-    [_W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
+    [_W, _G, _W, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
     [_W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _D, _G, _G, _G, _G, _G, _W, _G, _G, _W],  # D=Crystal Sentinel
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _W, _W, _W, _G, _G, _G, _W, _W, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _C, _G, _W, _W, _W, _G, _G, _G, _W, _W, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _C, _G, _W],
     [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _W],
-    [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _Z, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # south→stormcrag
@@ -270,6 +272,10 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         },
         "town_entrances": {(22, 3): "ironhaven", (22, 9): "ashenvale"},
         "hidden_walls": {},
+        "chest_tiles": {
+            (7, 4): {"chest_id": "verdant_plains_1", "items": [{"item_id": "potion", "count": 2}], "gold": 80},
+            (15, 13): {"chest_id": "verdant_plains_2", "items": [{"item_id": "leather_helm", "count": 1}], "gold": 120},
+        },
         "display_name": "Verdant Plains",
         "encounter_zone": "grasslands",
     },
@@ -280,6 +286,12 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         "dungeon_entries": SILVERWOOD_DUNGEON_ENTRIES,
         "town_entrances": SILVERWOOD_TOWN_ENTRANCES,
         "hidden_walls": {},
+        "chest_tiles": {
+            (7, 3): {"chest_id": "silverwood_1", "items": [{"item_id": "potion", "count": 2}, {"item_id": "ether", "count": 1}], "gold": 200},
+            (21, 6): {"chest_id": "silverwood_2", "items": [{"item_id": "long_sword", "count": 1}], "gold": 400},
+            (16, 8): {"chest_id": "silverwood_3", "items": [{"item_id": "iron_shield", "count": 1}], "gold": 250},
+            (5, 14): {"chest_id": "silverwood_4", "items": [{"item_id": "hi_potion", "count": 2}], "gold": 300},
+        },
         "display_name": "Silverwood Forest",
         "encounter_zone": "forest",
     },
@@ -290,6 +302,13 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         "dungeon_entries": STORMCRAG_DUNGEON_ENTRIES,
         "town_entrances": {},
         "hidden_walls": STORMCRAG_HIDDEN_WALLS,
+        "chest_tiles": {
+            (4, 3): {"chest_id": "stormcrag_1", "items": [{"item_id": "hi_potion", "count": 3}], "gold": 400},
+            (18, 5): {"chest_id": "stormcrag_2", "items": [{"item_id": "chain_mail", "count": 1}], "gold": 500},
+            (7, 9): {"chest_id": "stormcrag_3", "items": [{"item_id": "hi_ether", "count": 2}], "gold": 600},
+            (19, 13): {"chest_id": "stormcrag_4", "items": [{"item_id": "broad_sword", "count": 1}], "gold": 800},
+            (11, 16): {"chest_id": "stormcrag_5", "items": [{"item_id": "bomb_frag", "count": 2}, {"item_id": "zeus_wrath", "count": 2}], "gold": 700},
+        },
         "display_name": "Stormcrag Mountains",
         "encounter_zone": "mountains",
     },
@@ -300,6 +319,14 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         "dungeon_entries": DARK_LANDS_DUNGEON_ENTRIES,
         "town_entrances": {},
         "hidden_walls": {},
+        "chest_tiles": {
+            (5, 2): {"chest_id": "dark_lands_1", "items": [{"item_id": "elixir", "count": 2}], "gold": 1000},
+            (20, 3): {"chest_id": "dark_lands_2", "items": [{"item_id": "knight_armor", "count": 1}], "gold": 2000},
+            (8, 6): {"chest_id": "dark_lands_3", "items": [{"item_id": "nano_potion", "count": 3}], "gold": 1500},
+            (17, 8): {"chest_id": "dark_lands_4", "items": [{"item_id": "plasma_grenade", "count": 2}], "gold": 1200},
+            (4, 13): {"chest_id": "dark_lands_5", "items": [{"item_id": "phoenix_down", "count": 2}, {"item_id": "elixir", "count": 1}], "gold": 1800},
+            (21, 15): {"chest_id": "dark_lands_6", "items": [{"item_id": "stasis_field", "count": 3}], "gold": 2500},
+        },
         "display_name": "Dark Lands",
         "encounter_zone": "dark_lands",
     },
@@ -310,6 +337,12 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         "dungeon_entries": SUBTERRA_PASSAGE_DUNGEON_ENTRIES,
         "town_entrances": SUBTERRA_PASSAGE_TOWN_ENTRANCES,
         "hidden_walls": {},
+        "chest_tiles": {
+            (5, 3): {"chest_id": "subterra_passage_1", "items": [{"item_id": "knight_sword", "count": 1}], "gold": 800},
+            (4, 6): {"chest_id": "subterra_passage_2", "items": [{"item_id": "hi_ether", "count": 3}], "gold": 700},
+            (17, 8): {"chest_id": "subterra_passage_3", "items": [{"item_id": "nano_potion", "count": 2}], "gold": 600},
+            (14, 11): {"chest_id": "subterra_passage_4", "items": [{"item_id": "plate_armor", "count": 1}], "gold": 1000},
+        },
         "display_name": "Subterra Passage",
         "encounter_zone": "subterra_passage",
     },
@@ -345,9 +378,8 @@ class TileMap:
         Mapping ``(col, row) → (zone_name, spawn_col, spawn_row)`` for TILE_ZONE_EXIT tiles.
     dungeon_entries:
         Mapping ``(col, row) → boss_config_dict`` for TILE_DUNGEON tiles.
-    hidden_walls:
-        Mapping ``(col, row) → config_dict`` for TILE_HIDDEN tiles (interactable).
-    """
+    chest_tiles:
+        Mapping ``(col, row) → chest_config_dict`` for TILE_CHEST tiles."""
 
     def __init__(
         self,
@@ -357,6 +389,7 @@ class TileMap:
         zone_exits: Optional[Dict[Tuple[int, int], Tuple[str, int, int]]] = None,
         dungeon_entries: Optional[Dict[Tuple[int, int], Dict[str, Any]]] = None,
         hidden_walls: Optional[Dict[Tuple[int, int], Dict[str, Any]]] = None,
+        chest_tiles: Optional[Dict[Tuple[int, int], Dict[str, Any]]] = None,
     ) -> None:
         self.data: List[List[int]] = data if data is not None else DEFAULT_MAP
         self.spawn: Tuple[int, int] = spawn if spawn is not None else DEFAULT_SPAWN
@@ -371,6 +404,9 @@ class TileMap:
         )
         self.hidden_walls: Dict[Tuple[int, int], Dict[str, Any]] = (
             hidden_walls if hidden_walls is not None else {}
+        )
+        self.chest_tiles: Dict[Tuple[int, int], Dict[str, Any]] = (
+            chest_tiles if chest_tiles is not None else {}
         )
         self.height = len(self.data)
         self.width = max(len(row) for row in self.data)

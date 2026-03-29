@@ -164,9 +164,44 @@ class TownState(BaseState):
         elif etype == "inn":
             from src.states.inn import InnState
             self.game.push_state(InnState(self.game))
+        elif etype == "chest":
+            self._open_chest(event_data)
         elif etype == "journal":
             # Ancestral home in Subterra: show the journal + give Exo items
             self._trigger_journal_event()
+
+    def _open_chest(self, chest_data: Dict[str, Any]) -> None:
+        """Open a treasure chest: award items/gold or display 'Empty!' if already opened."""
+        from src.systems.inventory import load_items
+        from src.states.dialog import DialogState
+
+        chest_id = chest_data.get("chest_id", "")
+        flag = f"chest_opened_{chest_id}"
+
+        if self.game.quest_flags.get(flag):
+            self.game.push_state(DialogState(self.game, ["Empty!"], speaker="Chest"))
+            return
+
+        self.game.quest_flags.set(flag)
+        items_data = load_items()
+        lines: List[str] = []
+
+        for item_entry in chest_data.get("items", []):
+            item_id = item_entry["item_id"]
+            count = item_entry.get("count", 1)
+            self.game.inventory.add(item_id, count)
+            item_name = items_data.get(item_id, {}).get("name", item_id)
+            lines.append(f"Found {count}x {item_name}!" if count > 1 else f"Found {item_name}!")
+
+        gold = chest_data.get("gold", 0)
+        if gold > 0:
+            self.game.inventory.gold += gold
+            lines.append(f"Found {gold} gold!")
+
+        if not lines:
+            lines = ["The chest is empty..."]
+
+        self.game.push_state(DialogState(self.game, lines, speaker="Treasure Chest"))
 
     def _start_dialog(self, dialog_id: str) -> None:
         entry = self._dialog.get(dialog_id, {})
