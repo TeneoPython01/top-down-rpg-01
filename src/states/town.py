@@ -96,6 +96,7 @@ class TownState(BaseState):
         # if e.g. a sub-state (dialog, shop) just popped back to this state.
         self._event_cooldown = TOWN_EVENT_COOLDOWN
         self.game.current_location = f"town:{self.town_name}"
+        self.game.audio.play_music("town")
 
     # ── Input ─────────────────────────────────────────────────────────────────
 

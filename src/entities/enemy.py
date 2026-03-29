@@ -37,6 +37,7 @@ class Enemy(pygame.sprite.Sprite):
         self.xp_reward: int = data.get("xp", 10)
         self.gold_reward: int = data.get("gold", 5)
         self.loot_table: list = data.get("loot", [])
+        self.boss: bool = bool(data.get("boss", False))
 
         self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
         self.image.fill(RED)

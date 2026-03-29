@@ -397,6 +397,8 @@ class BattleState(BaseState):
 
     def enter(self) -> None:
         self.player._defending = False
+        is_boss = any(getattr(e, "boss", False) for e in self.enemies)
+        self.game.audio.play_music("boss_battle" if is_boss else "battle")
         self._show_msg("An enemy appears!", duration=1.5, callback=self._start_new_round)
 
     # ── Turn management ───────────────────────────────────────────────────────
@@ -457,6 +459,7 @@ class BattleState(BaseState):
             if crit:
                 dmg *= 2
             actual = target.take_damage(dmg)
+            self.game.audio.play_sfx("attack_hit")
             msg = f"{self.player.name} attacks!  -{actual} HP"
             if crit:
                 msg = "Critical!  " + msg
@@ -487,6 +490,7 @@ class BattleState(BaseState):
             if self.player._defending:
                 dmg = max(1, dmg // 2)
             actual = self.player.take_damage(dmg)
+            self.game.audio.play_sfx("attack_hit")
             msg = f"{enemy.name} attacks!  -{actual} HP"
             if crit:
                 msg = "Critical!  " + msg
@@ -501,6 +505,7 @@ class BattleState(BaseState):
         self._victory_gold = sum(e.gold_reward for e in self.enemies)
         self.game.inventory.gold += self._victory_gold
         self._level_up_msgs = self.player.gain_xp(self._victory_xp)
+        self.game.audio.play_music("victory", loops=0)
         self._phase = _Phase.VICTORY
 
     def _begin_defeat(self) -> None:
@@ -560,6 +565,7 @@ class BattleState(BaseState):
             ):
                 if self._level_up_msgs:
                     self._message = self._level_up_msgs.pop(0)
+                    self.game.audio.play_sfx("level_up")
                     self._phase = _Phase.LEVEL_UP
                 else:
                     self.game.pop_state()
@@ -570,6 +576,7 @@ class BattleState(BaseState):
             ):
                 if self._level_up_msgs:
                     self._message = self._level_up_msgs.pop(0)
+                    self.game.audio.play_sfx("level_up")
                 else:
                     self.game.pop_state()
 

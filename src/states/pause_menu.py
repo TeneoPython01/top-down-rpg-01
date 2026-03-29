@@ -69,8 +69,10 @@ class PauseMenuState(BaseState):
 
         if event.key == pygame.K_ESCAPE:
             if self._focus == "content":
+                self.game.audio.play_sfx("cancel")
                 self._focus = "tabs"
             else:
+                self.game.audio.play_sfx("cancel")
                 self.game.pop_state()
             return
 
@@ -79,13 +81,16 @@ class PauseMenuState(BaseState):
             if event.key in (pygame.K_LEFT, pygame.K_a):
                 self._tab_idx = (self._tab_idx - 1) % len(_TABS)
                 self._tab_menu._cursor = self._tab_idx
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_RIGHT, pygame.K_d):
                 self._tab_idx = (self._tab_idx + 1) % len(_TABS)
                 self._tab_menu._cursor = self._tab_idx
+                self.game.audio.play_sfx("cursor")
             else:
-                result = self._tab_menu.handle_input(event)
+                result = self._tab_menu.handle_input(event, on_move=lambda: self.game.audio.play_sfx("cursor"))
                 self._tab_idx = self._tab_menu.selected
                 if result:
+                    self.game.audio.play_sfx("confirm")
                     self._focus = "content"
                     self._items_cursor = 0
                     self._equip_cursor = 0
@@ -104,11 +109,14 @@ class PauseMenuState(BaseState):
             keys = list(items.keys())
             if event.key in (pygame.K_UP, pygame.K_w):
                 self._items_cursor = (self._items_cursor - 1) % len(keys)
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self._items_cursor = (self._items_cursor + 1) % len(keys)
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
                 item_id = keys[self._items_cursor % len(keys)]
                 success, msg = self.player.inventory.use_item(item_id, self.player)
+                self.game.audio.play_sfx("item_use")
                 self._message = msg
                 self._message_timer = 2.5
 
@@ -116,15 +124,19 @@ class PauseMenuState(BaseState):
             slots = list(Inventory.SLOTS)
             if event.key in (pygame.K_UP, pygame.K_w):
                 self._equip_cursor = (self._equip_cursor - 1) % len(slots)
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self._equip_cursor = (self._equip_cursor + 1) % len(slots)
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
                 slot = slots[self._equip_cursor]
+                self.game.audio.play_sfx("confirm")
                 self._open_equip_submenu(slot)
             elif event.key == pygame.K_x:
                 # Unequip
                 slot = slots[self._equip_cursor]
                 ok, msg = self.player.inventory.unequip_slot(slot, self.player)
+                self.game.audio.play_sfx("cancel")
                 self._message = msg
                 self._message_timer = 2.5
 
@@ -134,22 +146,28 @@ class PauseMenuState(BaseState):
                 return
             if event.key in (pygame.K_UP, pygame.K_w):
                 self._magic_cursor = (self._magic_cursor - 1) % len(known)
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self._magic_cursor = (self._magic_cursor + 1) % len(known)
+                self.game.audio.play_sfx("cursor")
 
         elif tab == "Save":
             if event.key in (pygame.K_UP, pygame.K_w):
                 self._save_cursor = (self._save_cursor - 1) % NUM_SAVE_SLOTS
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self._save_cursor = (self._save_cursor + 1) % NUM_SAVE_SLOTS
+                self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
                 slot = self._save_cursor + 1
                 success = save_to_slot(self.game, slot)
                 if success:
+                    self.game.audio.play_sfx("confirm")
                     self._message = f"Game saved to slot {slot}."
                     # Refresh slot info after saving
                     self._slot_infos[self._save_cursor] = get_slot_info(slot)
                 else:
+                    self.game.audio.play_sfx("cancel")
                     self._message = "Save failed!"
                 self._message_timer = 2.5
 

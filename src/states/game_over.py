@@ -24,6 +24,7 @@ class GameOverState(BaseState):
 
     def enter(self) -> None:
         self._timer = 0.0
+        self.game.audio.play_music("game_over")
 
     def handle_input(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN:

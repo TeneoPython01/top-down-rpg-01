@@ -47,6 +47,7 @@ class DialogState(BaseState):
 
     def enter(self) -> None:
         self._index = 0
+        self.game.audio.play_sfx("dialog_open")
         if self._lines:
             self._text_box = TextBox(self._lines[0], speaker=self._speaker)
         else:
@@ -61,6 +62,7 @@ class DialogState(BaseState):
             else:
                 self._next_line()
         elif event.key == pygame.K_ESCAPE:
+            self.game.audio.play_sfx("dialog_close")
             self.game.pop_state()
 
     def _next_line(self) -> None:
@@ -70,6 +72,7 @@ class DialogState(BaseState):
                 self._lines[self._index], speaker=self._speaker
             )
         else:
+            self.game.audio.play_sfx("dialog_close")
             self.game.pop_state()
 
     def update(self, dt: float) -> None:

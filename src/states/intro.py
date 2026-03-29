@@ -252,6 +252,7 @@ class IntroState(BaseState):
         self._fading_in = False
         self._text_box = None
         self._narration_lines = []
+        self.game.audio.play_music("cutscene")
         self._start_step()
 
     # ── Step management ───────────────────────────────────────────────────────

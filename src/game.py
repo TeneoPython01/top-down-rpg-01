@@ -20,6 +20,7 @@ from settings import (
     BLACK,
 )
 from src.states.base_state import BaseState
+from src.systems.audio import AudioManager
 from src.systems.inventory import Inventory
 from src.systems.quest_flags import QuestFlags
 
@@ -40,6 +41,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self._state_stack: List[BaseState] = []
+
+        # Audio manager — must be created after pygame.init()
+        self.audio = AudioManager()
 
         # Shared player inventory / gold (persists across all states)
         self.inventory = Inventory()

@@ -57,14 +57,25 @@ class Menu:
         """Set the cursor to *index* (clamped to valid range)."""
         self._cursor = index % len(self.options)
 
-    def handle_input(self, event: pygame.event.Event) -> str | None:
-        """Handle navigation keys.  Returns the selected option label on confirm."""
+    def handle_input(self, event: pygame.event.Event, on_move=None) -> str | None:
+        """Handle navigation keys.  Returns the selected option label on confirm.
+
+        Parameters
+        ----------
+        on_move:
+            Optional zero-argument callable invoked whenever the cursor moves
+            (used by callers to play a cursor-movement sound effect).
+        """
         if event.type != pygame.KEYDOWN:
             return None
         if event.key in (pygame.K_UP, pygame.K_w):
             self.move_up()
+            if on_move is not None:
+                on_move()
         elif event.key in (pygame.K_DOWN, pygame.K_s):
             self.move_down()
+            if on_move is not None:
+                on_move()
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
             return self.selected_option
         return None
