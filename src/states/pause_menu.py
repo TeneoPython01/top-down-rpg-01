@@ -19,13 +19,17 @@ from src.states.base_state import BaseState
 from src.ui.menu import Menu
 from src.systems.inventory import load_items, Inventory
 from src.systems.magic import load_spells
+from src.systems.quest_log import ACTIVE, COMPLETE
 from src.systems.save_load import get_slot_info, save_to_slot
 
 if TYPE_CHECKING:
     from src.game import Game
 
 
-_TABS = ["Items", "Equipment", "Magic", "Stats", "Save"]
+_TABS = ["Items", "Equipment", "Magic", "Stats", "Quests", "Save"]
+
+# Pixel width of one character in the small monospace font (7pt).
+_CHAR_W = 6
 
 
 class PauseMenuState(BaseState):
@@ -43,6 +47,7 @@ class PauseMenuState(BaseState):
         self._items_cursor = 0
         self._equip_cursor = 0
         self._magic_cursor = 0
+        self._quests_cursor = 0
         self._save_cursor = 0
 
         self._message = ""
@@ -95,6 +100,7 @@ class PauseMenuState(BaseState):
                     self._items_cursor = 0
                     self._equip_cursor = 0
                     self._magic_cursor = 0
+                    self._quests_cursor = 0
                     self._save_cursor = 0
         else:
             self._handle_content_input(event)
@@ -149,6 +155,17 @@ class PauseMenuState(BaseState):
                 self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self._magic_cursor = (self._magic_cursor + 1) % len(known)
+                self.game.audio.play_sfx("cursor")
+
+        elif tab == "Quests":
+            quest_entries = self._get_quest_entries()
+            if not quest_entries:
+                return
+            if event.key in (pygame.K_UP, pygame.K_w):
+                self._quests_cursor = (self._quests_cursor - 1) % len(quest_entries)
+                self.game.audio.play_sfx("cursor")
+            elif event.key in (pygame.K_DOWN, pygame.K_s):
+                self._quests_cursor = (self._quests_cursor + 1) % len(quest_entries)
                 self.game.audio.play_sfx("cursor")
 
         elif tab == "Save":
@@ -223,11 +240,11 @@ class PauseMenuState(BaseState):
         for i, tab_name in enumerate(_TABS):
             color = YELLOW if i == self._tab_idx else WHITE
             if i == self._tab_idx:
-                bg = pygame.Rect(tab_x - 2, 18, len(tab_name) * 6 + 6, 12)
+                bg = pygame.Rect(tab_x - 2, 18, len(tab_name) * _CHAR_W + _CHAR_W, 12)
                 pygame.draw.rect(surface, (60, 60, 100), bg)
             surf = font_sm.render(tab_name, True, color)
             surface.blit(surf, (tab_x, 20))
-            tab_x += len(tab_name) * 6 + 10
+            tab_x += len(tab_name) * _CHAR_W + 10
 
         # Divider
         pygame.draw.line(surface, LIGHT_GRAY, (8, 33), (NATIVE_WIDTH - 8, 33), 1)
@@ -265,6 +282,8 @@ class PauseMenuState(BaseState):
             self._draw_magic_tab(surface, font, font_sm, content_y)
         elif tab == "Stats":
             self._draw_stats_tab(surface, font, font_sm, content_y)
+        elif tab == "Quests":
+            self._draw_quests_tab(surface, font, font_sm, content_y)
         elif tab == "Save":
             self._draw_save_tab(surface, font, font_sm, content_y)
 
@@ -352,6 +371,41 @@ class PauseMenuState(BaseState):
         ]
         for i, line in enumerate(lines):
             surface.blit(font_sm.render(line, True, WHITE), (12, y + i * 11))
+
+    def _get_quest_entries(self) -> List[tuple]:
+        """Return a list of (quest_id, quest_data, state) for active and complete quests."""
+        return [
+            (qid, qdata, state)
+            for qid, qdata, state in self.game.quest_log.all_quests()
+            if state in (ACTIVE, COMPLETE)
+        ]
+
+    def _draw_quests_tab(self, surface: pygame.Surface, font: pygame.font.Font, font_sm: pygame.font.Font, y: int) -> None:
+        quest_entries = self._get_quest_entries()
+        if not quest_entries:
+            surface.blit(font_sm.render("No quests discovered yet.", True, WHITE), (12, y))
+            return
+
+        for i, (qid, qdata, state) in enumerate(quest_entries):
+            title = qdata.get("title", qid)
+            status_color = GREEN if state == COMPLETE else YELLOW
+            status_str = "[DONE]" if state == COMPLETE else "[ACTIVE]"
+            is_selected = self._focus == "content" and i == self._quests_cursor
+            prefix = ">" if is_selected else " "
+            row_color = YELLOW if is_selected else WHITE
+            row = f"{prefix} {title:<22} {status_str}"
+            surface.blit(font_sm.render(row, True, row_color), (12, y + i * 11))
+            # Draw the status badge in its own color
+            badge_x = 12 + (len(prefix) + 1 + 22 + 1) * _CHAR_W
+            surface.blit(font_sm.render(status_str, True, status_color), (badge_x, y + i * 11))
+
+        # Show objective/description of highlighted quest
+        if self._focus == "content" and quest_entries:
+            idx = self._quests_cursor % len(quest_entries)
+            _, qdata, state = quest_entries[idx]
+            objective = qdata.get("objective", qdata.get("description", ""))
+            if objective:
+                surface.blit(font_sm.render(objective, True, (200, 200, 160)), (12, NATIVE_HEIGHT - 35))
 
     def _draw_save_tab(
         self,
