@@ -165,6 +165,195 @@ class TestTownExitSpawn:
 
 
 # ---------------------------------------------------------------------------
+# Tests: zone-to-zone transition spawn (verdant_plains ↔ silverwood)
+# ---------------------------------------------------------------------------
+
+class TestZoneTransitionSpawn:
+    """Confirm that zone exit data places the player adjacent to the
+    corresponding zone-exit tile in the destination map.
+
+    Key scenario from the problem statement:
+      Using the verdant_plains tile on Silverwood's *south* edge (12, 19)
+      must place the player at tile (12, 1) in Verdant Plains — exactly one
+      tile south of the TILE_ZONE_EXIT ("silverwood tile") at (12, 0).
+    """
+
+    def test_silverwood_south_exit_targets_verdant_plains(self):
+        """The south-edge zone exit of Silverwood must point to verdant_plains."""
+        from src.utils.tilemap import SILVERWOOD_ZONE_EXITS
+        assert (12, 19) in SILVERWOOD_ZONE_EXITS, (
+            "Expected a zone exit at Silverwood (12, 19) — the south edge"
+        )
+        target_zone, spawn_col, spawn_row = SILVERWOOD_ZONE_EXITS[(12, 19)]
+        assert target_zone == "verdant_plains", (
+            f"Expected target 'verdant_plains', got '{target_zone}'"
+        )
+
+    def test_silverwood_south_exit_spawn_adjacent_to_verdant_zone_tile(self):
+        """The spawn delivered by the Silverwood→Verdant transition must land
+        the player exactly one tile from the TILE_ZONE_EXIT at the north edge
+        of Verdant Plains (the 'silverwood tile')."""
+        from settings import TILE_ZONE_EXIT
+        from src.utils.tilemap import SILVERWOOD_ZONE_EXITS, get_zone_data
+
+        _target_zone, spawn_col, spawn_row = SILVERWOOD_ZONE_EXITS[(12, 19)]
+
+        # Build a real verdant_plains TileMap to inspect the tile IDs.
+        zone_data = get_zone_data("verdant_plains")
+        from src.utils.tilemap import TileMap
+        tilemap = TileMap(
+            data=zone_data["map"],
+            spawn=zone_data["spawn"],
+            town_entrances=zone_data["town_entrances"],
+            zone_exits=zone_data["zone_exits"],
+            dungeon_entries=zone_data["dungeon_entries"],
+            hidden_walls=zone_data["hidden_walls"],
+        )
+
+        # Locate the TILE_ZONE_EXIT tile(s) at the north edge (row 0) of
+        # Verdant Plains that lead back to Silverwood.
+        silverwood_exit_tiles = [
+            (col, row)
+            for (col, row), (zone, _sc, _sr) in tilemap.zone_exits.items()
+            if zone == "silverwood_forest"
+        ]
+        assert silverwood_exit_tiles, (
+            "Verdant Plains must have a TILE_ZONE_EXIT leading back to Silverwood"
+        )
+
+        # The player should land adjacent (manhattan distance == 1) to the
+        # silverwood exit tile.
+        min_distance = min(
+            abs(spawn_col - ec) + abs(spawn_row - er)
+            for ec, er in silverwood_exit_tiles
+        )
+        assert min_distance == 1, (
+            f"Spawn ({spawn_col},{spawn_row}) is not adjacent to any Silverwood "
+            f"exit tile in Verdant Plains; nearest distance = {min_distance}"
+        )
+
+    def test_player_lands_at_spawn_col_row_after_zone_transition(self):
+        """OverworldState with spawn_override=(12,1) positions the player at
+        tile (12,1) — confirmed via pixel_to_tile round-trip."""
+        from src.utils.tilemap import SILVERWOOD_ZONE_EXITS
+        from src.entities.player import Player
+
+        _zone, spawn_col, spawn_row = SILVERWOOD_ZONE_EXITS[(12, 19)]
+
+        game = _MockGame()
+        from src.states.overworld import OverworldState
+        existing_player = Player(0, 0)
+        game.player = existing_player
+
+        # Simulate arrival: create OverworldState for the destination zone with
+        # the spawn_override that _transition_zone would pass.
+        state = OverworldState(
+            game,
+            player=existing_player,
+            zone_name="verdant_plains",
+            spawn_override=(spawn_col, spawn_row),
+        )
+
+        arrived_col, arrived_row = state.tilemap.pixel_to_tile(
+            state.player.rect.centerx, state.player.rect.centery
+        )
+        assert (arrived_col, arrived_row) == (spawn_col, spawn_row), (
+            f"Expected player at ({spawn_col},{spawn_row}), "
+            f"got ({arrived_col},{arrived_row})"
+        )
+
+    def test_player_not_on_zone_exit_tile_after_arrival(self):
+        """After arriving in Verdant Plains the player must NOT be standing on
+        TILE_ZONE_EXIT — that would cause an immediate re-trigger."""
+        from settings import TILE_ZONE_EXIT
+        from src.utils.tilemap import SILVERWOOD_ZONE_EXITS
+        from src.entities.player import Player
+
+        _zone, spawn_col, spawn_row = SILVERWOOD_ZONE_EXITS[(12, 19)]
+
+        game = _MockGame()
+        existing_player = Player(0, 0)
+        game.player = existing_player
+
+        from src.states.overworld import OverworldState
+        state = OverworldState(
+            game,
+            player=existing_player,
+            zone_name="verdant_plains",
+            spawn_override=(spawn_col, spawn_row),
+        )
+
+        arrived_col, arrived_row = state.tilemap.pixel_to_tile(
+            state.player.rect.centerx, state.player.rect.centery
+        )
+        tile_id = state.tilemap.tile_at(arrived_col, arrived_row)
+        assert tile_id != TILE_ZONE_EXIT, (
+            f"Player arrived on TILE_ZONE_EXIT at ({arrived_col},{arrived_row}) "
+            "— this would cause an immediate re-transition"
+        )
+
+    @pytest.mark.parametrize("from_zone,exit_tile,to_zone,spawn", [
+        # Verdant Plains → Silverwood (north edge)
+        ("verdant_plains",      (12, 0),  "silverwood_forest",  (12, 18)),
+        # Silverwood → Verdant Plains (south edge)
+        ("silverwood_forest",   (12, 19), "verdant_plains",     (12, 1)),
+        # Silverwood → Stormcrag (north edge)
+        ("silverwood_forest",   (12, 0),  "stormcrag_mountains",(12, 18)),
+        # Stormcrag → Silverwood (south edge)
+        ("stormcrag_mountains", (12, 19), "silverwood_forest",  (12, 1)),
+        # Stormcrag → Dark Lands (north edge)
+        ("stormcrag_mountains", (12, 0),  "dark_lands",         (12, 18)),
+        # Dark Lands → Stormcrag (south edge)
+        ("dark_lands",          (12, 19), "stormcrag_mountains",(12, 1)),
+    ])
+    def test_all_zone_exit_spawns_are_adjacent_to_exit_tile(
+        self, from_zone, exit_tile, to_zone, spawn
+    ):
+        """Every zone exit must deliver a spawn one tile away from the
+        matching exit tile in the destination zone."""
+        from src.utils.tilemap import get_zone_data, TileMap
+        from settings import TILE_ZONE_EXIT
+
+        # Verify the exit data matches expectations.
+        zone_data = get_zone_data(from_zone)
+        actual = zone_data["zone_exits"].get(exit_tile)
+        assert actual is not None, (
+            f"{from_zone} has no zone exit at {exit_tile}"
+        )
+        actual_zone, actual_sc, actual_sr = actual
+        assert actual_zone == to_zone, (
+            f"Exit {exit_tile} in {from_zone}: expected target '{to_zone}', "
+            f"got '{actual_zone}'"
+        )
+        assert (actual_sc, actual_sr) == spawn, (
+            f"Exit {exit_tile} in {from_zone}: expected spawn {spawn}, "
+            f"got ({actual_sc},{actual_sr})"
+        )
+
+        # Verify the spawn lands adjacent to a zone exit in the destination.
+        dest_data = get_zone_data(to_zone)
+        dest_map = TileMap(
+            data=dest_data["map"],
+            spawn=dest_data["spawn"],
+            town_entrances=dest_data["town_entrances"],
+            zone_exits=dest_data["zone_exits"],
+            dungeon_entries=dest_data["dungeon_entries"],
+            hidden_walls=dest_data["hidden_walls"],
+        )
+        exit_tiles_in_dest = list(dest_data["zone_exits"].keys())
+        assert exit_tiles_in_dest, f"{to_zone} has no zone exits"
+
+        min_dist = min(
+            abs(spawn[0] - ec) + abs(spawn[1] - er)
+            for ec, er in exit_tiles_in_dest
+        )
+        assert min_dist == 1, (
+            f"Spawn {spawn} in {to_zone} (arriving from {from_zone}) is not "
+            f"adjacent to any zone exit tile; min distance = {min_dist}"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Tests: _place_player_outside_tile unit test
 # ---------------------------------------------------------------------------
 
