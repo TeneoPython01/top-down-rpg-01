@@ -271,14 +271,23 @@ class OverworldState(BaseState):
         self.game.push_state(DialogState(self.game, lines, speaker=speaker))
 
     def _transition_zone(self, zone_name: str, spawn: tuple = (12, 17)) -> None:
-        """Replace this overworld state with a new one for the target zone."""
-        new_state = OverworldState(
-            self.game,
-            player=self.player,
-            zone_name=zone_name,
-            spawn_override=spawn,
-        )
-        self.game.change_state(new_state)
+        """Replace this overworld state with a new one for the target zone.
+
+        Phase 6: wraps the transition in a FadeOverlay so the zone swap is
+        hidden behind a brief black fade rather than a hard cut.
+        """
+        from src.states.fade import FadeOverlay
+
+        def _do_swap() -> None:
+            new_state = OverworldState(
+                self.game,
+                player=self.player,
+                zone_name=zone_name,
+                spawn_override=spawn,
+            )
+            self.game.change_state(new_state)
+
+        self.game.push_state(FadeOverlay(self.game, midpoint_callback=_do_swap))
 
     def _check_dungeon_entry(self, dungeon_data: Dict[str, Any]) -> None:
         """Trigger a boss encounter if not already cleared."""

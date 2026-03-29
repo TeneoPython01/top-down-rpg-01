@@ -1,9 +1,12 @@
 """
-src/ui/menu.py - Reusable menu component with cursor navigation (Phase 3).
+src/ui/menu.py - Reusable menu component with cursor navigation (Phase 3 & 6).
+
+Phase 6: animated ▶ cursor that bobs left/right.
 """
 
 from __future__ import annotations
 
+import math
 from typing import List
 
 import pygame
@@ -82,6 +85,11 @@ class Menu:
 
     def draw(self, surface: pygame.Surface) -> None:
         font = pygame.font.SysFont(FONT_NAME, FONT_SIZE_NORMAL)
+        # Phase-6: bobbing cursor offset — uses wall-clock time so it animates
+        # even when no events are being processed.
+        t = pygame.time.get_ticks() / 1000.0
+        cursor_x_offset = int(math.sin(t * 7.0) * 1.5) + 1  # oscillates 0–3 px
+
         for i, option in enumerate(self.options):
             color = YELLOW if i == self._cursor else WHITE
             text_surf = font.render(option, True, color)
@@ -95,5 +103,5 @@ class Menu:
                 )
                 pygame.draw.rect(surface, MENU_CURSOR_BG, bg)
                 cursor_surf = font.render("▶", True, YELLOW)
-                surface.blit(cursor_surf, (self.x, iy))
+                surface.blit(cursor_surf, (self.x + cursor_x_offset, iy))
             surface.blit(text_surf, (self.x + 10, iy))
