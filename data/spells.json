@@ -14,5 +14,7 @@
   {"id": "scan",      "name": "Scan",      "mp": 2,  "power": 0,   "element": null, "target": "enemy_single", "effect": "reveal_stats",  "learn_level": 1,  "type": "support","description": "Reveals enemy stats."},
   {"id": "haste",     "name": "Haste",     "mp": 8,  "power": 0,   "element": null, "target": "ally_single",  "effect": "buff_spd",      "learn_level": 10, "type": "support","description": "+50% SPD for 5 turns."},
   {"id": "slow",      "name": "Slow",      "mp": 6,  "power": 0,   "element": null, "target": "enemy_single", "effect": "debuff_spd",    "learn_level": 8,  "type": "support","description": "-50% SPD for 3 turns."},
-  {"id": "dispel",    "name": "Dispel",    "mp": 10, "power": 0,   "element": null, "target": "any_single",   "effect": "remove_buffs",  "learn_level": 16, "type": "support","description": "Remove buffs/debuffs."}
+  {"id": "dispel",    "name": "Dispel",    "mp": 10, "power": 0,   "element": null, "target": "any_single",   "effect": "remove_buffs",  "learn_level": 16, "type": "support","description": "Remove buffs/debuffs."},
+  {"id": "curaga",    "name": "Curaga",    "mp": 24, "power": 800, "element": null, "target": "ally_single",  "effect": "heal_hp",       "learn_level": 99, "type": "white", "description": "Heals ~800 HP. Quest reward: The Final Stand."},
+  {"id": "flare",     "name": "Flare",     "mp": 40, "power": 300, "element": null, "target": "enemy_single", "effect": "damage",        "learn_level": 99, "type": "black", "description": "Massive non-elemental damage. Quest reward: The Corrupted Throne."}
 ]

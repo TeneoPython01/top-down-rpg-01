@@ -73,7 +73,7 @@ DEFAULT_MAP: List[List[int]] = [
     [_W, _G, _G, _G, _G, _P, _P, _P, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _P, _P, _G, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _P, _P, _G, _P, _P, _P, _P, _G, _G, _G, _G, _G, _G, _G, _G, _D, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],
@@ -92,7 +92,7 @@ DEFAULT_ZONE_EXITS: Dict[Tuple[int, int], Tuple[str, int, int]] = {
 # ---------------------------------------------------------------------------
 SILVERWOOD_MAP: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _Z, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # north→stormcrag
-    [_W, _G, _W, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _W],
+    [_W, _G, _W, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _D, _G, _G, _G, _W],
     [_W, _G, _W, _G, _G, _G, _W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _W, _W, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
     [_W, _W, _G, _G, _D, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # D=Silverwood Clearing
@@ -125,6 +125,11 @@ SILVERWOOD_DUNGEON_ENTRIES: Dict[Tuple[int, int], Dict[str, Any]] = {
         "boss_id": "dire_wolf_alpha",
         "flag": "wolf_alpha_defeated",
         "narration": "The Silverwood Clearing — something stirs in the trees...",
+    },
+    (20, 1): {
+        "boss_id": "thunder_hawk_king",
+        "flag": "thunder_hawk_king_defeated",
+        "narration": "The treetops crackle with lightning — the Thunder Hawk King descends!",
     },
 }
 
@@ -272,7 +277,13 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         "map": DEFAULT_MAP,
         "spawn": DEFAULT_SPAWN,
         "zone_exits": DEFAULT_ZONE_EXITS,
-        "dungeon_entries": {},
+        "dungeon_entries": {
+            (20, 16): {
+                "boss_id": "viper_queen",
+                "flag": "viper_queen_defeated",
+                "narration": "A den of vipers coils in the eastern plains — the Viper Queen rises!",
+            },
+        },
         "town_entrances": {(22, 3): "ironhaven", (22, 9): "ashenvale"},
         "hidden_walls": {},
         "display_name": "Verdant Plains",

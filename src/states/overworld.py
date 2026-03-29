@@ -36,6 +36,7 @@ from src.entities.player import Player
 from src.entities.npc import NPC
 from src.systems.camera import Camera
 from src.systems.encounter import EncounterSystem
+from src.systems.quest_log import get_quest_for_dialog, get_quest_for_zone
 from src.utils.tilemap import TileMap, get_zone_data
 
 if TYPE_CHECKING:
@@ -153,6 +154,10 @@ class OverworldState(BaseState):
         self._town_cooldown = TOWN_ENTRY_COOLDOWN
         self.game.current_location = f"overworld:{self._zone_name}"
         self.game.audio.play_music("overworld")
+
+        # Zone-entry quest activation and completion flags.
+        self._handle_zone_entry_quests()
+
         if not self._intro_shown:
             self._intro_shown = True
             self._push_scene_dialog(_INTRO_LINES, speaker="")
@@ -173,6 +178,7 @@ class OverworldState(BaseState):
         self.player.update(dt, self.tilemap.blocked_rects)
         self.camera.update(self.player)
         self._check_encounter()
+        self._check_quest_completions()
 
         if self._town_cooldown > 0:
             self._town_cooldown = max(0.0, self._town_cooldown - dt)
@@ -225,7 +231,7 @@ class OverworldState(BaseState):
                 entry = self._dialog_data.get(npc.dialog_id)
                 if entry:
                     lines = entry.get("lines", [])
-                    self._push_npc_dialog(lines, speaker=npc.name)
+                    self._push_npc_dialog(lines, speaker=npc.name, dialog_id=npc.dialog_id)
                     return
 
         # Hidden wall interaction
@@ -266,9 +272,60 @@ class OverworldState(BaseState):
         from src.states.dialog import DialogState
         self.game.push_state(DialogState(self.game, lines, speaker=speaker, callback=callback))
 
-    def _push_npc_dialog(self, lines: List[str], speaker: str) -> None:
+    def _push_npc_dialog(self, lines: List[str], speaker: str, dialog_id: str = "") -> None:
+        """Push NPC dialog and activate a quest if this dialog triggers one."""
         from src.states.dialog import DialogState
-        self.game.push_state(DialogState(self.game, lines, speaker=speaker))
+
+        def _on_close() -> None:
+            if dialog_id:
+                quest_id = get_quest_for_dialog(dialog_id)
+                if quest_id:
+                    newly_active = self.game.quest_log.activate(quest_id)
+                    if newly_active:
+                        self._show_quest_notice(quest_id)
+
+        self.game.push_state(DialogState(self.game, lines, speaker=speaker, callback=_on_close))
+
+    def _handle_zone_entry_quests(self) -> None:
+        """Set zone-entry flags and activate zone-triggered quests on arrival."""
+        zone = self._zone_name
+
+        # Set completion flags for quests triggered by zone entry.
+        if zone == "silverwood_forest" and not self.game.quest_flags.get("silverwood_reached"):
+            self.game.quest_flags.set("silverwood_reached")
+        elif zone == "subterra_passage" and not self.game.quest_flags.get("subterra_reached"):
+            self.game.quest_flags.set("subterra_reached")
+
+        # Activate any quest whose start trigger is this zone.
+        quest_id = get_quest_for_zone(zone)
+        if quest_id:
+            newly_active = self.game.quest_log.activate(quest_id)
+            if newly_active:
+                self._show_quest_notice(quest_id)
+
+    def _check_quest_completions(self) -> None:
+        """Award rewards for newly completed quests and show a notice dialog."""
+        if self.game.player is None:
+            return
+        messages = self.game.quest_log.check_completions(
+            self.game.quest_flags,
+            self.game.player,
+            self.game.inventory,
+        )
+        if messages:
+            self._push_scene_dialog(messages, speaker="Quest Complete")
+
+    def _show_quest_notice(self, quest_id: str) -> None:
+        """Push a short dialog notifying the player that a quest was accepted."""
+        from src.systems.quest_log import _load_quest_data
+        quest_data = _load_quest_data()
+        qdata = quest_data.get(quest_id, {})
+        title = qdata.get("title", quest_id)
+        objective = qdata.get("objective", "")
+        lines = [f'Quest accepted: "{title}"']
+        if objective:
+            lines.append(objective)
+        self._push_scene_dialog(lines, speaker="New Quest")
 
     def _transition_zone(self, zone_name: str, spawn: tuple = (12, 17)) -> None:
         """Replace this overworld state with a new one for the target zone.

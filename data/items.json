@@ -30,5 +30,16 @@
   {"id": "plate_armor", "name": "Plate Armor",   "type": "armor",      "def": 25, "mdf": 8, "price": 4000,"description": "Heavy full plate."},
   {"id": "knight_armor","name": "Knight Armor",  "type": "armor",      "def": 35, "mdf": 15,"price": 9000,"description": "The finest purchasable armor."},
   {"id": "exo_armor",   "name": "Exo Armor",     "type": "armor",      "def": 60, "mdf": 40,"price": 0,   "elemental_resist": 25, "description": "Pre-pandemic exosuit chest. Reduces all elemental damage by 25%. (Secret)"},
-  {"id": "silver_ring", "name": "Silver Ring",   "type": "accessory",  "lck": 5,  "price": 500,  "description": "A simple silver ring. Boosts LCK."}
+  {"id": "silver_ring", "name": "Silver Ring",   "type": "accessory",  "lck": 5,  "price": 500,  "description": "A simple silver ring. Boosts LCK."},
+
+  {"id": "hunters_sigil",    "name": "Hunter's Sigil",    "type": "accessory", "str": 5,  "lck": 10, "price": 0, "description": "A sigil worn by veteran hunters. Quest reward: The Growing Threat."},
+  {"id": "viper_fang_ring",  "name": "Viper Fang Ring",   "type": "accessory", "mdf": 8,  "lck": 5,  "price": 0, "description": "Carved from the Viper Queen's fang. Quest reward: Poisoned Fields."},
+  {"id": "forest_cloak",     "name": "Forest Cloak",      "type": "armor",     "def": 18, "mdf": 12, "price": 0, "description": "Woven from enchanted forest fibers. Quest reward: The Healer's Research."},
+  {"id": "moonstone_helm",   "name": "Moonstone Helm",    "type": "helmet",    "def": 14, "mag": 8,  "price": 0, "description": "Carved from ancient moonstone. Quest reward: The Wanderer's Secret."},
+  {"id": "thunder_blade",    "name": "Thunder Blade",     "type": "weapon",    "str": 5,  "atk": 55, "price": 0, "description": "Infused with thunderhawk lightning. Quest reward: The Blacksmith's Commission."},
+  {"id": "ancestral_shield", "name": "Ancestral Shield",  "type": "shield",    "def": 20, "mdf": 10, "price": 0, "description": "Your ancestor's shield, found in Subterra. Quest reward: Family History."},
+  {"id": "subterra_boots",   "name": "Subterra Boots",    "type": "accessory", "spd": 12, "price": 0, "description": "Boots crafted in the underground city. Quest reward: Family History."},
+  {"id": "dark_iron_sword",  "name": "Dark Iron Sword",   "type": "weapon",    "atk": 65, "price": 0, "description": "A fearsome blade forged from dark iron. Quest reward: Into the Darkness."},
+  {"id": "crystal_gauntlets","name": "Crystal Gauntlets", "type": "accessory", "str": 15, "def": 10, "price": 0, "description": "Gauntlets formed from Crystal Sentinel remains. Quest reward: The Crystal Colossus."},
+  {"id": "radiant_armor",    "name": "Radiant Armor",     "type": "armor",     "def": 50, "mdf": 30, "price": 0, "description": "Legendary armor of the first White Knight. Quest reward: The Final Stand."}
 ]
