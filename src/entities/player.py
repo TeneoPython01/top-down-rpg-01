@@ -311,8 +311,8 @@ class Player(pygame.sprite.Sprite):
                 self.max_mp = entry.get("mp", self.max_mp)
                 hp_gain = self.max_hp - old_max_hp
                 mp_gain = self.max_mp - old_max_mp
-                self.hp = min(self.hp + max(0, hp_gain), self.max_hp)
-                self.mp = min(self.mp + max(0, mp_gain), self.max_mp)
+                self.hp = self.max_hp
+                self.mp = self.max_mp
                 self.recalculate_stats()
                 messages.append(
                     f"Level up! Now Lv {self.level}. "
@@ -409,14 +409,14 @@ class Player(pygame.sprite.Sprite):
 
         Returns a list of level-up message strings (one per level gained).
         """
-        self.xp += amount
+        self.exp += amount
         messages: List[str] = []
         levels = _get_levels_data()
         while self.level < len(levels):
             # levels is 0-indexed: level 1 data is at index 0, level 2 at index 1, …
             # To check if the player should advance to level N+1, read index N.
             next_data = levels[self.level]
-            if self.xp >= next_data["xp_required"]:
+            if self.exp >= next_data["xp_required"]:
                 self.level = next_data["level"]
                 hp_gain = next_data["hp"] - self.max_hp
                 mp_gain = next_data["mp"] - self.max_mp

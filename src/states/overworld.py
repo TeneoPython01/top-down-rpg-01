@@ -171,12 +171,17 @@ class OverworldState(BaseState):
                 entry = self._dialog_data.get(npc.dialog_id)
                 if entry:
                     lines = entry.get("lines", [])
-                    self._push_npc_dialog(lines, speaker=npc.name)
+                    on_close = None
+                    if npc.dialog_id == "healer_npc":
+                        player = self.player
+                        def on_close() -> None:  # type: ignore[misc]
+                            player.hp = player.max_hp
+                    self._push_npc_dialog(lines, speaker=npc.name, on_close=on_close)
                     return
 
-    def _push_npc_dialog(self, lines: List[str], speaker: str) -> None:
+    def _push_npc_dialog(self, lines: List[str], speaker: str, on_close=None) -> None:
         from src.states.dialog import DialogState
-        self.game.push_state(DialogState(self.game, lines, speaker=speaker))
+        self.game.push_state(DialogState(self.game, lines, speaker=speaker, on_close=on_close))
 
     def _push_scene_dialog(self, lines: List[str], speaker: str = "") -> None:
         from src.states.dialog import DialogState

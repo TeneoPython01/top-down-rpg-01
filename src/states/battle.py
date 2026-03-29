@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from src.game import Game
 
 _MSG_LINE_LEN = 50  # max characters per message display line
+_COMMANDS = ["Attack", "Defend", "Flee", "Magic", "Item"]
 
 
 class _Phase(Enum):
@@ -87,30 +88,24 @@ class BattleState(BaseState):
         self.enemies = enemies
         self.player = player
 
-        self._cmd_menu = Menu(_CMD_LABELS, x=NATIVE_WIDTH - 70, y=NATIVE_HEIGHT - 55)
-
-        # Spell submenu (populated in enter())
-        self._spell_labels: List[str] = []
-        self._spell_ids: List[str] = []
-        self._spell_menu: Menu | None = None
-
-        # Item submenu
-        self._item_labels: List[str] = []
-        self._item_ids: List[str] = []
-        self._item_menu: Menu | None = None
-
-        # Target selection
-        self._targets: List[Any] = []
-        self._target_cursor: int = 0
-
-        self._phase = _Phase.PLAYER_CHOOSE_CMD
-        self._messages: List[str] = []
+        self._menu = Menu(_COMMANDS, x=NATIVE_WIDTH - 72, y=NATIVE_HEIGHT - 52, item_height=10)
+        self._phase = _Phase.PLAYER_MENU
+        self._message = ""
         self._msg_timer = 0.0
-        self._pending_action: str = ""
-        self._pending_spell_id: str = ""
-        self._pending_item_id: str = ""
+        self._msg_callback: Optional[Callable] = None
 
-        self._all_spells = magic_sys.load_spells()
+        # Victory bookkeeping
+        self._victory_xp = 0
+        self._victory_gold = 0
+        self._level_up_msgs: List[str] = []
+
+        # Per-round turn queue
+        self._turn_queue: List[Any] = []
+        self._queue_idx = 0
+
+        # Cached fonts (initialised lazily)
+        self._font: Optional[pygame.font.Font] = None
+        self._font_sm: Optional[pygame.font.Font] = None
 
     def enter(self) -> None:
         self._phase = _Phase.PLAYER_CHOOSE_CMD
@@ -602,32 +597,6 @@ class BattleState(BaseState):
         self._draw_enemies(surface, font, font_sm)
         self._draw_player_panel(surface, font, font_sm)
 
-        font = pygame.font.SysFont("monospace", 8)
-        font_sm = pygame.font.SysFont("monospace", 7)
-
-        # Enemy area
-        alive_enemies = [e for e in self.enemies if e.is_alive()]
-        selected_enemy = (
-            alive_enemies[self._target_cursor % len(alive_enemies)]
-            if alive_enemies and self._phase == _Phase.PLAYER_CHOOSE_TARGET
-            else None
-        )
-        ex = 20
-        for enemy in self.enemies:
-            if not enemy.is_alive():
-                continue
-            color = YELLOW if enemy is selected_enemy else RED
-            pygame.draw.rect(surface, color, (ex, 20, 32, 32))
-            lbl = font_sm.render(enemy.name, True, WHITE)
-            surface.blit(lbl, (ex, 56))
-            hp_lbl = font_sm.render(f"HP:{enemy.hp}/{enemy.max_hp}", True, (200, 200, 200))
-            surface.blit(hp_lbl, (ex, 66))
-            ex += 60
-
-        # Player stats strip
-        strip = pygame.Rect(0, NATIVE_HEIGHT - 55, NATIVE_WIDTH, 55)
-        pygame.draw.rect(surface, (20, 20, 40), strip)
-        pygame.draw.rect(surface, (100, 100, 140), strip, 1)
         if self._phase == _Phase.PLAYER_MENU:
             self._menu.draw(surface)
         elif self._phase == _Phase.MSG:
@@ -671,7 +640,7 @@ class BattleState(BaseState):
 
         py = panel.y + 6
         surface.blit(font.render(self.player.name, True, WHITE), (8, py))
-        lv_text = f"Lv{self.player.level}  XP:{self.player.xp}"
+        lv_text = f"Lv{self.player.level}  XP:{self.player.exp}"
         surface.blit(font_sm.render(lv_text, True, YELLOW), (8, py + 10))
 
         # HP bar
@@ -699,58 +668,6 @@ class BattleState(BaseState):
             st_surf = font_sm.render(" ".join(s.upper() for s in statuses), True, (255, 160, 0))
             surface.blit(st_surf, (6, NATIVE_HEIGHT - 40))
 
-        # Draw phase-appropriate menu
-        if self._phase == _Phase.PLAYER_CHOOSE_CMD:
-            self._cmd_menu.draw(surface)
-            hint = font_sm.render("Enter/Z:select  ESC:flee", True, (120, 120, 160))
-            surface.blit(hint, (4, NATIVE_HEIGHT - 14))
-
-        elif self._phase == _Phase.PLAYER_CHOOSE_SPELL:
-            header = font.render("-- Magic --", True, CYAN)
-            surface.blit(header, (NATIVE_WIDTH - 90, NATIVE_HEIGHT - 65))
-            if self._spell_menu:
-                self._spell_menu.draw(surface)
-            hint = font_sm.render("ESC: back", True, (120, 120, 160))
-            surface.blit(hint, (4, NATIVE_HEIGHT - 14))
-
-        elif self._phase == _Phase.PLAYER_CHOOSE_ITEM:
-            header = font.render("-- Items --", True, CYAN)
-            surface.blit(header, (NATIVE_WIDTH - 100, NATIVE_HEIGHT - 65))
-            if self._item_menu:
-                self._item_menu.draw(surface)
-            hint = font_sm.render("ESC: back", True, (120, 120, 160))
-            surface.blit(hint, (4, NATIVE_HEIGHT - 14))
-
-        elif self._phase == _Phase.PLAYER_CHOOSE_TARGET:
-            hint = font.render("Choose target (←/→, Enter)", True, YELLOW)
-            surface.blit(hint, (4, NATIVE_HEIGHT - 65))
-
-        elif self._phase == _Phase.SHOW_MESSAGE:
-            msg_text = "  ".join(self._messages)
-            # Split into up to two lines at word boundaries where possible
-            if len(msg_text) <= _MSG_LINE_LEN:
-                line1, line2 = msg_text, ""
-            else:
-                split_at = msg_text.rfind(" ", 0, _MSG_LINE_LEN)
-                if split_at == -1:
-                    split_at = _MSG_LINE_LEN
-                line1 = msg_text[:split_at]
-                line2 = msg_text[split_at:split_at + _MSG_LINE_LEN].strip()
-            msg_surf = font.render(line1, True, WHITE)
-            surface.blit(msg_surf, (4, NATIVE_HEIGHT - 65))
-            if line2:
-                msg_surf2 = font.render(line2, True, WHITE)
-                surface.blit(msg_surf2, (4, NATIVE_HEIGHT - 55))
-            hint = font_sm.render("Press Enter/Z to continue", True, (150, 150, 150))
-            surface.blit(hint, (4, NATIVE_HEIGHT - 14))
-
-        elif self._phase == _Phase.VICTORY:
-            v = font.render("VICTORY!  Press Enter", True, YELLOW)
-            surface.blit(v, v.get_rect(centerx=NATIVE_WIDTH // 2, centery=NATIVE_HEIGHT // 2))
-
-        elif self._phase == _Phase.DEFEAT:
-            d = font.render("DEFEATED...  Press Enter", True, RED)
-            surface.blit(d, d.get_rect(centerx=NATIVE_WIDTH // 2, centery=NATIVE_HEIGHT // 2))
         # Controls hint (only when player is choosing)
         if self._phase == _Phase.PLAYER_MENU:
             hint = font_sm.render("W/S: move  Z/Enter: select", True, (150, 150, 180))

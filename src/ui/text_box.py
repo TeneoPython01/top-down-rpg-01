@@ -97,12 +97,31 @@ class TextBox:
         x = box_rect.x + DIALOG_PADDING
         y = box_rect.y + DIALOG_PADDING
         line_height = 10
-        for line in visible.split("\n"):
-            surf = font.render(line, True, WHITE)
-            surface.blit(surf, (x, y))
-            y += line_height
+        max_text_w = box_rect.width - DIALOG_PADDING * 2
+        for raw_line in visible.split("\n"):
+            for wrapped_line in self._wrap_line(font, raw_line, max_text_w):
+                surf = font.render(wrapped_line, True, WHITE)
+                surface.blit(surf, (x, y))
+                y += line_height
 
         # "More" indicator
         if self._done:
             indicator = font.render("▼", True, (200, 200, 100))
             surface.blit(indicator, (box_rect.right - 12, box_rect.bottom - 12))
+
+    def _wrap_line(self, font: pygame.font.Font, line: str, max_width: int) -> list[str]:
+        """Break *line* into sub-lines that each fit within *max_width* pixels."""
+        words = line.split(" ")
+        wrapped: list[str] = []
+        current = ""
+        for word in words:
+            test = (current + " " + word) if current else word
+            if font.size(test)[0] <= max_width:
+                current = test
+            else:
+                if current:
+                    wrapped.append(current)
+                current = word
+        if current:
+            wrapped.append(current)
+        return wrapped or [""]
