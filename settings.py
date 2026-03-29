@@ -69,7 +69,8 @@ MAPS_DIR = os.path.join(ASSETS_DIR, "maps")
 
 # ── Battle ────────────────────────────────────────────────────────────────────
 BASE_HIT_RATE = 0.90
-CRIT_CHANCE_DIVISOR = 256
+PLAYER_CRIT_DIVISOR = 25   # player crit chance = lck / PLAYER_CRIT_DIVISOR (20% at lck 5, 60% at max lck 15)
+ENEMY_CRIT_CHANCE = 0.01   # enemies and bosses always have a 1% crit chance
 DAMAGE_VARIANCE = 0.10
 BLIND_HIT_PENALTY = 0.50       # hit-rate reduction when attacker is blinded
 UNARMED_ATTACK_POWER = 3       # default weapon power when no weapon is equipped
