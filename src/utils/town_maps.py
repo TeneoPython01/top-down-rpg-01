@@ -59,6 +59,13 @@ ASHENVALE_NPCS: List[Dict[str, Any]] = [
         "color": (220, 200, 50),   # gold
     },
     {
+        "name": "Old Man",
+        "dialog_id": "elder_zelda_ref",
+        "col": 14,
+        "row": 6,
+        "color": (180, 160, 140),  # grey-beige
+    },
+    {
         "name": "Farmer",
         "dialog_id": "farmer_ashenvale",
         "col": 4,
@@ -173,6 +180,13 @@ WILLOWMERE_NPCS: List[Dict[str, Any]] = [
         "col": 17,
         "row": 7,
         "color": (200, 200, 100),  # pale gold
+    },
+    {
+        "name": "Ultros",
+        "dialog_id": "ultros_encounter",
+        "col": 6,
+        "row": 10,
+        "color": (160, 60, 200),   # purple
     },
 ]
 
