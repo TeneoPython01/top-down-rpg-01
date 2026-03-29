@@ -1,26 +1,29 @@
 {
   "slot": 1,
-  "timestamp": "2026-03-29 10:50",
-  "location": "overworld:silverwood_forest",
+  "timestamp": "2026-03-29 14:18",
+  "location": "overworld:verdant_plains",
   "player_name": "White Knight",
-  "player_level": 2,
+  "player_level": 3,
   "player": {
     "name": "White Knight",
-    "level": 2,
-    "exp": 105,
-    "hp": 140,
-    "max_hp": 140,
-    "mp": 36,
-    "max_mp": 36,
+    "level": 3,
+    "exp": 270,
+    "hp": 162,
+    "max_hp": 162,
+    "mp": 42,
+    "max_mp": 42,
     "base_stats": {
-      "str": 10,
-      "def": 5,
-      "mag": 6,
-      "mdf": 4,
-      "spd": 8,
-      "lck": 5
+      "str": 14,
+      "def": 10,
+      "mag": 10,
+      "mdf": 8,
+      "spd": 9,
+      "lck": 6
     },
-    "status": {},
+    "status": {
+      "poison": 3,
+      "blind": 2
+    },
     "buffs": {},
     "known_spells": [
       "cure",
@@ -37,9 +40,9 @@
       "armor": null,
       "accessory": null
     },
-    "pos_x": 192.0,
-    "pos_y": 286.64,
-    "direction": 3
+    "pos_x": 331.2746983211902,
+    "pos_y": 125.21146888904056,
+    "direction": 2
   },
   "quest_flags": {
     "silverwood_reached": true
