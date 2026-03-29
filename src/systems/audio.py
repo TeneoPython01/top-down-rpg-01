@@ -39,16 +39,19 @@ MUSIC_TRACKS: Dict[str, str] = {
 
 # SFX name → filename (searched in SFX_DIR)
 SFX_FILES: Dict[str, str] = {
-    "cursor":       "cursor.wav",
-    "confirm":      "confirm.wav",
-    "cancel":       "cancel.wav",
-    "attack_hit":   "attack_hit.wav",
-    "spell_cast":   "spell_cast.wav",
-    "item_use":     "item_use.wav",
-    "level_up":     "level_up.wav",
-    "door_open":    "door_open.wav",
-    "dialog_open":  "dialog_open.wav",
-    "dialog_close": "dialog_close.wav",
+    "cursor":         "cursor.wav",
+    "confirm":        "confirm.wav",
+    "cancel":         "cancel.wav",
+    "attack_hit":     "attack_hit.wav",
+    "spell_cast":     "spell_cast.wav",
+    "item_use":       "item_use.wav",
+    "level_up":       "level_up.wav",
+    "door_open":      "door_open.wav",
+    "dialog_open":    "dialog_open.wav",
+    "dialog_close":   "dialog_close.wav",
+    "item_get":       "item_get.wav",
+    "quest_start":    "quest_start.wav",
+    "quest_complete": "quest_complete.wav",
 }
 
 _MUSIC_EXTS = (".wav", ".ogg", ".mp3")

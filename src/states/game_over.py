@@ -41,7 +41,12 @@ class GameOverState(BaseState):
         font_sm = pygame.font.SysFont("monospace", 8)
 
         go_surf = font_big.render("GAME OVER", True, RED)
-        surface.blit(go_surf, go_surf.get_rect(center=(NATIVE_WIDTH // 2, 90)))
+        surface.blit(go_surf, go_surf.get_rect(center=(NATIVE_WIDTH // 2, 80)))
+
+        msg_surf = font_sm.render(
+            "the world's chaos will grow without your light.", True, WHITE
+        )
+        surface.blit(msg_surf, msg_surf.get_rect(centerx=NATIVE_WIDTH // 2, top=102))
 
         if self._timer > 2.0:
             hint = font_sm.render("Press ENTER to return to title", True, WHITE)

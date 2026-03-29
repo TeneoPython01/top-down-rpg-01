@@ -360,6 +360,8 @@ class OverworldState(BaseState):
             self.game.player.inventory,
         )
         if messages:
+            self.game.audio.play_sfx("quest_complete")
+            self.game.audio.play_sfx("item_get")
             self._push_scene_dialog(messages, speaker="Quest Complete")
 
     def _show_quest_notice(self, quest_id: str) -> None:
@@ -372,6 +374,7 @@ class OverworldState(BaseState):
         lines = [f'Quest accepted: "{title}"']
         if objective:
             lines.append(objective)
+        self.game.audio.play_sfx("quest_start")
         self._push_scene_dialog(lines, speaker="New Quest")
 
     def _transition_zone(self, zone_name: str, spawn: tuple = (12, 17)) -> None:
@@ -499,6 +502,8 @@ class OverworldState(BaseState):
 
         if not lines:
             lines = ["The chest is empty..."]
+        else:
+            self.game.audio.play_sfx("item_get")
 
         self._push_scene_dialog(lines, speaker="Treasure Chest")
 
