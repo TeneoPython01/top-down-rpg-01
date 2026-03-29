@@ -71,6 +71,7 @@ def save_to_slot(game: Any, slot: int) -> bool:
         return False
 
     quest_flags = getattr(game, "quest_flags", None)
+    quest_log = getattr(game, "quest_log", None)
     data: Dict[str, Any] = {
         "slot": slot,
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -79,6 +80,7 @@ def save_to_slot(game: Any, slot: int) -> bool:
         "player_level": player.level,
         "player": player.to_dict(),
         "quest_flags": quest_flags.to_dict() if quest_flags is not None else {},
+        "quest_log": quest_log.to_dict() if quest_log is not None else {},
     }
 
     path = get_slot_path(slot)
@@ -120,3 +122,7 @@ def apply_save_to_game(data: Dict[str, Any], game: Any) -> None:
     quest_flags = getattr(game, "quest_flags", None)
     if quest_flags is not None:
         quest_flags.from_dict(data.get("quest_flags", {}))
+
+    quest_log = getattr(game, "quest_log", None)
+    if quest_log is not None:
+        quest_log.from_dict(data.get("quest_log", {}))

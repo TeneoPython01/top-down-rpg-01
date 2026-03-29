@@ -23,6 +23,7 @@ from src.states.base_state import BaseState
 from src.systems.audio import AudioManager
 from src.systems.inventory import Inventory
 from src.systems.quest_flags import QuestFlags
+from src.systems.quest_log import QuestLog
 
 
 class Game:
@@ -52,6 +53,7 @@ class Game:
         # Shared game-state objects (set by OverworldState when a game begins)
         self.player = None                  # type: ignore[assignment]
         self.quest_flags = QuestFlags()
+        self.quest_log = QuestLog()
         self.current_location = "overworld"
 
         # Kick off with the title screen (imported here to avoid circular deps)
