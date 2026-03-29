@@ -108,7 +108,10 @@ def check_crit(attacker: Any) -> bool:
     throughout this module.
     """
     if hasattr(attacker, "inventory"):
-        # Player character – crit chance scales with the LCK stat
+        # Player character – always-crit cheat takes priority
+        if getattr(attacker, "always_crit", False):
+            return True
+        # Crit chance scales with the LCK stat
         lck = attacker.stats.get("lck", 5)
         return random.random() < (lck / PLAYER_CRIT_DIVISOR)
     # Enemy / boss – fixed low chance

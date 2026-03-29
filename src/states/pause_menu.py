@@ -21,12 +21,31 @@ from src.systems.inventory import load_items, Inventory
 from src.systems.magic import load_spells
 from src.systems.quest_log import ACTIVE, COMPLETE
 from src.systems.save_load import get_slot_info, save_to_slot
+from src.entities.player import _get_levels_data
 
 if TYPE_CHECKING:
     from src.game import Game
 
 
-_TABS = ["Items", "Equipment", "Magic", "Stats", "Quests", "Save"]
+_BASE_TABS = ["Items", "Equipment", "Magic", "Stats", "Quests", "Save"]
+_CHEAT_LABEL = "Cheats"
+
+# Konami code: ↑ ↑ ↓ ↓ ← → ← →  (enter while viewing the Quests tab)
+_KONAMI = [
+    pygame.K_UP, pygame.K_UP,
+    pygame.K_DOWN, pygame.K_DOWN,
+    pygame.K_LEFT, pygame.K_RIGHT,
+    pygame.K_LEFT, pygame.K_RIGHT,
+]
+
+# Cheat definitions: (button label, description shown at bottom)
+_CHEATS = [
+    ("Give 100,000 Gold",  "Adds 100,000 gold to your wallet."),
+    ("Max Level (Lv 30)",  "Jumps level and stats to Lv 30 if currently below Lv 30."),
+    ("Endgame Equipment",  "Adds and equips the Exo Weapon and Exo Armor."),
+    ("Learn All Spells",   "Teaches every spell in the game."),
+    ("Toggle Always-Crit", "Every player attack becomes a critical hit (toggle ON/OFF)."),
+]
 
 # Pixel width of one character in the small monospace font (7pt).
 _CHAR_W = 6
@@ -41,7 +60,7 @@ class PauseMenuState(BaseState):
         super().__init__(game)
         self.player = player
         self._tab_idx = 0
-        self._tab_menu = Menu(_TABS, x=8, y=20, item_height=14)
+        self._tab_menu = Menu(list(_BASE_TABS), x=8, y=20, item_height=14)
 
         # Per-tab cursors
         self._items_cursor = 0
@@ -49,6 +68,7 @@ class PauseMenuState(BaseState):
         self._magic_cursor = 0
         self._quests_cursor = 0
         self._save_cursor = 0
+        self._cheat_cursor = 0
 
         self._message = ""
         self._message_timer = 0.0
@@ -60,6 +80,21 @@ class PauseMenuState(BaseState):
         # Which pane has focus: "tabs" or "content"
         self._focus = "tabs"
 
+        # Cheat-mode state (persisted on the player object between menu opens)
+        self._cheat_unlocked: bool = getattr(player, "cheat_unlocked", False)
+        self._konami_progress: int = 0
+        if self._cheat_unlocked:
+            self._tab_menu.options = self._tabs
+
+    # ── Dynamic tab list ──────────────────────────────────────────────────────
+
+    @property
+    def _tabs(self) -> List[str]:
+        """Return the active tab list, including 'Cheats' once unlocked."""
+        if self._cheat_unlocked:
+            return _BASE_TABS + [_CHEAT_LABEL]
+        return list(_BASE_TABS)
+
     def enter(self) -> None:
         self._all_items = load_items()
         self._all_spells = load_spells()
@@ -67,10 +102,34 @@ class PauseMenuState(BaseState):
         self._message_timer = 0.0
         self._focus = "tabs"
         self._slot_infos = [get_slot_info(i) for i in range(1, NUM_SAVE_SLOTS + 1)]
+        # Sync cheat-unlock state from the persistent player flag
+        self._cheat_unlocked = getattr(self.player, "cheat_unlocked", False)
+        if self._cheat_unlocked:
+            self._tab_menu.options = self._tabs
 
     def handle_input(self, event: pygame.event.Event) -> None:
         if event.type != pygame.KEYDOWN:
             return
+
+        # ── Konami code: ↑↑↓↓←→←→ while viewing the Quests tab ────────────
+        if not self._cheat_unlocked and self._tabs[self._tab_idx] == "Quests":
+            if event.key == _KONAMI[self._konami_progress]:
+                self._konami_progress += 1
+                if self._konami_progress == len(_KONAMI):
+                    # Sequence complete — unlock the Cheats tab
+                    self._cheat_unlocked = True
+                    self.player.cheat_unlocked = True
+                    self._konami_progress = 0
+                    self._tab_menu.options = self._tabs
+                    self._tab_idx = self._tabs.index(_CHEAT_LABEL)
+                    self._tab_menu._cursor = self._tab_idx
+                    self._focus = "tabs"
+                    self._message = "\u2605 CHEAT MODE ENABLED \u2605"
+                    self._message_timer = 3.0
+                    self.game.audio.play_sfx("confirm")
+                    return  # consume this key press
+            else:
+                self._konami_progress = 0
 
         if event.key == pygame.K_ESCAPE:
             if self._focus == "content":
@@ -84,11 +143,11 @@ class PauseMenuState(BaseState):
         if self._focus == "tabs":
             # Left/right arrow keys navigate the horizontal tab bar directly.
             if event.key in (pygame.K_LEFT, pygame.K_a):
-                self._tab_idx = (self._tab_idx - 1) % len(_TABS)
+                self._tab_idx = (self._tab_idx - 1) % len(self._tabs)
                 self._tab_menu._cursor = self._tab_idx
                 self.game.audio.play_sfx("cursor")
             elif event.key in (pygame.K_RIGHT, pygame.K_d):
-                self._tab_idx = (self._tab_idx + 1) % len(_TABS)
+                self._tab_idx = (self._tab_idx + 1) % len(self._tabs)
                 self._tab_menu._cursor = self._tab_idx
                 self.game.audio.play_sfx("cursor")
             else:
@@ -102,11 +161,12 @@ class PauseMenuState(BaseState):
                     self._magic_cursor = 0
                     self._quests_cursor = 0
                     self._save_cursor = 0
+                    self._cheat_cursor = 0
         else:
             self._handle_content_input(event)
 
     def _handle_content_input(self, event: pygame.event.Event) -> None:
-        tab = _TABS[self._tab_idx]
+        tab = self._tabs[self._tab_idx]
 
         if tab == "Items":
             items = self._get_healing_items()
@@ -188,6 +248,16 @@ class PauseMenuState(BaseState):
                     self._message = "Save failed!"
                 self._message_timer = 2.5
 
+        elif tab == "Cheats":
+            if event.key in (pygame.K_UP, pygame.K_w):
+                self._cheat_cursor = (self._cheat_cursor - 1) % len(_CHEATS)
+                self.game.audio.play_sfx("cursor")
+            elif event.key in (pygame.K_DOWN, pygame.K_s):
+                self._cheat_cursor = (self._cheat_cursor + 1) % len(_CHEATS)
+                self.game.audio.play_sfx("cursor")
+            elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
+                self._activate_cheat(self._cheat_cursor)
+
     def _open_equip_submenu(self, slot: str) -> None:
         """Find items in inventory matching the slot type and equip the selected one."""
         # Build list of items of this type in inventory
@@ -208,6 +278,71 @@ class PauseMenuState(BaseState):
 
     def _get_healing_items(self) -> Dict[str, int]:
         return self.player.inventory.healing_items()
+
+    def _activate_cheat(self, index: int) -> None:
+        """Execute cheat *index* and show a feedback message."""
+        p = self.player
+        if index == 0:
+            # Cheat 1: Give 100,000 gold
+            p.inventory.gold += 100_000
+            self._message = "Received 100,000 gold!"
+            self.game.audio.play_sfx("confirm")
+
+        elif index == 1:
+            # Cheat 2: Set level and stats to Lv 30 (if below Lv 30)
+            if p.level >= 30:
+                self._message = "Already at Lv 30 or higher."
+                self._message_timer = 2.5
+                return
+            levels_data = _get_levels_data()
+            lv30 = next((e for e in levels_data if e["level"] == 30), None)
+            if lv30:
+                p.level = 30
+                p.exp = lv30["xp_required"]
+                p.max_hp = lv30["hp"]
+                p.hp = p.max_hp
+                p.max_mp = lv30["mp"]
+                p.mp = p.max_mp
+                for stat in ("str", "def", "mag", "mdf", "spd", "lck"):
+                    p.base_stats[stat] = lv30[stat]
+                p.recalculate_stats()
+                # Learn all spells that would have been gained by level 30
+                for sid, sdata in self._all_spells.items():
+                    if sdata.get("learn_level", 99) <= 30 and sid not in p.known_spells:
+                        p.known_spells.append(sid)
+                self._message = "Jumped to Lv 30 with full stats!"
+            self.game.audio.play_sfx("confirm")
+
+        elif index == 2:
+            # Cheat 3: Give and equip endgame equipment
+            for item_id in ("exo_weapon", "exo_armor"):
+                if not p.inventory.has(item_id):
+                    p.inventory.add(item_id, 1)
+                p.inventory.equip_item(item_id, p)
+            self._message = "Equipped Exo Weapon and Exo Armor!"
+            self.game.audio.play_sfx("confirm")
+
+        elif index == 3:
+            # Cheat 4: Learn all spells
+            added = 0
+            for sid in self._all_spells:
+                if sid not in p.known_spells:
+                    p.known_spells.append(sid)
+                    added += 1
+            if added:
+                self._message = f"Learned {added} new spell(s)!"
+            else:
+                self._message = "All spells already known."
+            self.game.audio.play_sfx("confirm")
+
+        elif index == 4:
+            # Cheat 5: Toggle always-crit
+            p.always_crit = not p.always_crit
+            state = "ON" if p.always_crit else "OFF"
+            self._message = f"Always-Crit: {state}"
+            self.game.audio.play_sfx("confirm")
+
+        self._message_timer = 2.5
 
     def update(self, dt: float) -> None:
         if self._message_timer > 0:
@@ -237,7 +372,7 @@ class PauseMenuState(BaseState):
 
         # Tab row (always visible)
         tab_x = 8
-        for i, tab_name in enumerate(_TABS):
+        for i, tab_name in enumerate(self._tabs):
             color = YELLOW if i == self._tab_idx else WHITE
             if i == self._tab_idx:
                 bg = pygame.Rect(tab_x - 2, 18, len(tab_name) * _CHAR_W + _CHAR_W, 12)
@@ -271,7 +406,7 @@ class PauseMenuState(BaseState):
             surface.blit(msg_surf, (8, NATIVE_HEIGHT - 24))
 
     def _draw_content(self, surface: pygame.Surface, font: pygame.font.Font, font_sm: pygame.font.Font) -> None:
-        tab = _TABS[self._tab_idx]
+        tab = self._tabs[self._tab_idx]
         content_y = 38
 
         if tab == "Items":
@@ -286,6 +421,8 @@ class PauseMenuState(BaseState):
             self._draw_quests_tab(surface, font, font_sm, content_y)
         elif tab == "Save":
             self._draw_save_tab(surface, font, font_sm, content_y)
+        elif tab == "Cheats":
+            self._draw_cheats_tab(surface, font, font_sm, content_y)
 
     def _draw_items_tab(self, surface: pygame.Surface, font: pygame.font.Font, font_sm: pygame.font.Font, y: int) -> None:
         items = self._get_healing_items()
@@ -438,3 +575,30 @@ class PauseMenuState(BaseState):
                 "Enter: save to selected slot", True, (130, 130, 160)
             )
             surface.blit(hint2, (12, NATIVE_HEIGHT - 35))
+
+    def _draw_cheats_tab(
+        self,
+        surface: pygame.Surface,
+        font: pygame.font.Font,
+        font_sm: pygame.font.Font,
+        y: int,
+    ) -> None:
+        """Render the cheat list with cursor and bottom description."""
+        surface.blit(font_sm.render("\u2605 CHEAT MODE \u2605", True, RED), (12, y))
+        y += 14
+
+        for i, (label, _desc) in enumerate(_CHEATS):
+            is_sel = self._focus == "content" and i == self._cheat_cursor
+            color = YELLOW if is_sel else WHITE
+            prefix = ">" if is_sel else " "
+            if i == 4:
+                # Always-Crit shows live ON/OFF state
+                toggle = "[ON] " if self.player.always_crit else "[OFF]"
+                row = f"{prefix} {label}  {toggle}"
+            else:
+                row = f"{prefix} {label}"
+            surface.blit(font_sm.render(row, True, color), (12, y + i * 12))
+
+        if self._focus == "content":
+            _, desc = _CHEATS[self._cheat_cursor]
+            surface.blit(font_sm.render(desc, True, (200, 160, 200)), (12, NATIVE_HEIGHT - 35))
