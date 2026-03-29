@@ -146,6 +146,26 @@
       "Defeat the Corrupted Beast King at the Black Fortress in the Dark Lands."
     ]
   },
+  "elder_zelda_ref": {
+    "lines": [
+      "It's scary solo, have this!",
+      "Er… as some others might say…",
+      "It's dangerous to go alone, take this!"
+    ]
+  },
+  "elder_zelda_ref_seen": {
+    "lines": [
+      "Remember — it is dangerous to go alone.",
+      "Stay safe out there, young one."
+    ]
+  },
+  "ultros_encounter": {
+    "lines": [
+      "White Knight: A talking octopus..?",
+      "Ultros: What?! You don't know me?! I am the famous ULTROS!",
+      "White Knight: …?"
+    ]
+  },
   "ironhaven_blacksmith_quest": {
     "lines": [
       "Finest steel in the region, forged right here in Ironhaven.",

@@ -16,6 +16,7 @@
   {"id": "nano_potion", "name": "Nano Potion",   "type": "consumable", "effect": "heal_hp", "power": 999, "price": 2000, "description": "Restores 999 HP. (Subterra exclusive)"},
   {"id": "plasma_grenade","name":"Plasma Grenade","type":"battle",     "effect":"non_elemental_all","power":800,"price":1500,"description":"~800 non-elemental damage to all enemies. (Subterra exclusive)"},
   {"id": "stasis_field","name": "Stasis Field",  "type": "battle",     "effect": "sleep_all",   "power": 80, "price": 1000,"description": "80% chance to inflict Sleep on all enemies. (Subterra exclusive)"},
+  {"id": "old_sword",   "name": "Old Sword",     "type": "weapon",     "atk": 3,  "price": 0,    "description": "A rusty old sword gifted by a kindly old man. Better than nothing."},
   {"id": "short_sword", "name": "Short Sword",   "type": "weapon",     "atk": 10, "price": 200,  "description": "A basic iron sword."},
   {"id": "long_sword",  "name": "Long Sword",    "type": "weapon",     "atk": 20, "price": 800,  "description": "A well-forged steel blade."},
   {"id": "broad_sword", "name": "Broad Sword",   "type": "weapon",     "atk": 30, "price": 2000, "description": "A heavy, powerful sword."},

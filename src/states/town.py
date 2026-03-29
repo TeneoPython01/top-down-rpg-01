@@ -204,16 +204,30 @@ class TownState(BaseState):
         self.game.push_state(DialogState(self.game, lines, speaker="Treasure Chest"))
 
     def _start_dialog(self, dialog_id: str) -> None:
+        # If the old man has already given his gift, show the follow-up lines instead.
+        if dialog_id == "elder_zelda_ref" and self.game.quest_flags.get("old_man_sword_given"):
+            dialog_id = "elder_zelda_ref_seen"
         entry = self._dialog.get(dialog_id, {})
         lines: List[str] = entry.get("lines", ["..."])
         from src.states.dialog import DialogState
         on_close = None
+        callback = None
         if dialog_id == "healer_npc":
             player = self.game.player
             def on_close() -> None:  # type: ignore[misc]
                 player.hp = player.max_hp
                 player.mp = player.max_mp
-        self.game.push_state(DialogState(self.game, lines, on_close=on_close))
+        elif dialog_id == "elder_zelda_ref":
+            def callback() -> None:  # type: ignore[misc]
+                self.game.quest_flags.set("old_man_sword_given")
+                self.game.inventory.add("old_sword", 1)
+                from src.systems.inventory import load_items
+                items_data = load_items()
+                sword_name = items_data.get("old_sword", {}).get("name", "Old Sword")
+                self.game.push_state(
+                    DialogState(self.game, [f"Received {sword_name}!"], speaker="Old Man")
+                )
+        self.game.push_state(DialogState(self.game, lines, on_close=on_close, callback=callback))
 
     def _trigger_journal_event(self) -> None:
         """Show the grandmother's journal and grant Exo Weapon + Exo Armor."""
