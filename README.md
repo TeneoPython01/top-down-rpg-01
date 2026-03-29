@@ -31,12 +31,17 @@ post-pandemic fantasy world called the Verdant Plains.
 - Level-up system — stat growth and automatic spell learning
 - Magic system with spells loaded from `data/spells.json`
 - Inventory and equipment system (weapons, armour, accessories)
-- Pause menu with four tabs: **Items**, **Equipment**, **Magic**, **Stats**
+- Pause menu with five tabs: **Items**, **Equipment**, **Magic**, **Stats**, **Save**
 - Inn — pay gold to restore HP and MP fully
+
+### Audio
+- Background music (BGM) for title, overworld, town, battle, boss battle, cutscene, victory, and game over
+- Sound effects (SFX) for menu cursor, confirm/cancel, attack, spell cast, item use, level up, door open, and dialog
+- Audio gracefully degrades — game runs normally when audio files are absent
 
 ### Systems
 - Quest flag system for tracking story progression
-- JSON save / load system (`data/save.json`)
+- JSON save / load system with multiple save slots (accessible from the **Save** tab in the pause menu)
 
 ## Requirements
 - Python 3.10+
@@ -85,7 +90,12 @@ top-down-rpg-01/
 │   ├── dialog.json          # NPC dialog scripts
 │   └── maps/
 │       └── map01.csv        # Overworld tile map (CSV)
-├── assets/                  # Sprites, tilesets, audio (placeholders)
+├── assets/                  # Game assets
+│   ├── music/               # BGM tracks (WAV/OGG)
+│   ├── sfx/                 # Sound effects (WAV)
+│   ├── sprites/             # Player, enemy, and NPC sprites
+│   ├── tilesets/            # Tileset images
+│   └── ui/                  # UI graphics
 └── src/                     # Game source code
     ├── game.py              # Main loop and state-machine manager
     ├── states/
@@ -104,12 +114,13 @@ top-down-rpg-01/
     │   ├── enemy.py         # Enemy entity
     │   └── npc.py           # NPC entity
     ├── systems/
+    │   ├── audio.py         # BGM and SFX manager
     │   ├── battle_engine.py # Damage, hit, and crit formulas
     │   ├── encounter.py     # Random encounter system
     │   ├── magic.py         # Spell definitions and casting logic
     │   ├── inventory.py     # Inventory and equipment management
     │   ├── camera.py        # Camera that follows the player
-    │   ├── save_load.py     # JSON save / load
+    │   ├── save_load.py     # JSON save / load (multiple slots)
     │   └── quest_flags.py   # Story progression flags
     └── ui/
         ├── text_box.py      # Typewriter dialog box with speaker banner

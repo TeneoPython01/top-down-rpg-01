@@ -306,7 +306,7 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 ## Implementation Phases
 
-### Phase 1: Core Engine & Overworld Movement
+### Phase 1: Core Engine & Overworld Movement ✅ COMPLETE
 
 *Goal: Walk around a scrolling tile map*
 
@@ -333,7 +333,7 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 ---
 
-### Phase 2: Battle System
+### Phase 2: Battle System ✅ COMPLETE
 
 *Goal: Random encounters trigger turn-based battles*
 
@@ -375,7 +375,7 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 ---
 
-### Phase 3: Magic & Inventory
+### Phase 3: Magic & Inventory ✅ COMPLETE
 
 *Goal: Cast spells, use items, equip gear*
 
@@ -403,9 +403,11 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 ---
 
-### Phase 4: Towns, NPCs & Shops
+### Phase 4: Towns, NPCs & Shops ✅ COMPLETE
 
 *Goal: Enter towns, talk to NPCs, buy/sell items*
+
+> **Note:** Maps are implemented as hardcoded 2D arrays rather than Tiled TMX files. The `pytmx`/`pyscroll` workflow from the original plan was skipped in favour of a simpler in-code approach. Everything else in this phase is implemented as planned.
 
 **Steps:**
 
@@ -435,29 +437,37 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 ---
 
-### Phase 5: Content, Story & Save System
+### Phase 5: Content, Story & Save System 🔄 PARTIALLY COMPLETE
 
 *Goal: Full game content, story progression, save/load*
 
+**What is done:**
+- Scripted intro cutscene (`src/states/intro.py`): narration panels, animated characters, dialog, skip key
+- Quest flag system (`src/systems/quest_flags.py`)
+- JSON save/load with multiple slots (`src/systems/save_load.py`; Save tab in pause menu)
+- Overworld HUD (`src/ui/hud.py`)
+
+**What remains:**
+
 **Steps:**
 
-1. Create all overworld maps in Tiled — Verdant Plains, Silverwood Forest, Stormcrag Mountains, Dark Lands
-2. Create all town maps — Ashenvale, Ironhaven, Willowmere, **Subterra** (hidden underground city)
-3. Create dungeon maps — Silverwood clearing (Dire Wolf Alpha), Black Fortress, **Subterra Passage** (hidden cave from Stormcrag)
-4. Implement `src/systems/quest_flags.py` — dictionary of boolean flags tracking story events (e.g., `defeated_wolf_alpha`, `visited_ironhaven`, `found_subterra`, `obtained_exo_weapon`), NPCs check flags to change dialog
-5. Implement boss battles — scripted encounters (not random), unique AI patterns:
+1. ❌ Create all overworld maps — currently only one overworld map exists (`data/maps/map01.csv`); Silverwood Forest, Stormcrag Mountains, and Dark Lands maps still needed
+2. ⚠️ Create all town maps — Ashenvale and Ironhaven are implemented; **Willowmere** and **Subterra** (hidden underground city) are not yet built
+3. ❌ Create dungeon maps — Silverwood clearing (Dire Wolf Alpha boss), Black Fortress (final dungeon), and **Subterra Passage** (hidden cave) are not yet implemented
+4. ✅ Implement `src/systems/quest_flags.py` — done; dictionary of boolean flags tracks story events
+5. ❌ Implement boss battles — scripted encounters (not random), unique AI patterns:
    - Dire Wolf Alpha: multi-hit attacks, summons regular wolves
    - Black Knight Lieutenant: uses sword skills + dark magic
    - Corrupted Beast King: high HP, alternates physical/magic phases
    - The Black Knight: multi-phase fight, heals once, full spell kit
    - Crystal Sentinel (Subterra Passage mini-boss): immune to magic, high HP, guards Subterra entrance
-6. Write all NPC dialog for each town, update based on quest flags
-7. **Subterra content:** hidden wall interaction in Stormcrag, passage with unique enemies (Cave Crawler, Pale Lurker), Subterra town map with Elder Marek, Archivist Lena, Merchant Dax (unique shop), ancestral home with journal + Exo Weapon + Exo Armor
-8. Implement `src/systems/save_load.py` — serialize player stats, inventory, position, quest flags to JSON file. Save at save points (glowing crystals on map) or via menu. Load from title screen.
-9. Implement map transitions — walk to edge of map or onto transition tile, fade out, load new map, fade in, position player at correct entry point
-10. Implement `src/ui/hud.py` — minimal overworld HUD (HP/MP bars, current area name)
-11. Add encounter table variety — `data/encounters.json` defines which enemies appear in which map zones, with level-appropriate groupings (including Subterra Passage zone)
-12. Balance pass — adjust XP curves, gold rewards, shop prices, enemy stats. Ensure Exo equipment is clearly best-in-game but the game is completable without it.
+6. ⚠️ Write all NPC dialog for each town, update based on quest flags — intro cutscene dialog and basic NPC lines exist; full story-driven, flag-reactive dialog not yet written
+7. ❌ **Subterra content** — hidden wall in Stormcrag, passage with unique enemies (Cave Crawler, Pale Lurker), Subterra town map with Elder Marek, Archivist Lena, Merchant Dax, ancestral home with journal + Exo Weapon + Exo Armor
+8. ✅ Implement `src/systems/save_load.py` — done; multiple slots, accessible via Save tab in the pause menu
+9. ❌ Full map transitions — within-town and town↔overworld transitions work; cross-area transitions (e.g. overworld → Silverwood Forest, → Stormcrag Mountains) not yet implemented
+10. ✅ Implement `src/ui/hud.py` — done; shows HP/MP bars and current area name
+11. ⚠️ Encounter table variety — `data/encounters.json` exists with zone tables; needs updating as new map zones are added
+12. ❌ Balance pass — requires all content to be in place first
 
 **Verification:**
 
@@ -478,22 +488,30 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 ---
 
-### Phase 6: Audio, Polish & Final
+### Phase 6: Audio, Polish & Final 🔄 PARTIALLY COMPLETE
 
 *Goal: Complete, polished game*
 
+**What is done:**
+- `src/systems/audio.py` — `AudioManager` supports BGM streaming and pre-loaded SFX, fails silently when files are absent
+- BGM tracks present in `assets/music/`: title, overworld, town, battle, boss_battle, cutscene, victory, game_over (WAV)
+- SFX present in `assets/sfx/`: cursor, confirm, cancel, attack_hit, spell_cast, item_use, level_up, door_open, dialog_open, dialog_close (WAV)
+- Opening intro cutscene (`src/states/intro.py`) with narration panels and animated character sequence
+
+**What remains:**
+
 **Steps:**
 
-1. Add background music — title theme, overworld theme, town theme, battle theme, boss theme, victory fanfare, game over
-2. Add sound effects — menu cursor, confirm, cancel, attack hit, spell cast, item use, level up, door open
-3. Add battle animations — attack slash effect, spell visual effects (fire burst, ice crystals, lightning bolt), damage flash on enemies
-4. Add screen transitions — fade to/from black between maps and battle entry/exit
-5. Implement battle intro — FF-style screen swirl/shatter effect transitioning from overworld to battle
-6. Add text for all dialog, story events, item descriptions
-7. Add opening crawl / intro sequence explaining the world's backstory
-8. Final balance testing — play through entire game, adjust numbers
-9. Polish: consistent UI styling, cursor animations, particle effects for magic
-10. Create placeholder pixel art for all sprites, tilesets, UI (or source free assets)
+1. ✅ Add background music — `AudioManager` + WAV files in `assets/music/` cover all planned tracks
+2. ✅ Add sound effects — all planned SFX WAV files present and hooked into `AudioManager`
+3. ❌ Battle animations — attack slash, spell visual effects (fire burst, ice crystals, lightning bolt), damage flash on hit enemies
+4. ⚠️ Screen transitions — basic fade is present for battle entry/exit; cross-map fade transitions not yet implemented
+5. ❌ Battle intro — FF-style screen swirl/shatter effect when entering combat
+6. ⚠️ Dialog and item descriptions — intro and basic NPC lines exist; full story dialog and flavour text for all items not yet written
+7. ✅ Opening crawl / intro sequence — implemented as `src/states/intro.py` (narration panels + animated cutscene)
+8. ❌ Final balance testing — requires complete content (Phase 5) before this is meaningful
+9. ❌ Polish pass — consistent UI styling, cursor animations, particle effects for magic
+10. ⚠️ Pixel art assets — placeholder procedural art is used; free tileset/sprite packs from OpenGameArt/itch.io have not yet been integrated
 
 **Verification:**
 
@@ -528,8 +546,33 @@ None on the main storyline. No NPCs outside Subterra reference it. The Black Kni
 
 - **Party-ready battle engine** — Battle engine supports N combatants on player side from day one. Initially only the White Knight fights solo, but the architecture allows adding party members later without refactoring.
 - **Pygame-CE over vanilla Pygame** — more actively maintained, better performance, more features.
-- **pytmx + pyscroll** for maps — industry-standard Tiled workflow, efficient scrolling. Phase 1 uses simple arrays; Phase 4 upgrades to TMX.
+- **pytmx + pyscroll** for maps — originally planned for Phase 4 upgrade; currently using hardcoded 2D arrays which are simpler to maintain for a small game. TMX upgrade remains an option if maps become large or complex enough to warrant it.
 - **JSON for game data** — easy to edit, no database needed, version-controllable.
 - **16x16 tiles, 3x scale** — authentic SNES feel at 768×672 window (48×42 tiles visible).
 - **Art assets** — Free tilesets from OpenGameArt / itch.io to unblock development. Replace with custom art later.
 - **Audio assets** — Free chiptune/RPG music packs from itch.io / OpenGameArt initially.
+
+---
+
+## Future Ideas & Stretch Goals
+
+These are features not in the original six-phase plan but worth considering once the core game is complete:
+
+### Gameplay Enhancements
+- **Party members** — The battle engine already supports N combatants. Add 1–2 companion characters (e.g. the traveling healer NPC from Act 2) who join the party and can be controlled in battle.
+- **Crafting system** — Combine raw materials found in the world into consumables or upgrade components for equipment.
+- **Fishing / foraging mini-game** — Low-stakes exploration activity near water/forest tiles that yields consumable ingredients.
+- **New Game+** — After finishing the game, restart with all stats and equipment carried over, with enemy HP/damage scaled up.
+
+### World & Story
+- **Willowmere** — The third town (lakeside hamlet, magic shop, inn) planned in the original story but not yet built.
+- **Act 2 & Act 3 maps** — Silverwood Forest, Stormcrag Mountains, Dark Lands overworld tiles, and the Black Fortress dungeon.
+- **Companion NPC quests** — Short personal questlines for each party companion that expand their backstory.
+- **Branching dialog choices** — Player responses that can shift NPC attitudes or unlock alternate routes through a conversation.
+
+### Technical & Polish
+- **Controller support** — Map gamepad buttons via pygame's joystick API; show button glyphs in the HUD when a controller is detected.
+- **Accessibility options** — Configurable text speed, toggle for reduced-motion (disable screen shakes/flashes), font size scaling.
+- **Achievements / journal** — In-game codex tracking enemies defeated, areas explored, and optional challenges completed.
+- **Procedural dungeon floors** — Optional: one or more "infinite" bonus dungeons generated at runtime for extended replayability.
+- **Localization support** — Externalize all display strings into a locale JSON file to support multiple languages.
