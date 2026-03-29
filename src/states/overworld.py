@@ -133,6 +133,9 @@ class OverworldState(BaseState):
         self._town_cooldown = 0.0
         # Only show the intro scene once per OverworldState instance.
         self._intro_shown = player is not None or zone_name != "verdant_plains"
+        # When set, enter() will reposition the player just outside this tile
+        # (used to land the player near the town entrance after exiting a town).
+        self._return_tile: tuple[int, int] | None = None
 
         # ── Dialog / NPC data ─────────────────────────────────────────────────
         dialog_path = os.path.join(DATA_DIR, "dialog.json")
@@ -157,6 +160,13 @@ class OverworldState(BaseState):
 
         # Zone-entry quest activation and completion flags.
         self._handle_zone_entry_quests()
+
+        # Returning from a town: place the player on the tile just outside the
+        # town entrance so they don't land at the town's internal spawn position.
+        if self._return_tile is not None:
+            col, row = self._return_tile
+            self._return_tile = None
+            self._place_player_outside_tile(col, row)
 
         if not self._intro_shown:
             self._intro_shown = True
@@ -192,6 +202,7 @@ class OverworldState(BaseState):
         if tile_id == TILE_TOWN:
             town_name = self.tilemap.town_entrances.get((col, row), "")
             if town_name:
+                self._return_tile = (col, row)
                 from src.states.town import TownState
                 self.game.push_state(TownState(self.game, town_name))
 
@@ -253,6 +264,24 @@ class OverworldState(BaseState):
                 if hw_data:
                     self._trigger_hidden_wall(hw_data)
                     return
+
+    def _place_player_outside_tile(self, col: int, row: int) -> None:
+        """Move the player to a walkable tile adjacent to (col, row).
+
+        Used when returning from a town so the player appears just outside
+        the town entrance rather than at the town's internal spawn position.
+        Tries south, east, west, north in that order.
+        """
+        blocked = {TILE_WALL, TILE_WATER, TILE_TOWN}
+        for dc, dr in ((0, 1), (1, 0), (-1, 0), (0, -1)):
+            nc, nr = col + dc, row + dr
+            if self.tilemap.tile_at(nc, nr) not in blocked:
+                _margin = (TILE_SIZE - PLAYER_SIZE) // 2
+                _px = nc * TILE_SIZE + _margin
+                _py = nr * TILE_SIZE + _margin
+                self.player.pos = pygame.Vector2(_px, _py)
+                self.player.rect.topleft = (round(_px), round(_py))
+                return
 
     def _trigger_hidden_wall(self, hw_data: Dict[str, Any]) -> None:
         """Handle a hidden wall interaction (secret passage)."""
