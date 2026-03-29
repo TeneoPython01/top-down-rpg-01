@@ -146,6 +146,10 @@ class Player(pygame.sprite.Sprite):
         # Combat buffs/debuffs: stat → (multiplier, turns remaining)
         self.buffs: Dict[str, list] = {}
 
+        # Cheat-mode flags (persistent across saves)
+        self.cheat_unlocked: bool = False
+        self.always_crit: bool = False
+
         # Inventory and equipment
         self.inventory = Inventory()
         # Start with a couple of potions
@@ -231,6 +235,8 @@ class Player(pygame.sprite.Sprite):
             "pos_x": float(self.pos.x),
             "pos_y": float(self.pos.y),
             "direction": self.direction,
+            "cheat_unlocked": self.cheat_unlocked,
+            "always_crit": self.always_crit,
         }
 
     @classmethod
@@ -276,6 +282,8 @@ class Player(pygame.sprite.Sprite):
         player._target_col = spawn_col
         player._target_row = spawn_row
         player.direction = data.get("direction", DIR_DOWN)
+        player.cheat_unlocked = bool(data.get("cheat_unlocked", False))
+        player.always_crit = bool(data.get("always_crit", False))
 
         return player
 
