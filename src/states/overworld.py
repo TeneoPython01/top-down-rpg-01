@@ -582,6 +582,65 @@ class OverworldState(BaseState):
         if enemies:
             self.game.push_state(BattleState(self.game, enemies, self.player))
 
+    def _build_minimap_surf(self) -> pygame.Surface:
+        """Pre-render the current zone's tiles into a small corner mini-map surface.
+
+        Each tile is drawn as a MINIMAP_TILE_SIZE × MINIMAP_TILE_SIZE pixel square
+        using the same TILE_COLORS palette as the main tilemap.
+        The returned surface has per-pixel alpha so it can be blended transparently.
+        """
+        ts = MINIMAP_TILE_SIZE
+        mini_w = self.tilemap.width * ts
+        mini_h = self.tilemap.height * ts
+        surf = pygame.Surface((mini_w, mini_h), pygame.SRCALPHA)
+        surf.fill((0, 0, 0, 0))
+        for row, row_data in enumerate(self.tilemap.data):
+            for col, tile_id in enumerate(row_data):
+                color = TILE_COLORS.get(tile_id, TILE_COLORS[0])
+                pygame.draw.rect(surf, color, (col * ts, row * ts, ts, ts))
+        return surf
+
+    def _draw_minimap(self, surface: pygame.Surface) -> None:
+        """Blit the corner mini-map in the bottom-right, with a player dot and border."""
+        if self._minimap_surf is None:
+            self._minimap_surf = self._build_minimap_surf()
+
+        ts = MINIMAP_TILE_SIZE
+        mini_w = self._minimap_surf.get_width()
+        mini_h = self._minimap_surf.get_height()
+        pad = MINIMAP_PADDING
+
+        # Bottom-right position (leave room for the bottom hint bar ~10 px tall)
+        ox = NATIVE_WIDTH - mini_w - pad
+        oy = NATIVE_HEIGHT - mini_h - pad - 12  # 12 px above the bottom hint bar
+
+        # Semi-transparent background
+        bg = pygame.Surface((mini_w, mini_h), pygame.SRCALPHA)
+        bg.fill((0, 0, 0, 160))
+        surface.blit(bg, (ox, oy))
+
+        # Tile colours at reduced alpha
+        map_copy = self._minimap_surf.copy()
+        map_copy.set_alpha(MINIMAP_ALPHA)
+        surface.blit(map_copy, (ox, oy))
+
+        # Player dot
+        px = int(self.player._tile_col * ts + ts // 2)
+        py = int(self.player._tile_row * ts + ts // 2)
+        pygame.draw.rect(
+            surface,
+            MINIMAP_PLAYER_COLOR,
+            (ox + px - 1, oy + py - 1, 3, 3),
+        )
+
+        # Border
+        pygame.draw.rect(
+            surface,
+            MINIMAP_BORDER_COLOR,
+            (ox - 1, oy - 1, mini_w + 2, mini_h + 2),
+            1,
+        )
+
     def _draw_hud(self, surface: pygame.Surface) -> None:
         """Draw the in-world heads-up display."""
         font = pygame.font.SysFont("monospace", 7)
@@ -595,7 +654,7 @@ class OverworldState(BaseState):
         surface.blit(hud_surf, (4, 14))
 
         hint_surf = font.render(
-            "WASD/Arrows: move  Z: talk  ESC: menu", True, (160, 160, 160)
+            "WASD/Arrows: move  Z: talk  M: map  ESC: menu", True, (160, 160, 160)
         )
         surface.blit(hint_surf, (4, NATIVE_HEIGHT - 10))
 
@@ -641,3 +700,6 @@ class OverworldState(BaseState):
                         surface.blit(lbl, lbl.get_rect(centerx=NATIVE_WIDTH // 2, top=4))
                         break
 
+        # Corner mini-map (bottom-right), drawn last so it sits on top of the world.
+        if self._minimap_visible:
+            self._draw_minimap(surface)
