@@ -23,19 +23,22 @@ post-pandemic fantasy world called the Verdant Plains.
   - Phase 2: animated characters move and speak on the overworld map
   - Press **\\** (Backslash) at any time to skip the entire intro
 - Typewriter dialog boxes with speaker banners
+- **Corner mini-map** overlay on the overworld (press **M** to toggle); full-screen world map with zone labels and player marker
 
 ### Battle System
 - Step-based **random encounter** system on grassland tiles
 - **Turn-based battle** with a Speed-based turn queue
 - Player battle commands: **Attack**, **Magic**, **Item**, **Defend**, **Flee**
 - Status effects (e.g. Blind) that affect hit rates
+- **Floating damage / healing numbers** animate above targets in battle
+- **Battle speed setting** — Normal, Fast, or Instant to reduce animation wait time
 
 ### RPG Progression
 - Full RPG stats: HP, MP, STR, DEF, MAG, MDF, SPD, LCK, Gold
 - Level-up system — stat growth and automatic spell learning
 - Magic system with spells loaded from `data/spells.json`
 - Inventory and equipment system (weapons, armour, accessories)
-- Pause menu with six tabs: **Items**, **Equipment**, **Magic**, **Stats**, **Quests**, **Save**
+- Pause menu with seven tabs: **Items**, **Equipment**, **Magic**, **Stats**, **Quests**, **Save**, **Options**
   - Secret **Cheats** tab unlockable via the Konami code (↑↑↓↓←→←→) while viewing the Quests tab
 - Inn — pay gold to restore HP and MP fully
 - **Quest log** — track active objectives and collect gold, item, and spell rewards on completion
@@ -49,6 +52,7 @@ post-pandemic fantasy world called the Verdant Plains.
 - Quest flag system for tracking story progression
 - Quest log — full objectives, flag-driven completion, and rewards (`data/quests.json`)
 - JSON save / load system with multiple save slots (accessible from the **Save** tab in the pause menu)
+- **Options / Settings menu** — adjust music volume, SFX volume, battle speed, and text speed; settings are persisted to `data/config.json` and loaded at startup. Accessible from the title screen and the pause menu's **Options** tab.
 
 ## Requirements
 - Python 3.10+
@@ -77,6 +81,7 @@ python run.py
 | A / ← | Move left |
 | D / → | Move right |
 | Z / Enter | Interact with NPC / Confirm menu selection |
+| M | Toggle mini-map overlay (overworld) |
 | Esc | Open pause menu / Go back |
 | \\ (Backslash) | Skip intro cutscene |
 
@@ -116,6 +121,8 @@ top-down-rpg-01/
     │   ├── inn.py           # Inn (rest to restore HP/MP)
     │   ├── dialog.py        # Dialog overlay
     │   ├── pause_menu.py    # Pause / inventory menu
+    │   ├── options.py       # Options / Settings menu
+    │   ├── world_map.py     # Full-screen world map
     │   ├── fade.py          # Fade-to-black screen transition overlay
     │   └── game_over.py     # Game over screen
     ├── entities/
@@ -125,6 +132,7 @@ top-down-rpg-01/
     ├── systems/
     │   ├── audio.py         # BGM and SFX manager
     │   ├── battle_engine.py # Damage, hit, and crit formulas
+    │   ├── config.py        # Persistent player-adjustable options
     │   ├── encounter.py     # Random encounter system
     │   ├── magic.py         # Spell definitions and casting logic
     │   ├── inventory.py     # Inventory and equipment management
@@ -136,7 +144,8 @@ top-down-rpg-01/
         ├── text_box.py      # Typewriter dialog box with speaker banner
         ├── menu.py          # Reusable menu widget
         ├── hud.py           # In-game HUD
-        └── battle_hud.py    # Battle HUD
+        ├── battle_hud.py    # Battle HUD
+        └── floating_text.py # Floating damage / heal numbers in battle
 ```
 
 ## Tile IDs

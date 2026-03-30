@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Callable, Optional
 import pygame
 
 from src.states.base_state import BaseState
+from src.systems.config import TEXT_SPEED_VALUES
 from src.ui.text_box import TextBox
 
 if TYPE_CHECKING:
@@ -54,11 +55,17 @@ class DialogState(BaseState):
         self._text_box: Optional[TextBox] = None
         self._callback = callback
 
+    def _text_speed(self) -> int:
+        """Return the configured typewriter chars-per-frame speed."""
+        idx = int(self.game.config.get("text_speed", 1))
+        idx = max(0, min(idx, len(TEXT_SPEED_VALUES) - 1))
+        return TEXT_SPEED_VALUES[idx]
+
     def enter(self) -> None:
         self._index = 0
         self.game.audio.play_sfx("dialog_open")
         if self._lines:
-            self._text_box = TextBox(self._lines[0], speaker=self._speaker)
+            self._text_box = TextBox(self._lines[0], speaker=self._speaker, speed=self._text_speed())
         else:
             self._finish()
 
@@ -78,7 +85,7 @@ class DialogState(BaseState):
         self._index += 1
         if self._index < len(self._lines):
             self._text_box = TextBox(
-                self._lines[self._index], speaker=self._speaker
+                self._lines[self._index], speaker=self._speaker, speed=self._text_speed()
             )
         else:
             self.game.audio.play_sfx("dialog_close")

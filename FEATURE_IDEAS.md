@@ -152,7 +152,7 @@
 ---
 
 ### 12. Mini-Map / World Map
-**Status:** `Not Started`
+**Status:** `Complete`
 
 **Description:** Press `M` to toggle a mini-map overlay (corner HUD) or full-screen world map showing explored zones, towns, and the player's current position.
 
@@ -165,7 +165,7 @@
 ---
 
 ### 13. Floating Damage Numbers
-**Status:** `Not Started`
+**Status:** `Complete`
 
 **Description:** Display animated damage and healing numbers that float upward and fade out above the affected target in battle.
 
@@ -214,7 +214,7 @@
 ---
 
 ### 17. Battle Speed Setting
-**Status:** `Not Started`
+**Status:** `Complete`
 
 **Description:** Let the player choose battle animation speed (Normal / Fast / Instant) via the Options menu to reduce grind time.
 
@@ -237,7 +237,7 @@
 ---
 
 ### 19. Options / Settings Menu
-**Status:** `Not Started`
+**Status:** `Complete`
 
 **Description:** In-game screen for adjusting music volume, SFX volume, window scale, battle speed, and text speed without editing code.
 
@@ -645,14 +645,14 @@
 | 9 | Arena / Coliseum | Gameplay | Not Started |
 | 10 | Mounts / Transportation | Gameplay | Not Started |
 | 11 | Animated Sprite Tilesets | UI/UX | Not Started |
-| 12 | Mini-Map / World Map | UI/UX | Not Started |
-| 13 | Floating Damage Numbers | UI/UX | Not Started |
+| 12 | Mini-Map / World Map | UI/UX | Complete |
+| 13 | Floating Damage Numbers | UI/UX | Complete |
 | 14 | Achievement System | UI/UX | Not Started |
 | 15 | Bestiary | UI/UX | Not Started |
 | 16 | Dialog Choice Trees | UI/UX | Not Started |
-| 17 | Battle Speed Setting | UI/UX | Not Started |
+| 17 | Battle Speed Setting | UI/UX | Complete |
 | 18 | Controller / Gamepad Support | UI/UX | Not Started |
-| 19 | Options / Settings Menu | UI/UX | Not Started |
+| 19 | Options / Settings Menu | UI/UX | Complete |
 | 20 | Animated Battle Backgrounds | UI/UX | Not Started |
 | 21 | Multi-Phase Boss Fights | Combat | Not Started |
 | 22 | Elemental Combo System | Combat | Not Started |

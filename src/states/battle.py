@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any, Callable, List, Optional
 import pygame
 
 from settings import (
+    BATTLE_SPEED_VALUES,
     BLACK,
     CYAN,
     DARK_BLUE,
@@ -181,12 +182,22 @@ class BattleState(BaseState):
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
+    @property
+    def _speed_mult(self) -> float:
+        """Return the current battle-speed multiplier from player config.
+
+        Higher = faster (durations are divided by this value).
+        """
+        idx = int(self.game.config.get("battle_speed", 0))
+        idx = max(0, min(idx, len(BATTLE_SPEED_VALUES) - 1))
+        return BATTLE_SPEED_VALUES[idx]
+
     def enter(self) -> None:
         self.player._defending = False
         is_boss = any(getattr(e, "boss", False) for e in self.enemies)
         self.game.audio.play_music("boss_battle" if is_boss else "battle")
         self._phase = _Phase.INTRO
-        self._intro_timer = self._INTRO_DURATION
+        self._intro_timer = self._INTRO_DURATION / self._speed_mult
 
     # ── Spell / item submenu helpers ──────────────────────────────────────────
 
@@ -698,7 +709,7 @@ class BattleState(BaseState):
         callback: Optional[Callable] = None,
     ) -> None:
         self._message = text
-        self._msg_timer = duration
+        self._msg_timer = duration / self._speed_mult
         self._msg_callback = callback
         self._phase = _Phase.MSG
 
@@ -726,12 +737,12 @@ class BattleState(BaseState):
             idx = 0
         ex = 16 + idx * 56
         ey = 16
-        self._anims.append(_Anim(ex, ey, 28, 28, color, 0.35, label=label))
+        self._anims.append(_Anim(ex, ey, 28, 28, color, 0.35 / self._speed_mult, label=label))
 
     def _fire_anim_on_player(self, element: str) -> None:
         """Queue a short visual flash on the player panel strip (incoming damage)."""
         color = _ANIM_COLORS.get(element, (200, 200, 200))
-        self._anims.append(_Anim(0, NATIVE_HEIGHT - 58, NATIVE_WIDTH, 8, color, 0.30))
+        self._anims.append(_Anim(0, NATIVE_HEIGHT - 58, NATIVE_WIDTH, 8, color, 0.30 / self._speed_mult))
 
     # ── Floating damage / heal helpers ─────────────────────────────────────────
 

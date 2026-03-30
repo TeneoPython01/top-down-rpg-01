@@ -86,6 +86,16 @@ UNARMED_ATTACK_POWER = 3       # default weapon power when no weapon is equipped
 # ── Encounters ────────────────────────────────────────────────────────────────
 ENCOUNTER_RATE_VARIANCE = 0.50  # ±50% of encounter_rate for threshold rolling
 
+# ── Battle speed ─────────────────────────────────────────────────────────────
+BATTLE_SPEED_NORMAL  = 1.0   # animation duration multiplier at Normal speed
+BATTLE_SPEED_FAST    = 2.0   # animation duration multiplier at Fast speed
+BATTLE_SPEED_INSTANT = 20.0  # animation duration multiplier at Instant speed
+BATTLE_SPEED_LABELS  = ["Normal", "Fast", "Instant"]  # index maps to multiplier list
+BATTLE_SPEED_VALUES  = [BATTLE_SPEED_NORMAL, BATTLE_SPEED_FAST, BATTLE_SPEED_INSTANT]
+
+# ── Options / config ──────────────────────────────────────────────────────────
+CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
+
 # ── UI ────────────────────────────────────────────────────────────────────────
 DIALOG_BOX_HEIGHT = 56      # native pixels
 DIALOG_PADDING = 6

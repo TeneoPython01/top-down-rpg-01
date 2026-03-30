@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from src.game import Game
 
 # Main-menu option labels
-_MAIN_OPTIONS = ["New Game", "Load Game", "Quit"]
+_MAIN_OPTIONS = ["New Game", "Load Game", "Options", "Quit"]
 
 
 class TitleState(BaseState):
@@ -88,6 +88,9 @@ class TitleState(BaseState):
             elif choice == "Load Game":
                 self.game.audio.play_sfx("confirm")
                 self._open_load_menu()
+            elif choice == "Options":
+                self.game.audio.play_sfx("confirm")
+                self._open_options()
             elif choice == "Quit":
                 self.game.running = False
         elif event.key == pygame.K_ESCAPE:
@@ -127,6 +130,10 @@ class TitleState(BaseState):
         self._slot_infos = [get_slot_info(i) for i in range(1, NUM_SAVE_SLOTS + 1)]
         self._load_cursor = 0
         self._mode = "load"
+
+    def _open_options(self) -> None:
+        from src.states.options import OptionsState
+        self.game.push_state(OptionsState(self.game))
 
     def _load_slot(self, slot: int) -> None:
         from src.systems.save_load import load_from_slot, apply_save_to_game
