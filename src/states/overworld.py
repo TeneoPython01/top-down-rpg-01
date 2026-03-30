@@ -99,6 +99,7 @@ class OverworldState(BaseState):
             dungeon_entries=zone_data["dungeon_entries"],
             hidden_walls=zone_data["hidden_walls"],
             chest_tiles=zone_data.get("chest_tiles", {}),
+            godzilla_tiles=zone_data.get("godzilla_tiles", frozenset()),
         )
 
         # Reuse an existing player or create a fresh one.
@@ -528,15 +529,19 @@ class OverworldState(BaseState):
             return
 
         if self._encounter.step():
-            self._trigger_encounter()
+            if new_tile in self.tilemap.godzilla_tiles:
+                self._trigger_encounter(zone_override="godzilla_lair")
+            else:
+                self._trigger_encounter()
 
-    def _trigger_encounter(self) -> None:
+    def _trigger_encounter(self, zone_override: str | None = None) -> None:
         """Pick a random enemy group for the current zone and start a battle."""
         from src.states.battle import BattleState
         from src.entities.enemy import Enemy
 
         self._ensure_data_loaded()
-        zone_data = self._encounters_data.get("zones", {}).get(self._zone, {})
+        zone_key = zone_override if zone_override is not None else self._zone
+        zone_data = self._encounters_data.get("zones", {}).get(zone_key, {})
         groups = zone_data.get("groups", [])
         if not groups:
             return

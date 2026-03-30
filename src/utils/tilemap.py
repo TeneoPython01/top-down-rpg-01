@@ -329,6 +329,7 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         },
         "display_name": "Dark Lands",
         "encounter_zone": "dark_lands",
+        "godzilla_tiles": frozenset({(18, 13), (19, 13), (18, 14), (19, 14)}),
     },
     "subterra_passage": {
         "map": SUBTERRA_PASSAGE_MAP,
@@ -390,6 +391,7 @@ class TileMap:
         dungeon_entries: Optional[Dict[Tuple[int, int], Dict[str, Any]]] = None,
         hidden_walls: Optional[Dict[Tuple[int, int], Dict[str, Any]]] = None,
         chest_tiles: Optional[Dict[Tuple[int, int], Dict[str, Any]]] = None,
+        godzilla_tiles: Optional[frozenset] = None,
     ) -> None:
         self.data: List[List[int]] = data if data is not None else DEFAULT_MAP
         self.spawn: Tuple[int, int] = spawn if spawn is not None else DEFAULT_SPAWN
@@ -407,6 +409,9 @@ class TileMap:
         )
         self.chest_tiles: Dict[Tuple[int, int], Dict[str, Any]] = (
             chest_tiles if chest_tiles is not None else {}
+        )
+        self.godzilla_tiles: frozenset = (
+            godzilla_tiles if godzilla_tiles is not None else frozenset()
         )
         self.height = len(self.data)
         self.width = max(len(row) for row in self.data)
