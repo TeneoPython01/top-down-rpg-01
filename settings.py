@@ -26,6 +26,7 @@ TILE_ZONE_EXIT = 5  # transition to another overworld zone
 TILE_DUNGEON = 6    # dungeon / boss arena entrance
 TILE_HIDDEN = 7     # hidden interactable tile (e.g. Subterra secret wall)
 TILE_CHEST = 8      # treasure chest (walkable, triggers chest event)
+TILE_LORE = 9       # lore-book / readable object (walkable, triggers lore reader)
 
 # ── Player ────────────────────────────────────────────────────────────────────
 PLAYER_SPEED = 80        # pixels per second (native resolution)
@@ -67,6 +68,7 @@ TILE_COLORS = {
     TILE_DUNGEON: (120, 30, 30),     # dark red — dungeon entrance
     TILE_HIDDEN: (80, 60, 50),       # same as wall — visually blends in
     TILE_CHEST: (180, 130, 40),      # golden-brown — treasure chest
+    TILE_LORE: (160, 100, 200),      # purple-blue — lore book / stone tablet
 }
 
 # ── Paths ─────────────────────────────────────────────────────────────────────

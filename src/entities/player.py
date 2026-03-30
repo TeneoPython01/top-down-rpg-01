@@ -153,6 +153,9 @@ class Player(pygame.sprite.Sprite):
         # Zones the player has visited (used by the mini-map / world map)
         self.visited_zones: set = {"verdant_plains"}
 
+        # Lore entries the player has collected (set of lore entry IDs)
+        self.collected_lore: set = set()
+
         # Inventory and equipment
         self.inventory = Inventory()
         # Start with a couple of potions
@@ -241,6 +244,7 @@ class Player(pygame.sprite.Sprite):
             "cheat_unlocked": self.cheat_unlocked,
             "always_crit": self.always_crit,
             "visited_zones": list(self.visited_zones),
+            "collected_lore": list(self.collected_lore),
         }
 
     @classmethod
@@ -289,6 +293,7 @@ class Player(pygame.sprite.Sprite):
         player.cheat_unlocked = bool(data.get("cheat_unlocked", False))
         player.always_crit = bool(data.get("always_crit", False))
         player.visited_zones = set(data.get("visited_zones", ["verdant_plains"]))
+        player.collected_lore = set(data.get("collected_lore", []))
 
         return player
 
