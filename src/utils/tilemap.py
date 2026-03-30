@@ -355,6 +355,11 @@ def get_zone_data(zone_name: str) -> Dict[str, Any]:
     return _ZONES[zone_name]
 
 
+def get_all_zones() -> Dict[str, Dict[str, Any]]:
+    """Return the full zone registry (read-only view)."""
+    return _ZONES
+
+
 
 
 

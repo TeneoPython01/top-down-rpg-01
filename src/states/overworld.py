@@ -17,10 +17,16 @@ import pygame
 
 from settings import (
     DATA_DIR,
+    MINIMAP_ALPHA,
+    MINIMAP_BORDER_COLOR,
+    MINIMAP_PADDING,
+    MINIMAP_PLAYER_COLOR,
+    MINIMAP_TILE_SIZE,
     NATIVE_HEIGHT,
     NATIVE_WIDTH,
     PLAYER_SIZE,
     TILE_CHEST,
+    TILE_COLORS,
     TILE_DUNGEON,
     TILE_HIDDEN,
     TILE_SIZE,
@@ -155,12 +161,22 @@ class OverworldState(BaseState):
         # ── Zone-specific area display name ───────────────────────────────────
         self._display_name: str = zone_data.get("display_name", zone_name.replace("_", " ").title())
 
+        # ── Mini-map ──────────────────────────────────────────────────────────
+        # Whether the corner mini-map overlay is currently visible (toggle with M).
+        self._minimap_visible: bool = False
+        # Pre-rendered mini-map surface for the current zone (built lazily).
+        self._minimap_surf: pygame.Surface | None = None
+
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
     def enter(self) -> None:
         self._town_cooldown = TOWN_ENTRY_COOLDOWN
         self.game.current_location = f"overworld:{self._zone_name}"
         self.game.audio.play_music("overworld")
+
+        # Record this zone as visited on the player for the world map.
+        if hasattr(self.player, "visited_zones"):
+            self.player.visited_zones.add(self._zone_name)
 
         # Zone-entry quest activation and completion flags.
         self._handle_zone_entry_quests()
@@ -185,6 +201,16 @@ class OverworldState(BaseState):
                 self.game.push_state(PauseMenuState(self.game, self.player))
             elif event.key in (pygame.K_z, pygame.K_RETURN):
                 self._try_interact()
+            elif event.key == pygame.K_m:
+                if not self._minimap_visible:
+                    self._minimap_visible = True
+                else:
+                    # Second press: open full-screen world map
+                    self._minimap_visible = False
+                    from src.states.world_map import WorldMapState
+                    self.game.push_state(
+                        WorldMapState(self.game, self.player, self._zone_name)
+                    )
 
     # ── Update ────────────────────────────────────────────────────────────────
 

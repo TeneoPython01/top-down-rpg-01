@@ -12,6 +12,7 @@ Phase 6 additions
 from __future__ import annotations
 
 import enum
+import re
 import random
 from typing import TYPE_CHECKING, Any, Callable, List, Optional
 
@@ -40,6 +41,7 @@ from src.systems.battle_engine import (
     turn_order,
 )
 from src.ui.menu import Menu
+from src.ui.floating_text import FloatingText
 from src.systems import battle_engine, magic as magic_sys
 from src.systems.inventory import load_items
 
@@ -61,6 +63,17 @@ _ANIM_COLORS: dict = {
     "non_elemental": (200, 200, 200),
     "physical":      (255, 255, 255),
 }
+
+
+def _parse_amount(msg: str) -> int:
+    """Extract the first integer from a battle message string.
+
+    Used to obtain the damage or heal amount from messages returned by
+    ``cast_spell`` and ``apply_battle_item`` so floating numbers can be
+    spawned without changing those APIs.  Returns 0 if no integer is found.
+    """
+    m = re.search(r"(\d+)", msg)
+    return int(m.group(1)) if m else 0
 
 
 class _Phase(enum.Enum):
@@ -163,6 +176,9 @@ class BattleState(BaseState):
         # Phase-6: active battle animations
         self._anims: List[_Anim] = []
 
+        # Floating damage / healing numbers
+        self._floating_texts: List[FloatingText] = []
+
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
     def enter(self) -> None:
@@ -263,6 +279,7 @@ class BattleState(BaseState):
             actual = target.take_damage(dmg)
             self.game.audio.play_sfx("attack_hit")
             self._fire_anim_on(target, "physical", label="SLASH")
+            self._spawn_float_on_enemy(target, dmg)
             msg = f"{self.player.name} attacks!  -{actual} HP"
             if crit:
                 msg = "CRITICAL HIT!  " + msg
@@ -300,8 +317,14 @@ class BattleState(BaseState):
             element = spell_data.get("element") or "non_elemental"
             if target_type.startswith("enemy"):
                 self._fire_anim_on(target, element)
+                amount = _parse_amount(msg)
+                if amount:
+                    self._spawn_float_on_enemy(target, amount)
             else:
                 self._fire_anim_on_player(element)
+                amount = _parse_amount(msg)
+                if amount:
+                    self._spawn_float_on_player(amount, is_heal=True)
         self._show_msg(msg, callback=self._after_action)
 
     def _execute_player_item(self, item_id: str) -> None:
@@ -329,11 +352,17 @@ class BattleState(BaseState):
                     "non_elemental"
                 )
                 self._fire_anim_on(target, element)
+                amount = _parse_amount(msg)
+                if amount:
+                    self._spawn_float_on_enemy(target, amount)
         else:
             success, msg = self.player.inventory.use_item(item_id, self.player)
             if success:
                 self.game.audio.play_sfx("item_use")
                 self._fire_anim_on_player("non_elemental")
+                amount = _parse_amount(msg)
+                if amount:
+                    self._spawn_float_on_player(amount, is_heal=True)
         self._rebuild_item_menu()
         self._show_msg(msg, callback=self._after_action)
 
@@ -385,6 +414,7 @@ class BattleState(BaseState):
             actual = self.player.take_damage(dmg)
             self.game.audio.play_sfx("attack_hit")
             self._fire_anim_on_player("physical")
+            self._spawn_float_on_player(dmg)
             msg = f"{enemy.name} attacks!  -{actual} HP"
             if crit:
                 msg = "CRITICAL HIT!  " + msg
@@ -438,6 +468,7 @@ class BattleState(BaseState):
             actual = self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
+            self._spawn_float_on_player(dmg)
             msg = f"{enemy.name} unleashes Dark Slash!  -{actual} HP"
             self._show_msg(msg, callback=self._after_action)
         else:
@@ -461,6 +492,7 @@ class BattleState(BaseState):
                 actual = self.player.take_damage(dmg)
                 self.game.audio.play_sfx("spell_cast")
                 self._fire_anim_on_player("dark")
+                self._spawn_float_on_player(dmg)
                 self._show_msg(
                     f"{enemy.name} bellows with corrupted magic!  -{actual} HP",
                     callback=self._after_action,
@@ -475,6 +507,7 @@ class BattleState(BaseState):
             actual = self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
+            self._spawn_float_on_player(dmg)
             # Chance to inflict Sleep
             if random.random() < 0.35:
                 if not hasattr(self.player, "status"):
@@ -522,6 +555,7 @@ class BattleState(BaseState):
             actual = self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
+            self._spawn_float_on_player(dmg)
             self._show_msg(
                 f"{enemy.name} casts Void Strike!  -{actual} HP",
                 callback=self._after_action,
@@ -538,6 +572,7 @@ class BattleState(BaseState):
             actual = self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
+            self._spawn_float_on_player(dmg)
             self._show_msg(
                 f"{enemy.name} unleashes Black Flame!  -{actual} HP",
                 callback=self._after_action,
@@ -592,6 +627,7 @@ class BattleState(BaseState):
         actual = self.player.take_damage(dmg)
         self.game.audio.play_sfx("spell_cast")
         self._fire_anim_on_player("fire")
+        self._spawn_float_on_player(dmg)
         self._show_msg(
             f"{enemy.name} uses an elemental attack!  -{actual} HP",
             callback=self._after_action,
@@ -604,6 +640,7 @@ class BattleState(BaseState):
         actual = self.player.take_damage(dmg)
         self.game.audio.play_sfx("spell_cast")
         self._fire_anim_on_player("non_elemental")
+        self._spawn_float_on_player(dmg)
         self._show_msg(
             f"{enemy.name} casts a spell!  -{actual} HP",
             callback=self._after_action,
@@ -695,6 +732,36 @@ class BattleState(BaseState):
         """Queue a short visual flash on the player panel strip (incoming damage)."""
         color = _ANIM_COLORS.get(element, (200, 200, 200))
         self._anims.append(_Anim(0, NATIVE_HEIGHT - 58, NATIVE_WIDTH, 8, color, 0.30))
+
+    # ── Floating damage / heal helpers ─────────────────────────────────────────
+
+    def _spawn_float_on_enemy(self, enemy: Any, amount: int, is_heal: bool = False) -> None:
+        """Spawn a floating number above the given enemy sprite.
+
+        *amount* should be the full (uncapped) damage value, not capped at the
+        target's remaining HP.
+        """
+        try:
+            idx = self.enemies.index(enemy)
+        except ValueError:
+            idx = 0
+        x = float(16 + idx * 56 + 14)  # horizontal centre of the 28-px sprite
+        y = float(16)                   # top of the enemy area
+        text = f"+{amount}" if is_heal else f"-{amount}"
+        color = (100, 255, 100) if is_heal else (255, 80, 80)
+        self._floating_texts.append(FloatingText(x, y, text, color))
+
+    def _spawn_float_on_player(self, amount: int, is_heal: bool = False) -> None:
+        """Spawn a floating number above the player panel.
+
+        *amount* should be the full (uncapped) damage value, not capped at the
+        player's remaining HP.
+        """
+        x = float(NATIVE_WIDTH // 4)
+        y = float(NATIVE_HEIGHT - 58)
+        text = f"+{amount}" if is_heal else f"-{amount}"
+        color = (100, 255, 100) if is_heal else (255, 80, 80)
+        self._floating_texts.append(FloatingText(x, y, text, color))
 
     # ── Input ─────────────────────────────────────────────────────────────────
 
@@ -808,6 +875,11 @@ class BattleState(BaseState):
         for a in self._anims:
             a.remaining -= dt
 
+        # Tick floating damage / heal numbers
+        self._floating_texts = [ft for ft in self._floating_texts if ft.is_alive]
+        for ft in self._floating_texts:
+            ft.update(dt)
+
     # ── Draw ──────────────────────────────────────────────────────────────────
 
     def draw(self, surface: pygame.Surface) -> None:
@@ -821,6 +893,10 @@ class BattleState(BaseState):
 
         self._draw_enemies(surface, font, font_sm)
         self._draw_player_panel(surface, font, font_sm)
+
+        # Draw floating damage / heal numbers on top of everything else
+        for ft in self._floating_texts:
+            ft.draw(surface, font_sm)
 
         if self._phase == _Phase.PLAYER_MENU:
             self._menu.draw(surface)
