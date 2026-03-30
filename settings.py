@@ -117,7 +117,23 @@ INN_COST = 50                # gold charged per night at the inn
 TOWN_ENTRY_COOLDOWN = 0.5    # seconds before re-entering a town after exiting
 TOWN_EVENT_COOLDOWN = 0.3    # seconds before a town event tile can re-trigger
 
-# ── Save / Load ───────────────────────────────────────────────────────────────
+# ── Mini-map / World map ──────────────────────────────────────────────────────
+MINIMAP_TILE_SIZE = 3        # pixels per tile on the corner mini-map
+MINIMAP_PADDING = 2          # gap between the mini-map frame and screen edge
+MINIMAP_ALPHA = 200          # transparency of the corner mini-map overlay (0-255)
+MINIMAP_PLAYER_COLOR = (255, 255, 0)    # yellow dot for the player marker
+MINIMAP_BORDER_COLOR = (180, 180, 180)  # light-grey border around the mini-map
+MINIMAP_UNVISITED_COLOR = (30, 30, 30)  # dark fill for zones not yet visited
+
+# World map layout: each zone has a grid position (col, row) for the full-screen view
+WORLD_MAP_ZONE_POSITIONS = {
+    "verdant_plains":      (1, 2),
+    "silverwood_forest":   (1, 0),
+    "stormcrag_mountains": (2, 1),
+    "dark_lands":          (3, 1),
+    "subterra_passage":    (1, 1),
+}
+WORLD_MAP_ZONE_SIZE = (48, 36)   # native pixels allocated per zone cell
 NUM_SAVE_SLOTS = 5           # number of save-game slots available to the player
 
 # ── Audio ─────────────────────────────────────────────────────────────────────
