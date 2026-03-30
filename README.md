@@ -8,9 +8,13 @@ post-pandemic fantasy world called the Verdant Plains.
 ### Exploration
 - Tile-based overworld map with wall/water collision
 - Player movement (WASD / arrow keys) with camera that follows the player
-- Two towns to enter: **Ironhaven** and **Ashenvale**
+- **Five overworld zones** connected by zone-exit transitions: Verdant Plains, Silverwood Forest, Stormcrag Mountains, Dark Lands, and Subterra Passage (secret)
+- **Four towns** to visit: **Ironhaven**, **Ashenvale**, **Willowmere**, and **Subterra**
 - Town exploration: shop and inn event tiles, NPC interaction
 - Humanoid NPC sprites with name labels; press **Z** to start a conversation
+- Treasure chests scattered across every zone containing items and gold
+- Hidden wall in Stormcrag Mountains that opens a secret passage to Subterra Passage
+- Dungeon entrances in each zone leading to boss encounters
 
 ### Story & Presentation
 - **Title screen** with a starfield background
@@ -31,8 +35,10 @@ post-pandemic fantasy world called the Verdant Plains.
 - Level-up system — stat growth and automatic spell learning
 - Magic system with spells loaded from `data/spells.json`
 - Inventory and equipment system (weapons, armour, accessories)
-- Pause menu with five tabs: **Items**, **Equipment**, **Magic**, **Stats**, **Save**
+- Pause menu with six tabs: **Items**, **Equipment**, **Magic**, **Stats**, **Quests**, **Save**
+  - Secret **Cheats** tab unlockable via the Konami code (↑↑↓↓←→←→) while viewing the Quests tab
 - Inn — pay gold to restore HP and MP fully
+- **Quest log** — track active objectives and collect gold, item, and spell rewards on completion
 
 ### Audio
 - Background music (BGM) for title, overworld, town, battle, boss battle, cutscene, victory, and game over
@@ -41,6 +47,7 @@ post-pandemic fantasy world called the Verdant Plains.
 
 ### Systems
 - Quest flag system for tracking story progression
+- Quest log — full objectives, flag-driven completion, and rewards (`data/quests.json`)
 - JSON save / load system with multiple save slots (accessible from the **Save** tab in the pause menu)
 
 ## Requirements
@@ -88,6 +95,7 @@ top-down-rpg-01/
 │   ├── levels.json          # Level-up stat table
 │   ├── shops.json           # Shop inventories
 │   ├── dialog.json          # NPC dialog scripts
+│   ├── quests.json          # Quest definitions (objectives, rewards, flags)
 │   └── maps/
 │       └── map01.csv        # Overworld tile map (CSV)
 ├── assets/                  # Game assets
@@ -108,6 +116,7 @@ top-down-rpg-01/
     │   ├── inn.py           # Inn (rest to restore HP/MP)
     │   ├── dialog.py        # Dialog overlay
     │   ├── pause_menu.py    # Pause / inventory menu
+    │   ├── fade.py          # Fade-to-black screen transition overlay
     │   └── game_over.py     # Game over screen
     ├── entities/
     │   ├── player.py        # Player entity and RPG stats
@@ -121,7 +130,8 @@ top-down-rpg-01/
     │   ├── inventory.py     # Inventory and equipment management
     │   ├── camera.py        # Camera that follows the player
     │   ├── save_load.py     # JSON save / load (multiple slots)
-    │   └── quest_flags.py   # Story progression flags
+    │   ├── quest_flags.py   # Story progression flags
+    │   └── quest_log.py     # Quest log (objectives, state, rewards)
     └── ui/
         ├── text_box.py      # Typewriter dialog box with speaker banner
         ├── menu.py          # Reusable menu widget
@@ -140,3 +150,7 @@ Tile colours are defined in `settings.py`; the overworld map uses the following 
 | 2 | `TILE_WATER` | Impassable water |
 | 3 | `TILE_PATH` | Walkable path (no encounters) |
 | 4 | `TILE_TOWN` | Town entrance marker |
+| 5 | `TILE_ZONE_EXIT` | Zone transition tile (leads to the adjacent overworld zone) |
+| 6 | `TILE_DUNGEON` | Dungeon / boss arena entrance |
+| 7 | `TILE_HIDDEN` | Hidden interactable tile (e.g. secret wall in Subterra) |
+| 8 | `TILE_CHEST` | Treasure chest (walkable; triggers chest reward on step) |
