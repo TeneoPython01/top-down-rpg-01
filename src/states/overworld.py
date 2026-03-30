@@ -29,6 +29,7 @@ from settings import (
     TILE_COLORS,
     TILE_DUNGEON,
     TILE_HIDDEN,
+    TILE_LORE,
     TILE_SIZE,
     TILE_TOWN,
     TILE_WALL,

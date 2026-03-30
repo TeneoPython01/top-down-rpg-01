@@ -166,6 +166,8 @@ class TownState(BaseState):
             self.game.push_state(InnState(self.game))
         elif etype == "chest":
             self._open_chest(event_data)
+        elif etype == "lore":
+            self._open_lore_book(event_data)
         elif etype == "journal":
             # Ancestral home in Subterra: show the journal + give Exo items
             self._trigger_journal_event()
@@ -204,6 +206,15 @@ class TownState(BaseState):
             self.game.audio.play_sfx("item_get")
 
         self.game.push_state(DialogState(self.game, lines, speaker="Treasure Chest"))
+
+    def _open_lore_book(self, lore_data: Dict[str, Any]) -> None:
+        """Open a lore-book/tablet: mark it collected and push the reader overlay."""
+        from src.states.lore_reader import LoreReaderState
+        lore_id = lore_data.get("lore_id", "")
+        if lore_id and self.game.player is not None:
+            self.game.player.collected_lore.add(lore_id)
+        self.game.audio.play_sfx("confirm")
+        self.game.push_state(LoreReaderState(self.game, lore_id))
 
     def _start_dialog(self, dialog_id: str) -> None:
         # If the old man has already given his gift, show the follow-up lines instead.

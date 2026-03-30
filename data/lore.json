@@ -1,0 +1,235 @@
+[
+  {
+    "id": "chronicles_vol1",
+    "title": "Chronicles of the Verdant Plains, Vol. I",
+    "body": [
+      "Before the Pandemic, the Verdant Plains stretched unbroken from horizon to horizon — a vast sea of golden wheat and emerald grasses tended by thousands of farming families.",
+      "The city of Oldenvale stood at its heart, its spires visible for miles. Trade caravans from all corners of the realm passed through its gates each season.",
+      "Then came the Blight of Year 412. The crops withered overnight. Livestock collapsed in their pens. Within a fortnight, half the population had fled north toward Ironhaven."
+    ],
+    "location": "Ashenvale Library shelf",
+    "zone": "ashenvale"
+  },
+  {
+    "id": "chronicles_vol2",
+    "title": "Chronicles of the Verdant Plains, Vol. II",
+    "body": [
+      "The Blight was not natural. The court archivist Petra Voss documented strange luminescent spores drifting from the direction of the Dark Lands — a region no cartographer had successfully mapped.",
+      "Soldiers sent to investigate did not return. The king dispatched a second wave with aetheric wards inscribed on their armour. Only one returned — mute, his eyes clouded white.",
+      "He carried a single fragment of stone tablet carved with a symbol the scholars would spend a century deciphering. It read: 'We were here before the grass. We will remain after the stone.'"
+    ],
+    "location": "Ashenvale Library shelf",
+    "zone": "ashenvale"
+  },
+  {
+    "id": "elder_journal",
+    "title": "The Village Elder's Journal",
+    "body": [
+      "Day 1 of recovery — The beast attacks have intensified near the eastern border. Three more fields were trampled last night. I fear the Blight-spawn are growing bolder.",
+      "Day 12 — A traveller passed through today, heading south. He wore armour I have not seen in decades: the crest of the White Knights. Could the order truly be riding again?",
+      "Day 29 — Dug up old Petra's notes from the archive cellar. She believed the spores came from something buried deep beneath the Subterra Passage. Something sleeping. Something waking."
+    ],
+    "location": "Elder's house, Ashenvale",
+    "zone": "ashenvale"
+  },
+  {
+    "id": "ironhaven_history",
+    "title": "Ironhaven: A History of Walls",
+    "body": [
+      "Ironhaven was founded as a fortress-city three hundred years before the Pandemic. Its walls were constructed from Stormcrag granite — hauled south by teams of a hundred oxen each season for forty years.",
+      "The city's original purpose was defensive: to hold the northern pass against the raiding clans of the Stormcrag Mountains. By the time the Pandemic struck, it had become the last major settlement in the north.",
+      "When the refugees arrived from the Verdant Plains, Ironhaven's population tripled in two months. The current district known as the Lower Reaches was hastily built to house them — and has never been properly fortified."
+    ],
+    "location": "Ironhaven Armory notice board",
+    "zone": "ironhaven"
+  },
+  {
+    "id": "smithy_manual",
+    "title": "Ironhaven Master Smithy: Craft Manual",
+    "body": [
+      "Chapter 4: Aetheric Forging. Standard iron will not hold an aetheric charge for longer than one moon cycle. To bind permanent enchantments, the smith must first purify the metal with Silverwood resin — available only from licensed traders in the forest district.",
+      "Chapter 7: Exo-grade Materials. Since the discovery of the underground Subterra seams, a new class of materials has become available. Exo-alloy is three times harder than Stormcrag steel and retains aetheric charges indefinitely.",
+      "A word of caution: Exo-alloy resonates at the same frequency as Blight-spores. Extended exposure without proper shielding has caused madness in two apprentices this season."
+    ],
+    "location": "Ironhaven Smithy workbench",
+    "zone": "ironhaven"
+  },
+  {
+    "id": "willowmere_legend",
+    "title": "The Legend of the Willowmere Mirror Lake",
+    "body": [
+      "The lake at the heart of Willowmere is said to have been conjured by the mage Aelindra in the third century. She sought a place where the veil between worlds was thin enough to scry distant lands.",
+      "Fishermen who spend the night on the lake's shore sometimes report hearing voices from beneath the water — speaking in an older dialect of the common tongue, recounting events from centuries past.",
+      "The current Elder believes the lake is a living archive: that every event witnessed on its banks is stored within its depths. To read it, one needs only to listen — and the patience to hear."
+    ],
+    "location": "Willowmere dockside noticeboard",
+    "zone": "willowmere"
+  },
+  {
+    "id": "willowmere_spellbook",
+    "title": "Fragmentary Notes on Advanced Restoration Magic",
+    "body": [
+      "The Cure spell is well-understood: channel life-force inward, accelerate the body's natural recovery. Every hedge witch learns it before her sixteenth year.",
+      "What the academies do not teach is the Second-Order restoration — the weaving of MP directly from ambient aether rather than from the caster's own reserves. This technique was recorded only once, in the marginalia of a scorched tome recovered from Oldenvale's ruin.",
+      "The technique requires a catalyst: a single drop of water from a place where the world's ley-lines converge. The scholars believe Willowmere's lake may be one such confluence."
+    ],
+    "location": "Willowmere magic shop back shelf",
+    "zone": "willowmere"
+  },
+  {
+    "id": "subterra_founding",
+    "title": "The Founding of Subterra",
+    "body": [
+      "We did not choose to come underground. The Pandemic drove us here — the last survivors of the Eastern Scholars' Guild, clutching our books and our instruments as the surface burned.",
+      "The passage we found was already ancient. The walls bore carvings in a script we still cannot fully read. Whatever built this place was not human — or was not only human.",
+      "We built our city around the central chamber, where a constant warmth rises from somewhere far below. In forty years of excavation we have never found its source."
+    ],
+    "location": "Subterra founding monument",
+    "zone": "subterra"
+  },
+  {
+    "id": "subterra_archives",
+    "title": "Archivist's Catalogue: Section 7 — The Pre-Pandemic Record",
+    "body": [
+      "Archived items of note this quarter: Three intact ceramic jars from Oldenvale containing preserved grain samples from Year 410 (two years before the Blight). Analysis shows no spore contamination — confirming the Blight arrived suddenly, not gradually.",
+      "One leather-bound journal recovered from the ruins east of the Dark Lands border. Author unknown. Contents disturbing: the writer claims to have communicated with the entities described on the Subterra chamber walls. Entry ends mid-sentence.",
+      "One intact crystalline orb, provenance unknown. Emits a faint hum when held. Our senior archivist has requested it be stored in the Restricted Collection pending further study."
+    ],
+    "location": "Archivist's desk, Subterra",
+    "zone": "subterra"
+  },
+  {
+    "id": "stormcrag_stone_tablet",
+    "title": "Stone Tablet — Stormcrag Pass",
+    "body": [
+      "[Carved in old script — translation approximate]",
+      "Here stood the Gatehouse of the Venn, wardens of the mountain pass for four hundred years before the clans fell to the Grey Fever.",
+      "Let the traveller who reads this know: the Venn did not die. They sleep in the stone. When the mountains sing, we wake. When the old enemy returns, we stand."
+    ],
+    "location": "Stormcrag Mountains, ruined gatehouse",
+    "zone": "stormcrag_mountains"
+  },
+  {
+    "id": "stormcrag_weather_log",
+    "title": "Mountain Weather Log — Post 7",
+    "body": [
+      "Observation post 7, season of the Ice Wind, Year 512. Storm activity nominal. The usual route south is clear.",
+      "Note: unusual luminescence observed in the eastern valley on three consecutive nights. Colour: deep violet, consistent with Blight-spore activity. Recommend increased patrol frequency.",
+      "Addendum, two weeks later: the patrol did not return. The eastern valley access has been sealed. Do not proceed east of the second marker without written authorisation from the garrison commander."
+    ],
+    "location": "Stormcrag Mountains, weather post",
+    "zone": "stormcrag_mountains"
+  },
+  {
+    "id": "dark_lands_warning",
+    "title": "Warning Notice — Dark Lands Border",
+    "body": [
+      "BY ORDER OF THE IRONHAVEN GARRISON:",
+      "The territory beyond this marker is classified as a Hazard Zone. Blight-spore concentrations exceed safe thresholds at all times of day.",
+      "Any traveller crossing the border does so without the garrison's protection or rescue obligation.",
+      "Those who have returned from the Dark Lands report: the ruins of a great city lie at the territory's centre. No one who has entered those ruins has come back."
+    ],
+    "location": "Dark Lands border post",
+    "zone": "dark_lands"
+  },
+  {
+    "id": "dark_lands_journal",
+    "title": "Torn Journal Pages",
+    "body": [
+      "...the city is real. The maps don't show it but it's there — enormous, silent, half-swallowed by growth that isn't quite plant and isn't quite fungus.",
+      "The spores don't affect me anymore. I don't know if that's good. My companion ran back on the third day. I kept going.",
+      "There are lights in the central tower. Regular intervals. Not lanterns — the rhythm is wrong for lanterns. Something is counting. Or communicating. I am going to try to get closer..."
+    ],
+    "location": "Dark Lands, ruined outpost",
+    "zone": "dark_lands"
+  },
+  {
+    "id": "silverwood_tree_record",
+    "title": "Tree-Ring Record of the Silverwood",
+    "body": [
+      "The Silverwood's oldest living tree — the Grandmother Oak at the forest's northern edge — has been carbon-dated to Year 60. It was already ancient when the Pandemic struck.",
+      "Examination of its rings reveals three periods of severe stress: Year 412 (the Pandemic), Year 388 (an earlier, smaller Blight event no historian recorded), and Year 210 (unknown cause).",
+      "The pattern suggests a cycle of approximately 120-130 years. If the pattern holds, the next major event is overdue."
+    ],
+    "location": "Silverwood Forest, ranger station",
+    "zone": "silverwood_forest"
+  },
+  {
+    "id": "silverwood_ranger_notes",
+    "title": "Ranger Observations: Spring 513",
+    "body": [
+      "Unusual beast behaviour documented this season: pack animals moving north, away from their usual territory near the Dark Lands border. Migration patterns reversed by approximately six weeks.",
+      "Two nesting sites of the Greywing falcon — normally a stationary species — found abandoned mid-clutch. This has never been recorded in sixty years of observations.",
+      "Working hypothesis: something in the south or east is disturbing the ley-line resonance that many animals use for navigation. Recommend consultation with the Willowmere mages."
+    ],
+    "location": "Silverwood Forest, ranger lookout",
+    "zone": "silverwood_forest"
+  },
+  {
+    "id": "white_knight_codex",
+    "title": "The White Knight's Codex",
+    "body": [
+      "First Principle: the Knight serves the land before the crown, the people before the law, and the living before the dead.",
+      "Second Principle: power is a debt, not a gift. Every life saved must be repaid in service. Every battle won creates an obligation to prevent the next.",
+      "Third Principle: the last White Knight carries the order's entire legacy. Act accordingly. Leave no record unread, no ruin unexplored, no question unasked."
+    ],
+    "location": "Ashenvale, hidden cellar",
+    "zone": "ashenvale"
+  },
+  {
+    "id": "petra_voss_notes",
+    "title": "Petra Voss: Personal Research Notes",
+    "body": [
+      "The entity the Subterra chamber carvings depict is not a god. The Venn called it the Sleeper. The Eastern Scholars called it the Root. My own translation of the wall-text suggests a simpler description: the first life.",
+      "Pre-cellular. Pre-spore. Something that existed before the division between plant and animal, before the distinction between living and not-living was meaningful.",
+      "It is not malevolent. Malevolence requires intent. It is simply... returning to a state it finds natural. Our world is an interruption to it. The Pandemic was not an attack. It was a yawn."
+    ],
+    "location": "Subterra Restricted Collection",
+    "zone": "subterra"
+  },
+  {
+    "id": "subterra_map_notes",
+    "title": "Cartographic Notes: The Subterra Network",
+    "body": [
+      "Survey season 511 — confirmed three additional tunnel branches extending south and east from the central chamber. Depth measurement indicates they descend approximately two kilometres before levelling off.",
+      "The eastern branch terminates at a sealed door. The material is unlike anything we have worked with — neither stone nor metal. It is warm to the touch regardless of ambient temperature.",
+      "The door has a keyway. The keyway matches the profile of the crystalline orb in Section 7 of the archive. This has not been acted upon. The senior archivist has left strict instructions: the door is not to be opened."
+    ],
+    "location": "Subterra cartography room",
+    "zone": "subterra"
+  },
+  {
+    "id": "ironhaven_garrison_orders",
+    "title": "Garrison Standing Orders, Year 512",
+    "body": [
+      "Order 1: The eastern border patrol frequency has been increased to daily. All patrols must return before nightfall. Overnight observation posts in sector four have been permanently closed.",
+      "Order 7: Requests from civilian researchers to enter the Dark Lands are denied until further notice. No exceptions. This order supersedes the Academic Freedom Charter of Year 489.",
+      "Order 12: Any person returning from the Dark Lands voluntarily, without garrison escort, is to be quarantined for no fewer than forty days before being permitted to enter Ironhaven. This is not negotiable."
+    ],
+    "location": "Ironhaven garrison noticeboard",
+    "zone": "ironhaven"
+  },
+  {
+    "id": "blight_bestiary",
+    "title": "Field Notes: A Bestiary of Blight-Spawn",
+    "body": [
+      "Blight-spawn are not mutated natural animals, as early scholars believed. Comparative anatomy reveals that most lack the evolutionary adaptations of their supposed natural counterparts — no shared evolutionary history. They are something else wearing a familiar shape.",
+      "Common traits: resistance to conventional weapon damage, heightened aggression in areas of high spore concentration, apparent immunity to environmental extremes of temperature and pressure.",
+      "Observed weakness: aetheric energy disrupts their cellular cohesion. The Cure spell, applied offensively, causes visible distress. The scholars believe this is because Blight-spawn are, at the cellular level, an imitation of life rather than life itself."
+    ],
+    "location": "Silverwood Forest, abandoned research camp",
+    "zone": "silverwood_forest"
+  },
+  {
+    "id": "ancient_wall_inscription",
+    "title": "Ancient Wall Inscription — Subterra Passage",
+    "body": [
+      "[Inscribed in the oldest layer of the passage walls. Translation by Archivist Lena, Year 510.]",
+      "We made the passage for those who would come after. The surface will not always be safe. The deep is cold but constant.",
+      "Those who find this: the door at the eastern terminus remembers the shape of the light that made it. Bring the old light back and the old road opens.",
+      "We did not leave. We went deeper. In the lowest dark, beyond the door, we still keep watch."
+    ],
+    "location": "Subterra Passage, north wall",
+    "zone": "subterra"
+  }
+]
