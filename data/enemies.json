@@ -1,191 +1,812 @@
 [
   {
-    "id": "dire_wolf", "name": "Dire Wolf",
-    "hp": 45, "mp": 0, "str": 8, "def": 4, "mag": 0, "mdf": 3, "spd": 7, "lck": 5,
-    "weaknesses": ["fire"], "resistances": [],
-    "xp": 20, "gold": 60, "loot": [{"id": "potion", "chance": 0.2}],
-    "sprite": "dire_wolf", "zone": "grasslands", "ai": "basic_attack"
+    "id": "dire_wolf",
+    "name": "Dire Wolf",
+    "hp": 45,
+    "mp": 0,
+    "str": 8,
+    "def": 4,
+    "mag": 0,
+    "mdf": 3,
+    "spd": 7,
+    "lck": 5,
+    "weaknesses": [
+      "fire"
+    ],
+    "resistances": [],
+    "xp": 20,
+    "gold": 60,
+    "loot": [
+      {
+        "id": "potion",
+        "chance": 0.2
+      }
+    ],
+    "sprite": "dire_wolf",
+    "zone": "grasslands",
+    "ai": "basic_attack"
   },
   {
-    "id": "giant_rat", "name": "Giant Rat",
-    "hp": 25, "mp": 0, "str": 5, "def": 2, "mag": 0, "mdf": 2, "spd": 8, "lck": 6,
-    "weaknesses": [], "resistances": [],
-    "xp": 10, "gold": 30, "loot": [],
-    "sprite": "giant_rat", "zone": "grasslands", "ai": "basic_attack"
+    "id": "giant_rat",
+    "name": "Giant Rat",
+    "hp": 25,
+    "mp": 0,
+    "str": 5,
+    "def": 2,
+    "mag": 0,
+    "mdf": 2,
+    "spd": 8,
+    "lck": 6,
+    "weaknesses": [],
+    "resistances": [],
+    "xp": 10,
+    "gold": 30,
+    "loot": [],
+    "sprite": "giant_rat",
+    "zone": "grasslands",
+    "ai": "basic_attack"
   },
   {
-    "id": "feral_boar", "name": "Feral Boar",
-    "hp": 60, "mp": 0, "str": 10, "def": 8, "mag": 0, "mdf": 3, "spd": 5, "lck": 4,
-    "weaknesses": [], "resistances": [],
-    "xp": 30, "gold": 90, "loot": [{"id": "potion", "chance": 0.3}],
-    "sprite": "feral_boar", "zone": "grasslands", "ai": "basic_attack"
+    "id": "feral_boar",
+    "name": "Feral Boar",
+    "hp": 60,
+    "mp": 0,
+    "str": 10,
+    "def": 8,
+    "mag": 0,
+    "mdf": 3,
+    "spd": 5,
+    "lck": 4,
+    "weaknesses": [],
+    "resistances": [],
+    "xp": 30,
+    "gold": 90,
+    "loot": [
+      {
+        "id": "potion",
+        "chance": 0.3
+      }
+    ],
+    "sprite": "feral_boar",
+    "zone": "grasslands",
+    "ai": "basic_attack"
   },
   {
-    "id": "venomous_viper", "name": "Venomous Viper",
-    "hp": 30, "mp": 0, "str": 6, "def": 3, "mag": 0, "mdf": 4, "spd": 9, "lck": 7,
-    "weaknesses": [], "resistances": [],
-    "xp": 15, "gold": 50, "loot": [{"id": "antidote", "chance": 0.25}],
-    "sprite": "viper", "zone": "grasslands", "ai": "poison_attack",
-    "status_moves": [{"effect": "poison", "chance": 0.4}]
+    "id": "venomous_viper",
+    "name": "Venomous Viper",
+    "hp": 30,
+    "mp": 0,
+    "str": 6,
+    "def": 3,
+    "mag": 0,
+    "mdf": 4,
+    "spd": 9,
+    "lck": 7,
+    "weaknesses": [],
+    "resistances": [],
+    "xp": 15,
+    "gold": 50,
+    "loot": [
+      {
+        "id": "antidote",
+        "chance": 0.25
+      }
+    ],
+    "sprite": "viper",
+    "zone": "grasslands",
+    "ai": "poison_attack",
+    "status_moves": [
+      {
+        "effect": "poison",
+        "chance": 0.4
+      }
+    ]
   },
   {
-    "id": "shadow_panther", "name": "Shadow Panther",
-    "hp": 120, "mp": 0, "str": 18, "def": 8, "mag": 0, "mdf": 6, "spd": 14, "lck": 8,
-    "weaknesses": [], "resistances": ["dark"],
-    "xp": 80, "gold": 225, "loot": [{"id": "potion", "chance": 0.3}],
-    "sprite": "shadow_panther", "zone": "forest", "ai": "basic_attack"
+    "id": "shadow_panther",
+    "name": "Shadow Panther",
+    "hp": 120,
+    "mp": 0,
+    "str": 18,
+    "def": 8,
+    "mag": 0,
+    "mdf": 6,
+    "spd": 14,
+    "lck": 8,
+    "weaknesses": [],
+    "resistances": [
+      "dark"
+    ],
+    "xp": 80,
+    "gold": 225,
+    "loot": [
+      {
+        "id": "potion",
+        "chance": 0.3
+      }
+    ],
+    "sprite": "shadow_panther",
+    "zone": "forest",
+    "ai": "basic_attack"
   },
   {
-    "id": "thunder_hawk", "name": "Thunder Hawk",
-    "hp": 90, "mp": 20, "str": 14, "def": 5, "mag": 12, "mdf": 8, "spd": 12, "lck": 7,
-    "weaknesses": ["earth"], "resistances": ["lightning"],
-    "xp": 65, "gold": 190, "loot": [],
-    "sprite": "thunder_hawk", "zone": "forest", "ai": "elemental_attack",
-    "spells": [{"id": "thunder", "chance": 0.5}]
+    "id": "thunder_hawk",
+    "name": "Thunder Hawk",
+    "hp": 90,
+    "mp": 20,
+    "str": 14,
+    "def": 5,
+    "mag": 12,
+    "mdf": 8,
+    "spd": 12,
+    "lck": 7,
+    "weaknesses": [
+      "earth"
+    ],
+    "resistances": [
+      "lightning"
+    ],
+    "xp": 65,
+    "gold": 190,
+    "loot": [],
+    "sprite": "thunder_hawk",
+    "zone": "forest",
+    "ai": "elemental_attack",
+    "spells": [
+      {
+        "id": "thunder",
+        "chance": 0.5
+      }
+    ]
   },
   {
-    "id": "iron_bear", "name": "Iron Bear",
-    "hp": 200, "mp": 0, "str": 22, "def": 18, "mag": 0, "mdf": 10, "spd": 4, "lck": 5,
-    "weaknesses": ["fire"], "resistances": [],
-    "xp": 120, "gold": 350, "loot": [{"id": "hi_potion", "chance": 0.15}],
-    "sprite": "iron_bear", "zone": "forest", "ai": "basic_attack"
+    "id": "iron_bear",
+    "name": "Iron Bear",
+    "hp": 200,
+    "mp": 0,
+    "str": 22,
+    "def": 18,
+    "mag": 0,
+    "mdf": 10,
+    "spd": 4,
+    "lck": 5,
+    "weaknesses": [
+      "fire"
+    ],
+    "resistances": [],
+    "xp": 120,
+    "gold": 350,
+    "loot": [
+      {
+        "id": "hi_potion",
+        "chance": 0.15
+      }
+    ],
+    "sprite": "iron_bear",
+    "zone": "forest",
+    "ai": "basic_attack"
   },
   {
-    "id": "poison_toad", "name": "Poison Toad",
-    "hp": 70, "mp": 10, "str": 10, "def": 6, "mag": 8, "mdf": 8, "spd": 6, "lck": 6,
-    "weaknesses": ["fire", "lightning"], "resistances": ["water"],
-    "xp": 55, "gold": 150, "loot": [{"id": "antidote", "chance": 0.4}],
-    "sprite": "poison_toad", "zone": "forest", "ai": "status_attack",
-    "status_moves": [{"effect": "poison", "chance": 0.5}, {"effect": "blind", "chance": 0.3}]
+    "id": "poison_toad",
+    "name": "Poison Toad",
+    "hp": 70,
+    "mp": 10,
+    "str": 10,
+    "def": 6,
+    "mag": 8,
+    "mdf": 8,
+    "spd": 6,
+    "lck": 6,
+    "weaknesses": [
+      "fire",
+      "lightning"
+    ],
+    "resistances": [
+      "water"
+    ],
+    "xp": 55,
+    "gold": 150,
+    "loot": [
+      {
+        "id": "antidote",
+        "chance": 0.4
+      }
+    ],
+    "sprite": "poison_toad",
+    "zone": "forest",
+    "ai": "status_attack",
+    "status_moves": [
+      {
+        "effect": "poison",
+        "chance": 0.5
+      },
+      {
+        "effect": "blind",
+        "chance": 0.3
+      }
+    ]
   },
   {
-    "id": "rock_golem", "name": "Rock Golem",
-    "hp": 350, "mp": 0, "str": 28, "def": 25, "mag": 0, "mdf": 5, "spd": 3, "lck": 3,
-    "weaknesses": ["water"], "resistances": ["fire", "earth"],
-    "immunities": ["physical"],
-    "xp": 200, "gold": 600, "loot": [{"id": "hi_potion", "chance": 0.2}],
-    "sprite": "rock_golem", "zone": "mountains", "ai": "basic_attack"
+    "id": "rock_golem",
+    "name": "Rock Golem",
+    "hp": 350,
+    "mp": 0,
+    "str": 28,
+    "def": 25,
+    "mag": 0,
+    "mdf": 5,
+    "spd": 3,
+    "lck": 3,
+    "weaknesses": [
+      "water"
+    ],
+    "resistances": [
+      "fire",
+      "earth"
+    ],
+    "immunities": [
+      "physical"
+    ],
+    "xp": 200,
+    "gold": 600,
+    "loot": [
+      {
+        "id": "hi_potion",
+        "chance": 0.2
+      }
+    ],
+    "sprite": "rock_golem",
+    "zone": "mountains",
+    "ai": "basic_attack"
   },
   {
-    "id": "storm_drake", "name": "Storm Drake",
-    "hp": 280, "mp": 40, "str": 24, "def": 14, "mag": 20, "mdf": 16, "spd": 10, "lck": 7,
-    "weaknesses": ["ice"], "resistances": ["lightning", "wind"],
-    "xp": 180, "gold": 550, "loot": [],
-    "sprite": "storm_drake", "zone": "mountains", "ai": "elemental_attack",
-    "spells": [{"id": "thunder", "chance": 0.4}]
+    "id": "storm_drake",
+    "name": "Storm Drake",
+    "hp": 280,
+    "mp": 40,
+    "str": 24,
+    "def": 14,
+    "mag": 20,
+    "mdf": 16,
+    "spd": 10,
+    "lck": 7,
+    "weaknesses": [
+      "ice"
+    ],
+    "resistances": [
+      "lightning",
+      "wind"
+    ],
+    "xp": 180,
+    "gold": 550,
+    "loot": [],
+    "sprite": "storm_drake",
+    "zone": "mountains",
+    "ai": "elemental_attack",
+    "spells": [
+      {
+        "id": "thunder",
+        "chance": 0.4
+      }
+    ]
   },
   {
-    "id": "crystal_stag", "name": "Crystal Stag",
-    "hp": 180, "mp": 30, "str": 18, "def": 16, "mag": 14, "mdf": 18, "spd": 12, "lck": 15,
-    "weaknesses": ["dark"], "resistances": ["holy"],
-    "xp": 160, "gold": 475, "loot": [{"id": "hi_potion", "chance": 0.4}, {"id": "ether", "chance": 0.3}],
-    "sprite": "crystal_stag", "zone": "mountains", "ai": "healer",
-    "spells": [{"id": "cure", "chance": 0.4}]
+    "id": "crystal_stag",
+    "name": "Crystal Stag",
+    "hp": 180,
+    "mp": 30,
+    "str": 18,
+    "def": 16,
+    "mag": 14,
+    "mdf": 18,
+    "spd": 12,
+    "lck": 15,
+    "weaknesses": [
+      "dark"
+    ],
+    "resistances": [
+      "holy"
+    ],
+    "xp": 160,
+    "gold": 475,
+    "loot": [
+      {
+        "id": "hi_potion",
+        "chance": 0.4
+      },
+      {
+        "id": "ether",
+        "chance": 0.3
+      }
+    ],
+    "sprite": "crystal_stag",
+    "zone": "mountains",
+    "ai": "healer",
+    "spells": [
+      {
+        "id": "cure",
+        "chance": 0.4
+      }
+    ]
   },
   {
-    "id": "fire_lizard", "name": "Fire Lizard",
-    "hp": 220, "mp": 20, "str": 22, "def": 12, "mag": 16, "mdf": 10, "spd": 9, "lck": 6,
-    "weaknesses": ["ice"], "resistances": ["fire"],
-    "xp": 150, "gold": 450, "loot": [{"id": "bomb_frag", "chance": 0.2}],
-    "sprite": "fire_lizard", "zone": "mountains", "ai": "elemental_attack",
-    "spells": [{"id": "fire", "chance": 0.5}]
+    "id": "fire_lizard",
+    "name": "Fire Lizard",
+    "hp": 220,
+    "mp": 20,
+    "str": 22,
+    "def": 12,
+    "mag": 16,
+    "mdf": 10,
+    "spd": 9,
+    "lck": 6,
+    "weaknesses": [
+      "ice"
+    ],
+    "resistances": [
+      "fire"
+    ],
+    "xp": 150,
+    "gold": 450,
+    "loot": [
+      {
+        "id": "bomb_frag",
+        "chance": 0.2
+      }
+    ],
+    "sprite": "fire_lizard",
+    "zone": "mountains",
+    "ai": "elemental_attack",
+    "spells": [
+      {
+        "id": "fire",
+        "chance": 0.5
+      }
+    ]
   },
   {
-    "id": "bk_soldier", "name": "BK Soldier",
-    "hp": 300, "mp": 10, "str": 26, "def": 20, "mag": 0, "mdf": 14, "spd": 8, "lck": 6,
-    "weaknesses": ["holy"], "resistances": ["dark"],
-    "xp": 250, "gold": 750, "loot": [{"id": "hi_potion", "chance": 0.2}],
-    "sprite": "bk_soldier", "zone": "dark_lands", "ai": "basic_attack"
+    "id": "bk_soldier",
+    "name": "BK Soldier",
+    "hp": 300,
+    "mp": 10,
+    "str": 26,
+    "def": 20,
+    "mag": 0,
+    "mdf": 14,
+    "spd": 8,
+    "lck": 6,
+    "weaknesses": [
+      "holy"
+    ],
+    "resistances": [
+      "dark"
+    ],
+    "xp": 250,
+    "gold": 750,
+    "loot": [
+      {
+        "id": "hi_potion",
+        "chance": 0.2
+      }
+    ],
+    "sprite": "bk_soldier",
+    "zone": "dark_lands",
+    "ai": "basic_attack"
   },
   {
-    "id": "corrupted_wolf", "name": "Corrupted Wolf",
-    "hp": 250, "mp": 0, "str": 24, "def": 12, "mag": 0, "mdf": 10, "spd": 13, "lck": 7,
-    "weaknesses": ["holy"], "resistances": ["dark"],
-    "xp": 210, "gold": 650, "loot": [],
-    "sprite": "corrupted_wolf", "zone": "dark_lands", "ai": "basic_attack"
+    "id": "corrupted_wolf",
+    "name": "Corrupted Wolf",
+    "hp": 250,
+    "mp": 0,
+    "str": 24,
+    "def": 12,
+    "mag": 0,
+    "mdf": 10,
+    "spd": 13,
+    "lck": 7,
+    "weaknesses": [
+      "holy"
+    ],
+    "resistances": [
+      "dark"
+    ],
+    "xp": 210,
+    "gold": 650,
+    "loot": [],
+    "sprite": "corrupted_wolf",
+    "zone": "dark_lands",
+    "ai": "basic_attack"
   },
   {
-    "id": "nightmare_stallion", "name": "Nightmare Stallion",
-    "hp": 400, "mp": 20, "str": 30, "def": 18, "mag": 0, "mdf": 12, "spd": 6, "lck": 6,
-    "weaknesses": ["holy"], "resistances": ["dark"],
-    "xp": 280, "gold": 850, "loot": [{"id": "hi_potion", "chance": 0.25}],
-    "sprite": "nightmare_stallion", "zone": "dark_lands", "ai": "self_buff",
-    "spells": [{"id": "haste", "target": "self", "chance": 0.4}]
+    "id": "nightmare_stallion",
+    "name": "Nightmare Stallion",
+    "hp": 400,
+    "mp": 20,
+    "str": 30,
+    "def": 18,
+    "mag": 0,
+    "mdf": 12,
+    "spd": 6,
+    "lck": 6,
+    "weaknesses": [
+      "holy"
+    ],
+    "resistances": [
+      "dark"
+    ],
+    "xp": 280,
+    "gold": 850,
+    "loot": [
+      {
+        "id": "hi_potion",
+        "chance": 0.25
+      }
+    ],
+    "sprite": "nightmare_stallion",
+    "zone": "dark_lands",
+    "ai": "self_buff",
+    "spells": [
+      {
+        "id": "haste",
+        "target": "self",
+        "chance": 0.4
+      }
+    ]
   },
   {
-    "id": "dark_mage", "name": "Dark Mage",
-    "hp": 200, "mp": 60, "str": 12, "def": 10, "mag": 28, "mdf": 20, "spd": 10, "lck": 8,
-    "weaknesses": ["holy"], "resistances": ["dark"],
-    "xp": 230, "gold": 700, "loot": [{"id": "ether", "chance": 0.3}],
-    "sprite": "dark_mage", "zone": "dark_lands", "ai": "spellcaster",
-    "spells": [{"id": "fire", "chance": 0.3}, {"id": "blizzard", "chance": 0.3}, {"id": "thunder", "chance": 0.3}]
+    "id": "dark_mage",
+    "name": "Dark Mage",
+    "hp": 200,
+    "mp": 60,
+    "str": 12,
+    "def": 10,
+    "mag": 28,
+    "mdf": 20,
+    "spd": 10,
+    "lck": 8,
+    "weaknesses": [
+      "holy"
+    ],
+    "resistances": [
+      "dark"
+    ],
+    "xp": 230,
+    "gold": 700,
+    "loot": [
+      {
+        "id": "ether",
+        "chance": 0.3
+      }
+    ],
+    "sprite": "dark_mage",
+    "zone": "dark_lands",
+    "ai": "spellcaster",
+    "spells": [
+      {
+        "id": "fire",
+        "chance": 0.3
+      },
+      {
+        "id": "blizzard",
+        "chance": 0.3
+      },
+      {
+        "id": "thunder",
+        "chance": 0.3
+      }
+    ]
   },
   {
-    "id": "cave_crawler", "name": "Cave Crawler",
-    "hp": 200, "mp": 0, "str": 20, "def": 16, "mag": 0, "mdf": 8, "spd": 7, "lck": 5,
-    "weaknesses": ["fire"], "resistances": [],
-    "xp": 160, "gold": 500, "loot": [],
-    "sprite": "cave_crawler", "zone": "subterra_passage", "ai": "basic_attack"
+    "id": "cave_crawler",
+    "name": "Cave Crawler",
+    "hp": 200,
+    "mp": 0,
+    "str": 20,
+    "def": 16,
+    "mag": 0,
+    "mdf": 8,
+    "spd": 7,
+    "lck": 5,
+    "weaknesses": [
+      "fire"
+    ],
+    "resistances": [],
+    "xp": 160,
+    "gold": 500,
+    "loot": [],
+    "sprite": "cave_crawler",
+    "zone": "subterra_passage",
+    "ai": "basic_attack"
   },
   {
-    "id": "pale_lurker", "name": "Pale Lurker",
-    "hp": 160, "mp": 0, "str": 18, "def": 8, "mag": 0, "mdf": 6, "spd": 16, "lck": 9,
-    "weaknesses": [], "resistances": [],
-    "xp": 140, "gold": 425, "loot": [{"id": "eye_drops", "chance": 0.4}],
-    "sprite": "pale_lurker", "zone": "subterra_passage", "ai": "status_attack",
-    "status_moves": [{"effect": "blind", "chance": 0.5}]
+    "id": "pale_lurker",
+    "name": "Pale Lurker",
+    "hp": 160,
+    "mp": 0,
+    "str": 18,
+    "def": 8,
+    "mag": 0,
+    "mdf": 6,
+    "spd": 16,
+    "lck": 9,
+    "weaknesses": [],
+    "resistances": [],
+    "xp": 140,
+    "gold": 425,
+    "loot": [
+      {
+        "id": "eye_drops",
+        "chance": 0.4
+      }
+    ],
+    "sprite": "pale_lurker",
+    "zone": "subterra_passage",
+    "ai": "status_attack",
+    "status_moves": [
+      {
+        "effect": "blind",
+        "chance": 0.5
+      }
+    ]
   },
   {
-    "id": "dire_wolf_alpha", "name": "Dire Wolf Alpha", "boss": true,
-    "hp": 400, "mp": 0, "str": 16, "def": 10, "mag": 0, "mdf": 8, "spd": 10, "lck": 6,
-    "weaknesses": ["fire"], "resistances": [],
-    "xp": 200, "gold": 750, "loot": [{"id": "hi_potion", "chance": 1.0}],
-    "sprite": "dire_wolf_alpha", "zone": "boss", "ai": "boss_wolf"
+    "id": "dire_wolf_alpha",
+    "name": "Dire Wolf Alpha",
+    "boss": true,
+    "hp": 400,
+    "mp": 0,
+    "str": 16,
+    "def": 10,
+    "mag": 0,
+    "mdf": 8,
+    "spd": 10,
+    "lck": 6,
+    "weaknesses": [
+      "fire"
+    ],
+    "resistances": [],
+    "xp": 200,
+    "gold": 750,
+    "loot": [
+      {
+        "id": "hi_potion",
+        "chance": 1.0
+      }
+    ],
+    "sprite": "dire_wolf_alpha",
+    "zone": "boss",
+    "ai": "boss_wolf"
   },
   {
-    "id": "bk_lieutenant", "name": "BK Lieutenant", "boss": true,
-    "hp": 900, "mp": 40, "str": 30, "def": 22, "mag": 20, "mdf": 18, "spd": 12, "lck": 8,
-    "weaknesses": ["holy"], "resistances": ["dark"],
-    "xp": 800, "gold": 3000, "loot": [{"id": "hi_potion", "chance": 1.0}],
-    "sprite": "bk_lieutenant", "zone": "boss", "ai": "boss_lieutenant"
+    "id": "bk_lieutenant",
+    "name": "BK Lieutenant",
+    "boss": true,
+    "hp": 900,
+    "mp": 40,
+    "str": 30,
+    "def": 22,
+    "mag": 20,
+    "mdf": 18,
+    "spd": 12,
+    "lck": 8,
+    "weaknesses": [
+      "holy"
+    ],
+    "resistances": [
+      "dark"
+    ],
+    "xp": 800,
+    "gold": 3000,
+    "loot": [
+      {
+        "id": "hi_potion",
+        "chance": 1.0
+      }
+    ],
+    "sprite": "bk_lieutenant",
+    "zone": "boss",
+    "ai": "boss_lieutenant"
   },
   {
-    "id": "beast_king", "name": "Corrupted Beast King", "boss": true,
-    "hp": 2000, "mp": 60, "str": 40, "def": 30, "mag": 30, "mdf": 25, "spd": 8, "lck": 7,
-    "weaknesses": ["holy"], "resistances": ["dark", "fire"],
-    "xp": 2000, "gold": 7500, "loot": [{"id": "elixir", "chance": 1.0}],
-    "sprite": "beast_king", "zone": "boss", "ai": "boss_beast_king"
+    "id": "beast_king",
+    "name": "Corrupted Beast King",
+    "boss": true,
+    "hp": 2000,
+    "mp": 60,
+    "str": 40,
+    "def": 30,
+    "mag": 30,
+    "mdf": 25,
+    "spd": 8,
+    "lck": 7,
+    "weaknesses": [
+      "holy"
+    ],
+    "resistances": [
+      "dark",
+      "fire"
+    ],
+    "xp": 2000,
+    "gold": 7500,
+    "loot": [
+      {
+        "id": "elixir",
+        "chance": 1.0
+      }
+    ],
+    "sprite": "beast_king",
+    "zone": "boss",
+    "ai": "boss_beast_king"
   },
   {
-    "id": "crystal_sentinel", "name": "Crystal Sentinel", "boss": true,
-    "hp": 1500, "mp": 0, "str": 35, "def": 40, "mag": 0, "mdf": 5, "spd": 6, "lck": 5,
-    "weaknesses": [], "resistances": [],
-    "immunities": ["magic"],
-    "xp": 1500, "gold": 5000, "loot": [{"id": "hi_ether", "chance": 1.0}],
-    "sprite": "crystal_sentinel", "zone": "boss", "ai": "boss_sentinel"
+    "id": "crystal_sentinel",
+    "name": "Crystal Sentinel",
+    "boss": true,
+    "hp": 1500,
+    "mp": 0,
+    "str": 35,
+    "def": 40,
+    "mag": 0,
+    "mdf": 5,
+    "spd": 6,
+    "lck": 5,
+    "weaknesses": [],
+    "resistances": [],
+    "immunities": [
+      "magic"
+    ],
+    "xp": 1500,
+    "gold": 5000,
+    "loot": [
+      {
+        "id": "hi_ether",
+        "chance": 1.0
+      }
+    ],
+    "sprite": "crystal_sentinel",
+    "zone": "boss",
+    "ai": "boss_sentinel"
   },
   {
-    "id": "black_knight", "name": "The Black Knight", "boss": true,
-    "hp": 4000, "mp": 80, "str": 50, "def": 40, "mag": 40, "mdf": 35, "spd": 14, "lck": 10,
-    "weaknesses": ["holy"], "resistances": ["dark", "fire", "ice", "lightning"],
-    "xp": 5000, "gold": 15000, "loot": [{"id": "elixir", "chance": 1.0}],
-    "sprite": "black_knight", "zone": "boss", "ai": "boss_black_knight",
-    "phases": 2, "heal_at_phase_2": true
+    "id": "black_knight",
+    "name": "The Black Knight",
+    "boss": true,
+    "hp": 4000,
+    "mp": 80,
+    "str": 50,
+    "def": 40,
+    "mag": 40,
+    "mdf": 35,
+    "spd": 14,
+    "lck": 10,
+    "weaknesses": [
+      "holy"
+    ],
+    "resistances": [
+      "dark",
+      "fire",
+      "ice",
+      "lightning"
+    ],
+    "xp": 5000,
+    "gold": 15000,
+    "loot": [
+      {
+        "id": "elixir",
+        "chance": 1.0
+      }
+    ],
+    "sprite": "black_knight",
+    "zone": "boss",
+    "ai": "boss_black_knight",
+    "phases": 2,
+    "heal_at_phase_2": true
   },
   {
-    "id": "viper_queen", "name": "Viper Queen", "boss": true,
-    "hp": 500, "mp": 20, "str": 18, "def": 10, "mag": 10, "mdf": 12, "spd": 11, "lck": 8,
-    "weaknesses": ["fire"], "resistances": [],
-    "xp": 300, "gold": 250, "loot": [{"id": "antidote", "chance": 1.0}, {"id": "hi_potion", "chance": 0.5}],
-    "sprite": "viper_queen", "zone": "boss", "ai": "poison_attack",
-    "status_moves": [{"effect": "poison", "chance": 0.6}]
+    "id": "viper_queen",
+    "name": "Viper Queen",
+    "boss": true,
+    "hp": 500,
+    "mp": 20,
+    "str": 18,
+    "def": 10,
+    "mag": 10,
+    "mdf": 12,
+    "spd": 11,
+    "lck": 8,
+    "weaknesses": [
+      "fire"
+    ],
+    "resistances": [],
+    "xp": 300,
+    "gold": 250,
+    "loot": [
+      {
+        "id": "antidote",
+        "chance": 1.0
+      },
+      {
+        "id": "hi_potion",
+        "chance": 0.5
+      }
+    ],
+    "sprite": "viper_queen",
+    "zone": "boss",
+    "ai": "poison_attack",
+    "status_moves": [
+      {
+        "effect": "poison",
+        "chance": 0.6
+      }
+    ]
   },
   {
-    "id": "thunder_hawk_king", "name": "Thunder Hawk King", "boss": true,
-    "hp": 600, "mp": 60, "str": 20, "def": 10, "mag": 22, "mdf": 14, "spd": 15, "lck": 9,
-    "weaknesses": ["earth"], "resistances": ["lightning"],
-    "xp": 400, "gold": 320, "loot": [{"id": "hi_ether", "chance": 1.0}],
-    "sprite": "thunder_hawk_king", "zone": "boss", "ai": "elemental_attack",
-    "spells": [{"id": "thunder", "chance": 0.5}, {"id": "thundara", "chance": 0.3}]
+    "id": "thunder_hawk_king",
+    "name": "Thunder Hawk King",
+    "boss": true,
+    "hp": 600,
+    "mp": 60,
+    "str": 20,
+    "def": 10,
+    "mag": 22,
+    "mdf": 14,
+    "spd": 15,
+    "lck": 9,
+    "weaknesses": [
+      "earth"
+    ],
+    "resistances": [
+      "lightning"
+    ],
+    "xp": 400,
+    "gold": 320,
+    "loot": [
+      {
+        "id": "hi_ether",
+        "chance": 1.0
+      }
+    ],
+    "sprite": "thunder_hawk_king",
+    "zone": "boss",
+    "ai": "elemental_attack",
+    "spells": [
+      {
+        "id": "thunder",
+        "chance": 0.5
+      },
+      {
+        "id": "thundara",
+        "chance": 0.3
+      }
+    ]
+  },
+  {
+    "id": "godzilla",
+    "name": "Godzilla",
+    "boss": false,
+    "hp": 5000,
+    "mp": 0,
+    "str": 90,
+    "def": 50,
+    "mag": 0,
+    "mdf": 40,
+    "spd": 8,
+    "lck": 5,
+    "weaknesses": [],
+    "resistances": [
+      "fire",
+      "lightning",
+      "ice",
+      "earth",
+      "wind",
+      "dark",
+      "holy"
+    ],
+    "xp": 10000,
+    "gold": 20000,
+    "loot": [],
+    "sprite": "godzilla",
+    "zone": "dark_lands",
+    "ai": "aggressive"
   }
 ]
