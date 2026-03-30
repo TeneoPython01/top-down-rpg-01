@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from src.game import Game
 
 
-_BASE_TABS = ["Items", "Equipment", "Magic", "Stats", "Quests", "Save"]
+_BASE_TABS = ["Items", "Equipment", "Magic", "Stats", "Quests", "Save", "Options"]
 _CHEAT_LABEL = "Cheats"
 
 # Konami code: ↑ ↑ ↓ ↓ ← → ← →  (enter while viewing the Quests tab)
@@ -155,13 +155,18 @@ class PauseMenuState(BaseState):
                 self._tab_idx = self._tab_menu.selected
                 if result:
                     self.game.audio.play_sfx("confirm")
-                    self._focus = "content"
-                    self._items_cursor = 0
-                    self._equip_cursor = 0
-                    self._magic_cursor = 0
-                    self._quests_cursor = 0
-                    self._save_cursor = 0
-                    self._cheat_cursor = 0
+                    # Options tab launches the dedicated OptionsState overlay
+                    if self._tabs[self._tab_idx] == "Options":
+                        from src.states.options import OptionsState
+                        self.game.push_state(OptionsState(self.game))
+                    else:
+                        self._focus = "content"
+                        self._items_cursor = 0
+                        self._equip_cursor = 0
+                        self._magic_cursor = 0
+                        self._quests_cursor = 0
+                        self._save_cursor = 0
+                        self._cheat_cursor = 0
         else:
             self._handle_content_input(event)
 
@@ -423,6 +428,9 @@ class PauseMenuState(BaseState):
             self._draw_save_tab(surface, font, font_sm, content_y)
         elif tab == "Cheats":
             self._draw_cheats_tab(surface, font, font_sm, content_y)
+        elif tab == "Options":
+            hint = font_sm.render("Press Enter / Z to open Options", True, LIGHT_GRAY)
+            surface.blit(hint, hint.get_rect(centerx=NATIVE_WIDTH // 2, centery=content_y + 20))
 
     def _draw_items_tab(self, surface: pygame.Surface, font: pygame.font.Font, font_sm: pygame.font.Font, y: int) -> None:
         items = self._get_healing_items()

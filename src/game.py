@@ -21,6 +21,7 @@ from settings import (
 )
 from src.states.base_state import BaseState
 from src.systems.audio import AudioManager
+from src.systems.config import load_config, save_config
 from src.systems.inventory import Inventory
 from src.systems.quest_flags import QuestFlags
 from src.systems.quest_log import QuestLog
@@ -43,8 +44,12 @@ class Game:
         self.running = True
         self._state_stack: List[BaseState] = []
 
+        # Persistent player-adjustable options (music vol, SFX vol, speeds …)
+        self.config = load_config()
+
         # Audio manager — must be created after pygame.init()
         self.audio = AudioManager()
+        self._apply_config_audio()
 
         # Shared player inventory / gold (persists across all states)
         self.inventory = Inventory()
@@ -59,6 +64,16 @@ class Game:
         # Kick off with the title screen (imported here to avoid circular deps)
         from src.states.title import TitleState
         self.push_state(TitleState(self))
+
+    def _apply_config_audio(self) -> None:
+        """Push volume settings from config into the AudioManager."""
+        self.audio.set_music_volume(self.config.get("music_volume", 0.5))
+        self.audio.set_sfx_volume(self.config.get("sfx_volume", 0.7))
+
+    def save_config(self) -> None:
+        """Persist current config to disk and re-apply audio volumes."""
+        save_config(self.config)
+        self._apply_config_audio()
 
     # ── State management ──────────────────────────────────────────────────────
 

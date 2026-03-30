@@ -36,9 +36,18 @@ class TextBox:
         Optional name of the speaker shown as a banner above the box.
     width:
         Width of the text box in native pixels (defaults to full screen width).
+    speed:
+        Typewriter characters-per-frame override.  Defaults to the global
+        ``TYPEWRITER_SPEED`` constant if not provided (or if ``None``).
     """
 
-    def __init__(self, text: str, speaker: str = "", width: int = NATIVE_WIDTH) -> None:
+    def __init__(
+        self,
+        text: str,
+        speaker: str = "",
+        width: int = NATIVE_WIDTH,
+        speed: int | None = None,
+    ) -> None:
         self._full_text = text
         self._speaker = speaker
         self._chars_shown = 0
@@ -47,6 +56,7 @@ class TextBox:
         self.width = width
         self.height = DIALOG_BOX_HEIGHT
         self.y = NATIVE_HEIGHT - self.height - 4
+        self._speed = speed if speed is not None else TYPEWRITER_SPEED
 
     # ── Public API ────────────────────────────────────────────────────────────
 
@@ -65,8 +75,8 @@ class TextBox:
         if self._done:
             return
         self._timer += dt * 60  # convert to frame units
-        while self._timer >= 1.0 / TYPEWRITER_SPEED and not self._done:
-            self._timer -= 1.0 / TYPEWRITER_SPEED
+        while self._timer >= 1.0 / self._speed and not self._done:
+            self._timer -= 1.0 / self._speed
             self._chars_shown += 1
             if self._chars_shown >= len(self._full_text):
                 self._done = True
