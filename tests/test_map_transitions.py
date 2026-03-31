@@ -37,6 +37,9 @@ class _Audio:
     def play_music(self, name: str) -> None:
         pass
 
+    def play_sfx(self, name: str) -> None:
+        pass
+
 
 class _Inventory:
     gold: int = 0
@@ -377,3 +380,169 @@ class TestPlacePlayerOutsideTile:
         )
         manhattan = abs(col - 22) + abs(row - 3)
         assert manhattan == 1
+
+
+# ---------------------------------------------------------------------------
+# Tests: hidden passage reward mechanics
+# ---------------------------------------------------------------------------
+
+class _TrackingInventory:
+    """Minimal inventory that records added items and gold changes."""
+    def __init__(self):
+        self.gold: int = 0
+        self.items: list = []
+
+    def add(self, item_id: str, count: int = 1) -> None:
+        self.items.append((item_id, count))
+
+
+class _TrackingQuestFlags:
+    def __init__(self):
+        self._flags: dict = {}
+
+    def get(self, key: str) -> bool:
+        return self._flags.get(key, False)
+
+    def set(self, key: str) -> None:
+        self._flags[key] = True
+
+
+class _TrackingGame(_MockGame):
+    def __init__(self):
+        super().__init__()
+        self.quest_flags = _TrackingQuestFlags()
+        self.inventory = _TrackingInventory()
+        self._pushed_states: list = []
+
+    def push_state(self, state) -> None:
+        self._pushed_states.append(state)
+
+
+def _make_overworld_tracking(zone_name: str = "verdant_plains"):
+    """Create an OverworldState backed by a tracking game stub."""
+    game = _TrackingGame()
+    from src.states.overworld import OverworldState
+    state = OverworldState(game, zone_name=zone_name)
+    game.player = state.player
+    return game, state
+
+
+class TestHiddenPassageTiles:
+    """Verify that TILE_HIDDEN tiles exist at the expected map positions."""
+
+    @pytest.mark.parametrize("zone,col,row", [
+        ("verdant_plains",      12,  6),
+        ("silverwood_forest",    6,  5),
+        ("stormcrag_mountains", 21,  8),
+        ("dark_lands",           6, 11),
+    ])
+    def test_hidden_tile_present_in_map(self, zone, col, row):
+        from settings import TILE_HIDDEN
+        from src.utils.tilemap import get_zone_data
+        zone_data = get_zone_data(zone)
+        tile_id = zone_data["map"][row][col]
+        assert tile_id == TILE_HIDDEN, (
+            f"{zone} ({col},{row}): expected TILE_HIDDEN ({TILE_HIDDEN}), got {tile_id}"
+        )
+
+    @pytest.mark.parametrize("zone,col,row", [
+        ("verdant_plains",      12,  6),
+        ("silverwood_forest",    6,  5),
+        ("stormcrag_mountains", 21,  8),
+        ("dark_lands",           6, 11),
+    ])
+    def test_hidden_tile_registered_in_hidden_walls(self, zone, col, row):
+        from src.utils.tilemap import get_zone_data
+        zone_data = get_zone_data(zone)
+        assert (col, row) in zone_data["hidden_walls"], (
+            f"{zone}: ({col},{row}) not found in hidden_walls registry"
+        )
+
+
+class TestHiddenPassageRewards:
+    """Verify the reward-passage trigger: items, gold, spells, and flag-guard."""
+
+    def _run_trigger(self, zone: str, col: int, row: int):
+        """Trigger the hidden wall at (col, row) in *zone* and return (game, state)."""
+        game, state = _make_overworld_tracking(zone_name=zone)
+        from src.utils.tilemap import get_zone_data
+        hw_data = get_zone_data(zone)["hidden_walls"][(col, row)]
+        state._trigger_hidden_wall(hw_data)
+        return game, state
+
+    @pytest.mark.parametrize("zone,col,row,expected_gold", [
+        ("verdant_plains",      12,  6,  250),
+        ("silverwood_forest",    6,  5,  400),
+        ("stormcrag_mountains", 21,  8,  700),
+        ("dark_lands",           6, 11, 2000),
+    ])
+    def test_gold_awarded(self, zone, col, row, expected_gold):
+        game, _ = self._run_trigger(zone, col, row)
+        assert game.inventory.gold == expected_gold
+
+    @pytest.mark.parametrize("zone,col,row,expected_item", [
+        ("verdant_plains",      12,  6, "iron_helm"),
+        ("silverwood_forest",    6,  5, "silver_ring"),
+        ("stormcrag_mountains", 21,  8, "iron_shield"),
+        ("dark_lands",           6, 11, "elixir"),
+    ])
+    def test_items_awarded(self, zone, col, row, expected_item):
+        game, _ = self._run_trigger(zone, col, row)
+        item_ids = [item_id for item_id, _ in game.inventory.items]
+        assert expected_item in item_ids, (
+            f"{zone}: expected '{expected_item}' in awarded items {item_ids}"
+        )
+
+    @pytest.mark.parametrize("zone,col,row,expected_spell", [
+        ("stormcrag_mountains", 21,  8, "dispel"),
+        ("dark_lands",           6, 11, "holy"),
+    ])
+    def test_spell_learned(self, zone, col, row, expected_spell):
+        game, state = _make_overworld_tracking(zone_name=zone)
+        from src.utils.tilemap import get_zone_data
+        hw_data = get_zone_data(zone)["hidden_walls"][(col, row)]
+        assert expected_spell not in state.player.known_spells
+        state._trigger_hidden_wall(hw_data)
+        assert expected_spell in state.player.known_spells, (
+            f"{zone}: spell '{expected_spell}' not in player.known_spells after trigger"
+        )
+
+    def test_flag_set_after_first_trigger(self):
+        game, state = _make_overworld_tracking(zone_name="verdant_plains")
+        from src.utils.tilemap import get_zone_data
+        hw_data = get_zone_data("verdant_plains")["hidden_walls"][(12, 6)]
+        state._trigger_hidden_wall(hw_data)
+        assert game.quest_flags.get("passage_opened_verdant_secret_1")
+
+    def test_no_duplicate_reward_on_second_trigger(self):
+        game, state = _make_overworld_tracking(zone_name="verdant_plains")
+        from src.utils.tilemap import get_zone_data
+        hw_data = get_zone_data("verdant_plains")["hidden_walls"][(12, 6)]
+        state._trigger_hidden_wall(hw_data)
+        first_gold = game.inventory.gold
+        state._trigger_hidden_wall(hw_data)
+        assert game.inventory.gold == first_gold, (
+            "Gold should not be awarded a second time for the same passage"
+        )
+
+    def test_already_known_spell_not_duplicated(self):
+        game, state = _make_overworld_tracking(zone_name="stormcrag_mountains")
+        state.player.known_spells.append("dispel")  # pre-learn the spell
+        from src.utils.tilemap import get_zone_data
+        hw_data = get_zone_data("stormcrag_mountains")["hidden_walls"][(21, 8)]
+        state._trigger_hidden_wall(hw_data)
+        assert state.player.known_spells.count("dispel") == 1, (
+            "dispel should not be duplicated if already known"
+        )
+
+    def test_zone_transition_passage_unchanged(self):
+        """The existing Subterra zone-transition passage must still work."""
+        game, state = _make_overworld_tracking(zone_name="stormcrag_mountains")
+        from src.utils.tilemap import get_zone_data
+        hw_data = get_zone_data("stormcrag_mountains")["hidden_walls"][(8, 10)]
+        # Zone-transition passages push a dialog/fade state, not a reward
+        assert hw_data.get("to_zone") == "subterra_passage"
+        # Trigger should not add items (it queues a zone transition instead)
+        state._trigger_hidden_wall(hw_data)
+        assert game.inventory.gold == 0
+        assert game.inventory.items == []

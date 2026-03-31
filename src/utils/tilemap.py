@@ -51,7 +51,7 @@ DEFAULT_MAP: List[List[int]] = [
     [_W, _G, _G, _P, _G, _P, _G, _G, _G, _W, _W, _W, _W, _G, _G, _G, _G, _G, _G, _G, _P, _P, _E, _G, _W],
     [_W, _G, _G, _P, _G, _P, _G, _C, _G, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _P, _P, _P, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _H, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # H=secret cache (col 12)
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _P, _P, _E, _G, _W],
@@ -84,7 +84,7 @@ SILVERWOOD_MAP: List[List[int]] = [
     [_W, _G, _W, _G, _G, _G, _W, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _W, _W, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _C, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
     [_W, _W, _G, _G, _D, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # D=Silverwood Clearing
-    [_W, _G, _G, _G, _G, _G, _W, _G, _G, _L, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _G, _H, _G, _G, _L, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # H=secret hollow (col 6)
     [_W, _G, _W, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _C, _W, _G, _W],
     [_W, _G, _W, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _G, _G, _W, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _W],
@@ -137,7 +137,7 @@ STORMCRAG_MAP: List[List[int]] = [
     [_W, _W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _C, _G, _W, _W, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _W, _W, _G, _G, _G, _G, _D, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _W],  # D=Mountain Pass boss
     [_W, _G, _G, _G, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
+    [_W, _G, _G, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _H, _G, _G, _W],  # H=crystal vault (col 21)
     [_W, _G, _G, _W, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _H, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # H=hidden Subterra wall
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _L, _G, _G, _G, _G, _G, _W],
@@ -173,6 +173,15 @@ STORMCRAG_HIDDEN_WALLS: Dict[Tuple[int, int], Dict[str, Any]] = {
         "flag_required": None,  # always accessible
         "reveal_text": "The rock face shudders... A passage opens!",
     },
+    (21, 8): {
+        "chest_id": "stormcrag_secret_1",
+        "reveal_text": "The mountain face cracks — a crystal-lined vault glitters within!",
+        "reward": {
+            "items": [{"item_id": "hi_potion", "count": 2}, {"item_id": "iron_shield", "count": 1}],
+            "gold": 700,
+            "spells": ["dispel"],
+        },
+    },
 }
 
 # ---------------------------------------------------------------------------
@@ -190,7 +199,7 @@ DARK_LANDS_MAP: List[List[int]] = [
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _W],
     [_W, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
-    [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
+    [_W, _G, _G, _G, _G, _W, _H, _W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],  # W_H_W=ruined wall cache (col 6)
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _L, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _C, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
     [_W, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _G, _W],
@@ -273,7 +282,16 @@ _ZONES: Dict[str, Dict[str, Any]] = {
             },
         },
         "town_entrances": {(22, 3): "ironhaven", (22, 9): "ashenvale"},
-        "hidden_walls": {},
+        "hidden_walls": {
+            (12, 6): {
+                "chest_id": "verdant_secret_1",
+                "reveal_text": "A loose stone grinds aside — an old cache is revealed!",
+                "reward": {
+                    "items": [{"item_id": "potion", "count": 2}, {"item_id": "iron_helm", "count": 1}],
+                    "gold": 250,
+                },
+            },
+        },
         "chest_tiles": {
             (7, 4): {"chest_id": "verdant_plains_1", "items": [{"item_id": "potion", "count": 2}], "gold": 80},
             (15, 13): {"chest_id": "verdant_plains_2", "items": [{"item_id": "leather_helm", "count": 1}], "gold": 120},
@@ -291,7 +309,16 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         "zone_exits": SILVERWOOD_ZONE_EXITS,
         "dungeon_entries": SILVERWOOD_DUNGEON_ENTRIES,
         "town_entrances": SILVERWOOD_TOWN_ENTRANCES,
-        "hidden_walls": {},
+        "hidden_walls": {
+            (6, 5): {
+                "chest_id": "silverwood_secret_1",
+                "reveal_text": "Ancient roots shift aside — a hollow within the great tree!",
+                "reward": {
+                    "items": [{"item_id": "ether", "count": 2}, {"item_id": "silver_ring", "count": 1}],
+                    "gold": 400,
+                },
+            },
+        },
         "chest_tiles": {
             (7, 3): {"chest_id": "silverwood_1", "items": [{"item_id": "potion", "count": 2}, {"item_id": "ether", "count": 1}], "gold": 200},
             (21, 6): {"chest_id": "silverwood_2", "items": [{"item_id": "long_sword", "count": 1}], "gold": 400},
@@ -332,7 +359,17 @@ _ZONES: Dict[str, Dict[str, Any]] = {
         "zone_exits": DARK_LANDS_ZONE_EXITS,
         "dungeon_entries": DARK_LANDS_DUNGEON_ENTRIES,
         "town_entrances": {},
-        "hidden_walls": {},
+        "hidden_walls": {
+            (6, 11): {
+                "chest_id": "dark_lands_secret_1",
+                "reveal_text": "The rubble groans and shifts — a forgotten arsenal lies within!",
+                "reward": {
+                    "items": [{"item_id": "elixir", "count": 2}, {"item_id": "stasis_field", "count": 2}],
+                    "gold": 2000,
+                    "spells": ["holy"],
+                },
+            },
+        },
         "chest_tiles": {
             (5, 2): {"chest_id": "dark_lands_1", "items": [{"item_id": "elixir", "count": 2}], "gold": 1000},
             (20, 3): {"chest_id": "dark_lands_2", "items": [{"item_id": "knight_armor", "count": 1}], "gold": 2000},

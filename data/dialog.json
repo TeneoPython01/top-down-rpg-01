@@ -18,7 +18,8 @@
   "farmer_ashenvale": {
     "lines": [
       "Haven't slept right in weeks. The wolves howl all night now.",
-      "My crops are half-eaten. Something's different about these beasts — they seem angrier."
+      "My crops are half-eaten. Something's different about these beasts — they seem angrier.",
+      "...Oh, and there's an odd thing near the old ruins by the enclosure. One of the stones sounds hollow when you knock on it. Probably nothing."
     ]
   },
   "healer_npc": {
@@ -39,7 +40,8 @@
     "lines": [
       "The mountains breathe. I swear I felt warm air from solid stone.",
       "I wrote it in my journal — somewhere in the Stormcrag range, there's something strange.",
-      "Maybe I'm imagining things. Or maybe not."
+      "Maybe I'm imagining things. Or maybe not.",
+      "Actually — I noticed something here in the forest too. One of those old knotted trees near the west path... I tapped it once. Sounded hollow. Like it was hiding something."
     ]
   },
   "willowmere_elder": {
@@ -173,6 +175,22 @@
       "Actually... I have a commission for a warrior like you.",
       "Bring me the storm-feathers of the Thunder Hawk King that nests deep in the Silverwood.",
       "In return I'll forge you the finest blade I've ever made."
+    ]
+  },
+  "stormcrag_hermit": {
+    "lines": [
+      "I've camped these peaks for twenty years. Solitude suits me.",
+      "Some of the eastern cliff faces ring like a bell when the wind blows just right.",
+      "Hollow, they are. A wise traveler stops to knock on things that sound wrong.",
+      "That's how I've survived up here, anyway."
+    ]
+  },
+  "dark_soldier": {
+    "lines": [
+      "I served under the Black Knight once. Before I saw what he truly was.",
+      "His forces kept supply caches hidden across the Dark Lands. I helped build some.",
+      "There's one tucked behind a ruined wall in the south — just a heap of rubble to look at.",
+      "Some of us tried to take it. Couldn't get the door open. Maybe you'll have better luck."
     ]
   }
 }
