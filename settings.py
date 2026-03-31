@@ -11,7 +11,7 @@ SCALE = 3
 SCREEN_WIDTH = NATIVE_WIDTH * SCALE    # 768
 SCREEN_HEIGHT = NATIVE_HEIGHT * SCALE  # 672
 FPS = 60
-TITLE = "Top-Down RPG — Post-Pandemic Fantasy"
+TITLE = "ReThrive — The world will thrive again!"
 
 # ── Tile grid ─────────────────────────────────────────────────────────────────
 TILE_SIZE = 16  # pixels at native resolution

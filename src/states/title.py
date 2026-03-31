@@ -174,8 +174,8 @@ class TitleState(BaseState):
         font_med = pygame.font.SysFont(FONT_NAME, FONT_SIZE_NORMAL)
         cx = NATIVE_WIDTH // 2
 
-        title_surf = font_big.render("Post-Pandemic Fantasy", True, YELLOW)
-        sub_surf = font_med.render("Top-Down RPG", True, WHITE)
+        title_surf = font_big.render("ReThrive", True, YELLOW)
+        sub_surf = font_med.render("The world will thrive again!", True, WHITE)
 
         surface.blit(title_surf, title_surf.get_rect(centerx=cx, centery=50))
         surface.blit(sub_surf, sub_surf.get_rect(centerx=cx, centery=66))

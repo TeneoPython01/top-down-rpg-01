@@ -1,5 +1,5 @@
 """
-run.py - Entry point for Top-Down RPG.
+run.py - Entry point for ReThrive.
 """
 
 from src.game import Game

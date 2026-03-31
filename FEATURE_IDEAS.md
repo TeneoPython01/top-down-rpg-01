@@ -1,8 +1,8 @@
-# Feature Ideas for Top-Down RPG
+# Feature Ideas for ReThrive
 
 50 expansion ideas for growing the game beyond its current Phase 5 state. Each idea includes a recommended implementation approach and a status field.
 
-> **Current implementation baseline:** Single-character overworld exploration, turn-based battle system, 5-slot save/load, dialog system with typewriter effect, 4 towns, 6+ zones, 17 spells, 20+ consumable/equipment items, quest flags, intro cutscene, and basic audio.
+> **Current implementation baseline:** Single-character overworld exploration, turn-based battle system, 5-slot save/load, dialog system with typewriter effect, 4 towns, 6+ zones, 17 spells, 20+ consumable/equipment items, quest flags, intro cutscene, basic audio, hidden passages/secret rewards, and options/settings menu.
 
 ---
 
