@@ -61,8 +61,12 @@ _ZONE_NPCS: Dict[str, List[Dict[str, Any]]] = {
     "silverwood_forest": [
         {"dialog_id": "willowmere_traveler", "name": "Wanderer", "col": 15, "row": 5},
     ],
-    "stormcrag_mountains": [],
-    "dark_lands": [],
+    "stormcrag_mountains": [
+        {"dialog_id": "stormcrag_hermit", "name": "Hermit", "col": 13, "row": 14},
+    ],
+    "dark_lands": [
+        {"dialog_id": "dark_soldier", "name": "Fallen Soldier", "col": 19, "row": 14},
+    ],
     "subterra_passage": [],
 }
 
@@ -322,19 +326,70 @@ class OverworldState(BaseState):
                 return
 
     def _trigger_hidden_wall(self, hw_data: Dict[str, Any]) -> None:
-        """Handle a hidden wall interaction (secret passage)."""
+        """Handle a hidden wall interaction (secret passage).
+
+        If *hw_data* contains ``"to_zone"`` the passage teleports the player to
+        another zone (existing Subterra mechanic).  Otherwise it reveals an
+        in-place treasure cache and awards items, gold, and/or spells.
+        """
         flag_required = hw_data.get("flag_required")
         if flag_required and not self.game.quest_flags.get(flag_required):
             return  # quest gate not met
 
         reveal_text = hw_data.get("reveal_text", "A hidden passage is revealed!")
-        target_zone = hw_data.get("to_zone", "subterra_passage")
-        spawn = hw_data.get("spawn", (10, 13))
 
-        def _enter_passage() -> None:
-            self._transition_zone(target_zone, spawn=tuple(spawn))
+        # ── Zone-transition passage (e.g. Stormcrag → Subterra) ───────────────
+        to_zone = hw_data.get("to_zone")
+        if to_zone:
+            spawn = hw_data.get("spawn", (10, 13))
 
-        self._push_scene_dialog([reveal_text], speaker="", callback=_enter_passage)
+            def _enter_passage() -> None:
+                self._transition_zone(to_zone, spawn=tuple(spawn))
+
+            self._push_scene_dialog([reveal_text], speaker="", callback=_enter_passage)
+            return
+
+        # ── Treasure-reward passage ────────────────────────────────────────────
+        chest_id = hw_data.get("chest_id", "")
+        flag = f"passage_opened_{chest_id}" if chest_id else ""
+
+        if flag and self.game.quest_flags.get(flag):
+            self._push_scene_dialog(["The passage is empty now."], speaker="")
+            return
+
+        if flag:
+            self.game.quest_flags.set(flag)
+
+        reward = hw_data.get("reward", {})
+        lines: List[str] = [reveal_text]
+
+        from src.systems.inventory import load_items
+        items_data = load_items()
+
+        for item_entry in reward.get("items", []):
+            item_id = item_entry["item_id"]
+            count = item_entry.get("count", 1)
+            self.game.inventory.add(item_id, count)
+            item_name = items_data.get(item_id, {}).get("name", item_id)
+            lines.append(f"Found {count}x {item_name}!" if count > 1 else f"Found {item_name}!")
+
+        gold = reward.get("gold", 0)
+        if gold > 0:
+            self.game.inventory.gold += gold
+            lines.append(f"Found {gold} gold!")
+
+        for spell_id in reward.get("spells", []):
+            if spell_id not in self.player.known_spells:
+                self.player.known_spells.append(spell_id)
+                from src.systems.magic import load_spells
+                all_spells = load_spells()
+                spell_name = all_spells.get(spell_id, {}).get("name", spell_id)
+                lines.append(f"Learned the spell: {spell_name}!")
+
+        if len(lines) > 1:
+            self.game.audio.play_sfx("item_get")
+
+        self._push_scene_dialog(lines, speaker="Secret Passage")
 
     def _push_scene_dialog(
         self,
