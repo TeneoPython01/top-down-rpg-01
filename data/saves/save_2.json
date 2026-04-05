@@ -1,0 +1,70 @@
+{
+  "slot": 2,
+  "timestamp": "2026-04-04 20:58",
+  "location": "overworld:verdant_plains",
+  "player_name": "White Knight",
+  "player_level": 4,
+  "player": {
+    "name": "White Knight",
+    "level": 4,
+    "exp": 460,
+    "hp": 186,
+    "max_hp": 186,
+    "mp": 50,
+    "max_mp": 50,
+    "base_stats": {
+      "str": 15,
+      "def": 11,
+      "mag": 11,
+      "mdf": 9,
+      "spd": 9,
+      "lck": 6
+    },
+    "status": {
+      "poison": 3
+    },
+    "buffs": {},
+    "known_spells": [
+      "cure",
+      "scan"
+    ],
+    "gold": 200,
+    "inventory_items": {
+      "potion": 3,
+      "antidote": 5
+    },
+    "equipment": {
+      "weapon": null,
+      "shield": null,
+      "helmet": null,
+      "armor": null,
+      "accessory": "viper_fang_ring"
+    },
+    "pos_x": 336.0,
+    "pos_y": 144.0,
+    "direction": 2,
+    "cheat_unlocked": false,
+    "always_crit": false,
+    "visited_zones": [
+      "verdant_plains"
+    ],
+    "collected_lore": []
+  },
+  "quest_flags": {
+    "chest_opened_verdant_plains_1": true,
+    "chest_opened_verdant_plains_2": true,
+    "viper_queen_defeated": true
+  },
+  "quest_log": {
+    "quest_beast_menace": "active",
+    "quest_poisoned_crops": "complete",
+    "quest_healers_research": "active",
+    "quest_wanderers_secret": "inactive",
+    "quest_blacksmith_commission": "inactive",
+    "quest_family_history": "inactive",
+    "quest_into_darkness": "inactive",
+    "quest_crystal_colossus": "inactive",
+    "quest_corrupted_throne": "inactive",
+    "quest_final_stand": "inactive"
+  }
+}
