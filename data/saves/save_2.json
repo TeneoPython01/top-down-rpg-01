@@ -1,65 +1,84 @@
 {
   "slot": 2,
-  "timestamp": "2026-04-04 20:58",
-  "location": "overworld:verdant_plains",
+  "timestamp": "2026-04-04 21:48",
+  "location": "overworld:silverwood_forest",
   "player_name": "White Knight",
-  "player_level": 4,
+  "player_level": 7,
   "player": {
     "name": "White Knight",
-    "level": 4,
-    "exp": 460,
-    "hp": 186,
-    "max_hp": 186,
-    "mp": 50,
-    "max_mp": 50,
+    "level": 7,
+    "exp": 1420,
+    "hp": 270,
+    "max_hp": 270,
+    "mp": 74,
+    "max_mp": 78,
     "base_stats": {
-      "str": 15,
-      "def": 11,
-      "mag": 11,
-      "mdf": 9,
-      "spd": 9,
-      "lck": 6
+      "str": 20,
+      "def": 14,
+      "mag": 14,
+      "mdf": 11,
+      "spd": 11,
+      "lck": 7
     },
-    "status": {
-      "poison": 3
-    },
+    "status": {},
     "buffs": {},
     "known_spells": [
       "cure",
       "scan"
     ],
-    "gold": 200,
+    "gold": 6095,
     "inventory_items": {
-      "potion": 3,
-      "antidote": 5
+      "potion": 8,
+      "antidote": 5,
+      "hi_potion": 7,
+      "leather_shield": 1,
+      "ether": 2,
+      "old_sword": 1,
+      "short_sword": 1,
+      "long_sword": 1,
+      "viper_fang_ring": 1
     },
     "equipment": {
-      "weapon": null,
-      "shield": null,
-      "helmet": null,
-      "armor": null,
-      "accessory": "viper_fang_ring"
+      "weapon": "broad_sword",
+      "shield": "iron_shield",
+      "helmet": "iron_helm",
+      "armor": "forest_cloak",
+      "accessory": "hunters_sigil"
     },
-    "pos_x": 336.0,
-    "pos_y": 144.0,
-    "direction": 2,
+    "pos_x": 192.0,
+    "pos_y": 96.0,
+    "direction": 3,
     "cheat_unlocked": false,
     "always_crit": false,
     "visited_zones": [
-      "verdant_plains"
+      "verdant_plains",
+      "silverwood_forest"
     ],
     "collected_lore": []
   },
   "quest_flags": {
     "chest_opened_verdant_plains_1": true,
     "chest_opened_verdant_plains_2": true,
-    "viper_queen_defeated": true
+    "viper_queen_defeated": true,
+    "chest_opened_ashenvale_1": true,
+    "old_man_sword_given": true,
+    "chest_opened_ashenvale_2": true,
+    "chest_opened_ironhaven_1": true,
+    "chest_opened_ironhaven_2": true,
+    "silverwood_reached": true,
+    "chest_opened_silverwood_4": true,
+    "chest_opened_silverwood_3": true,
+    "chest_opened_willowmere_2": true,
+    "chest_opened_willowmere_1": true,
+    "chest_opened_silverwood_2": true,
+    "chest_opened_silverwood_1": true,
+    "wolf_alpha_defeated": true
   },
   "quest_log": {
-    "quest_beast_menace": "active",
+    "quest_beast_menace": "complete",
     "quest_poisoned_crops": "complete",
-    "quest_healers_research": "active",
-    "quest_wanderers_secret": "inactive",
+    "quest_healers_research": "complete",
+    "quest_wanderers_secret": "active",
     "quest_blacksmith_commission": "inactive",
     "quest_family_history": "inactive",
     "quest_into_darkness": "inactive",
