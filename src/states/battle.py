@@ -268,7 +268,8 @@ class BattleState(BaseState):
         self._queue_idx = 0
 
         if status_msgs:
-            msg = "  ".join(status_msgs[:2])  # cap at 2 lines to avoid overflow
+            # Show at most 2 status messages joined on one line to avoid overflow.
+            msg = "  ".join(status_msgs[:2])
             self._show_msg(msg, duration=1.5, callback=self._process_next_turn)
         else:
             self._process_next_turn()
@@ -847,6 +848,7 @@ class BattleState(BaseState):
                 alive = [e for e in self.enemies if e.is_alive()]
                 if event.key == pygame.K_ESCAPE:
                     # Cancel target selection — return to the appropriate menu.
+                    self.game.audio.play_sfx("cancel")
                     if self._pending_action.startswith("spell:"):
                         self._phase = _Phase.PLAYER_SPELL
                     else:
