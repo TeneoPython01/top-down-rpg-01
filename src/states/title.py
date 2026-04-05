@@ -34,6 +34,10 @@ if TYPE_CHECKING:
 # Main-menu option labels
 _MAIN_OPTIONS = ["New Game", "Load Game", "Options", "Quit"]
 
+# Maximum character widths for save-slot display fields.
+_SLOT_LOCATION_MAX = 18
+_SLOT_TIMESTAMP_MAX = 16
+
 
 class TitleState(BaseState):
     """Displays the game title with a New Game / Load Game / Quit menu.
@@ -224,8 +228,8 @@ class TitleState(BaseState):
 
             if info is not None:
                 # Truncate location and timestamp to prevent horizontal overflow.
-                location = info["location"][:18]
-                timestamp = info["timestamp"][:16]
+                location = info["location"][:_SLOT_LOCATION_MAX]
+                timestamp = info["timestamp"][:_SLOT_TIMESTAMP_MAX]
                 label = (
                     f"Slot {i + 1}  {info['name'][:10]}"
                     f"  Lv.{info['level']}"

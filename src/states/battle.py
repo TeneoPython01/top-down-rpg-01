@@ -386,8 +386,7 @@ class BattleState(BaseState):
         self.player.mp = max(0, self.player.mp - mp_cost)
         # Build a zero-cost version of the spell data so cast_spell doesn't
         # double-deduct MP on each individual target.
-        _free_spells = dict(self._all_spells)
-        _free_spells = {k: dict(v) for k, v in _free_spells.items()}
+        _free_spells = {k: dict(v) for k, v in self._all_spells.items()}
         _free_spells[spell_id]["mp"] = 0
 
         for target in targets:

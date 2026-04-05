@@ -34,6 +34,12 @@ _MODE_MAIN = "main"
 _MODE_BUY = "buy"
 _MODE_SELL = "sell"
 
+# Maps item stat field names to their display labels.
+_STAT_LABELS = {
+    "atk": "ATK", "def": "DEF", "mag": "MAG", "mdf": "MDF",
+    "str": "STR", "lck": "LCK", "spd": "SPD", "hp": "HP", "mp": "MP",
+}
+
 
 class ShopState(BaseState):
     """Buy/sell interface.
@@ -250,10 +256,6 @@ class ShopState(BaseState):
                         desc_surf.get_rect(left=6, bottom=NATIVE_HEIGHT - 22),
                     )
                 # Build stat bonus string from equipment stat fields.
-                _STAT_LABELS = {
-                    "atk": "ATK", "def": "DEF", "mag": "MAG", "mdf": "MDF",
-                    "str": "STR", "lck": "LCK", "spd": "SPD", "hp": "HP", "mp": "MP",
-                }
                 stat_parts = [
                     f"+{item[k]} {lbl}"
                     for k, lbl in _STAT_LABELS.items()
