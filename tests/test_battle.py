@@ -82,7 +82,7 @@ class TestPhaseEnum:
         from src.states.battle import _Phase
         expected = {
             "INTRO", "PLAYER_MENU", "PLAYER_SPELL", "PLAYER_ITEM",
-            "MSG", "VICTORY", "LEVEL_UP", "DEFEAT",
+            "TARGET_SELECT", "MSG", "VICTORY", "LEVEL_UP", "DEFEAT",
         }
         actual = {m.name for m in _Phase}
         assert actual == expected

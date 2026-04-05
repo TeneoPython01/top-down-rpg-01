@@ -221,6 +221,29 @@ class PauseMenuState(BaseState):
             elif event.key in (pygame.K_DOWN, pygame.K_s):
                 self._magic_cursor = (self._magic_cursor + 1) % len(known)
                 self.game.audio.play_sfx("cursor")
+            elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
+                sid = known[self._magic_cursor % len(known)]
+                spell_data = self._all_spells.get(sid, {})
+                target_type = spell_data.get("target", "enemy_single")
+                effect = spell_data.get("effect", "")
+                if target_type.startswith("ally") or target_type == "any_single":
+                    if effect == "revive":
+                        self._message = "No targets to revive outside battle."
+                        self._message_timer = 2.0
+                    else:
+                        from src.systems.magic import cast_spell
+                        success, msg = cast_spell(
+                            sid, self.player, self.player, self._all_spells
+                        )
+                        if success:
+                            self.game.audio.play_sfx("item_use")
+                        else:
+                            self.game.audio.play_sfx("cancel")
+                        self._message = msg
+                        self._message_timer = 2.5
+                else:
+                    self._message = "Can only use this in battle!"
+                    self._message_timer = 2.0
 
         elif tab == "Quests":
             quest_entries = self._get_quest_entries()
@@ -375,16 +398,17 @@ class PauseMenuState(BaseState):
             (NATIVE_WIDTH // 2 - 12, 8),
         )
 
-        # Tab row (always visible)
+        # Tab row (always visible) — use actual rendered widths to prevent overflow.
         tab_x = 8
         for i, tab_name in enumerate(self._tabs):
             color = YELLOW if i == self._tab_idx else WHITE
-            if i == self._tab_idx:
-                bg = pygame.Rect(tab_x - 2, 18, len(tab_name) * _CHAR_W + _CHAR_W, 12)
-                pygame.draw.rect(surface, (60, 60, 100), bg)
             surf = font_sm.render(tab_name, True, color)
+            tab_w = surf.get_width()
+            if i == self._tab_idx:
+                bg = pygame.Rect(tab_x - 2, 18, tab_w + 4, 12)
+                pygame.draw.rect(surface, (60, 60, 100), bg)
             surface.blit(surf, (tab_x, 20))
-            tab_x += len(tab_name) * _CHAR_W + 10
+            tab_x += tab_w + 6  # 6 px gap between tabs
 
         # Divider
         pygame.draw.line(surface, LIGHT_GRAY, (8, 33), (NATIVE_WIDTH - 8, 33), 1)
@@ -496,11 +520,23 @@ class PauseMenuState(BaseState):
             row = f"{prefix} {name:<12} {mp:>3}MP  [{stype}]"
             surface.blit(font_sm.render(row, True, color), (12, y + i * 10))
 
-        # Description of highlighted spell
+        # Description of highlighted spell, plus usage hint.
         if self._focus == "content" and known:
             sid = known[self._magic_cursor % len(known)]
-            desc = self._all_spells.get(sid, {}).get("description", "")
-            surface.blit(font_sm.render(desc, True, (160, 200, 255)), (12, NATIVE_HEIGHT - 35))
+            spell_data = self._all_spells.get(sid, {})
+            desc = spell_data.get("description", "")
+            target_type = spell_data.get("target", "enemy_single")
+            effect = spell_data.get("effect", "")
+            usable_outside = (
+                (target_type.startswith("ally") or target_type == "any_single")
+                and effect != "revive"
+            )
+            hint_color = (160, 200, 255) if usable_outside else (160, 160, 160)
+            suffix = "  [Enter: use]" if usable_outside else "  [battle only]"
+            surface.blit(
+                font_sm.render(desc + suffix, True, hint_color),
+                (12, NATIVE_HEIGHT - 35),
+            )
 
     def _draw_stats_tab(self, surface: pygame.Surface, font: pygame.font.Font, font_sm: pygame.font.Font, y: int) -> None:
         p = self.player
