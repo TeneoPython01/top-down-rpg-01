@@ -68,6 +68,13 @@ class TownState(BaseState):
         _py = spawn_row * TILE_SIZE + _margin
         self.player.pos = pygame.Vector2(_px, _py)
         self.player.rect.topleft = (round(_px), round(_py))
+        # Reset grid movement state to prevent the player continuing any
+        # in-progress step from the overworld into the town.
+        self.player._tile_col = spawn_col
+        self.player._tile_row = spawn_row
+        self.player._target_col = spawn_col
+        self.player._target_row = spawn_row
+        self.player._grid_moving = False
 
         # Camera
         self.camera = Camera(
@@ -112,7 +119,8 @@ class TownState(BaseState):
     # ── Update ────────────────────────────────────────────────────────────────
 
     def update(self, dt: float) -> None:
-        self.player.update(dt, self.tilemap.blocked_rects)
+        npc_rects = [npc.rect for npc in self._npcs]
+        self.player.update(dt, self.tilemap.blocked_rects + npc_rects)
         self.camera.update(self.player)
 
         # NPC proximity check
@@ -227,9 +235,17 @@ class TownState(BaseState):
         callback = None
         if dialog_id == "healer_npc":
             player = self.game.player
+            game = self.game
             def on_close() -> None:  # type: ignore[misc]
                 player.hp = player.max_hp
                 player.mp = player.max_mp
+                game.push_state(
+                    DialogState(
+                        game,
+                        ["Your HP and MP have been fully restored!"],
+                        speaker="Healer",
+                    )
+                )
         elif dialog_id == "elder_zelda_ref":
             def callback() -> None:  # type: ignore[misc]
                 self.game.quest_flags.set("old_man_sword_given")

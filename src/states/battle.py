@@ -78,14 +78,15 @@ def _parse_amount(msg: str) -> int:
 
 
 class _Phase(enum.Enum):
-    INTRO        = "intro"         # battle-start stripe flash
-    PLAYER_MENU  = "player_menu"
-    PLAYER_SPELL = "player_spell"
-    PLAYER_ITEM  = "player_item"
-    MSG          = "msg"
-    VICTORY      = "victory"
-    LEVEL_UP     = "level_up"
-    DEFEAT       = "defeat"
+    INTRO         = "intro"          # battle-start stripe flash
+    PLAYER_MENU   = "player_menu"
+    PLAYER_SPELL  = "player_spell"
+    PLAYER_ITEM   = "player_item"
+    TARGET_SELECT = "target_select"  # choose which enemy to attack/cast on
+    MSG           = "msg"
+    VICTORY       = "victory"
+    LEVEL_UP      = "level_up"
+    DEFEAT        = "defeat"
 
 
 class _Anim:
@@ -170,6 +171,10 @@ class BattleState(BaseState):
         self._turn_queue: List[Any] = []
         self._queue_idx = 0
 
+        # Target selection state
+        self._enemy_cursor: int = 0        # index into alive enemy list
+        self._pending_action: str = ""     # "attack" or "spell:<spell_id>"
+
         # Cached fonts (initialised lazily)
         self._font: Optional[pygame.font.Font] = None
         self._font_sm: Optional[pygame.font.Font] = None
@@ -233,7 +238,7 @@ class BattleState(BaseState):
     # ── Turn management ───────────────────────────────────────────────────────
 
     def _start_new_round(self) -> None:
-        """Check end conditions, reset defend flag, then build the next turn queue."""
+        """Check end conditions, tick status effects, then build the next turn queue."""
         alive = [e for e in self.enemies if e.is_alive()]
         if not alive:
             self._begin_victory()
@@ -242,11 +247,31 @@ class BattleState(BaseState):
             self._begin_defeat()
             return
 
+        # Tick status effects (poison, sleep, blind, etc.) for all combatants.
+        from src.systems.magic import tick_status_effects
+        status_msgs: List[str] = []
+        for combatant in [self.player] + alive:
+            status_msgs.extend(tick_status_effects(combatant))
+
+        # Re-check end conditions after status ticks (e.g. poison kill).
+        if self.player.hp <= 0:
+            self._begin_defeat()
+            return
+        alive = [e for e in self.enemies if e.is_alive()]
+        if not alive:
+            self._begin_victory()
+            return
+
         self.player._defending = False
         all_combatants = [self.player] + alive
         self._turn_queue = turn_order(all_combatants)
         self._queue_idx = 0
-        self._process_next_turn()
+
+        if status_msgs:
+            msg = "  ".join(status_msgs[:2])  # cap at 2 lines to avoid overflow
+            self._show_msg(msg, duration=1.5, callback=self._process_next_turn)
+        else:
+            self._process_next_turn()
 
     def _process_next_turn(self) -> None:
         """Advance to the next actor in the queue; start a new round when exhausted."""
@@ -276,22 +301,23 @@ class BattleState(BaseState):
 
     # ── Player actions ────────────────────────────────────────────────────────
 
-    def _execute_player_attack(self) -> None:
+    def _execute_player_attack(self, target: Any = None) -> None:
         targets = [e for e in self.enemies if e.is_alive()]
         if not targets:
             self._after_action()
             return
-        target = targets[0]
+        if target is None:
+            target = targets[0]
         if check_hit(self.player, target):
             crit = check_crit(self.player)
             dmg = physical_damage(self.player, target, attack_power=UNARMED_ATTACK_POWER)
             if crit:
                 dmg *= 3
-            actual = target.take_damage(dmg)
+            target.take_damage(dmg)
             self.game.audio.play_sfx("attack_hit")
             self._fire_anim_on(target, "physical", label="SLASH")
             self._spawn_float_on_enemy(target, dmg)
-            msg = f"{self.player.name} attacks!  -{actual} HP"
+            msg = f"{self.player.name} attacks!  -{dmg} HP"
             if crit:
                 msg = "CRITICAL HIT!  " + msg
         else:
@@ -309,16 +335,17 @@ class BattleState(BaseState):
         else:
             self._show_msg("Couldn't escape!", callback=self._after_action)
 
-    def _execute_player_spell(self, spell_id: str) -> None:
+    def _execute_player_spell(self, spell_id: str, target: Any = None) -> None:
         """Cast a player spell then proceed to enemy turn."""
         spell_data = self._all_spells.get(spell_id, {})
         target_type = spell_data.get("target", "enemy_single")
         if target_type.startswith("enemy"):
-            targets = [e for e in self.enemies if e.is_alive()]
-            if not targets:
-                self._after_action()
-                return
-            target = targets[0]
+            if target is None:
+                targets = [e for e in self.enemies if e.is_alive()]
+                if not targets:
+                    self._after_action()
+                    return
+                target = targets[0]
         else:
             target = self.player
 
@@ -422,11 +449,11 @@ class BattleState(BaseState):
                 dmg *= 3
             if getattr(self.player, "_defending", False):
                 dmg = max(1, dmg // 2)
-            actual = self.player.take_damage(dmg)
+            self.player.take_damage(dmg)
             self.game.audio.play_sfx("attack_hit")
             self._fire_anim_on_player("physical")
             self._spawn_float_on_player(dmg)
-            msg = f"{enemy.name} attacks!  -{actual} HP"
+            msg = f"{enemy.name} attacks!  -{dmg} HP"
             if crit:
                 msg = "CRITICAL HIT!  " + msg
             return True, msg
@@ -476,11 +503,11 @@ class BattleState(BaseState):
             dmg = int(be.magical_damage(enemy, self.player, spell_power=20))
             if getattr(self.player, "_defending", False):
                 dmg = max(1, dmg // 2)
-            actual = self.player.take_damage(dmg)
+            self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
             self._spawn_float_on_player(dmg)
-            msg = f"{enemy.name} unleashes Dark Slash!  -{actual} HP"
+            msg = f"{enemy.name} unleashes Dark Slash!  -{dmg} HP"
             self._show_msg(msg, callback=self._after_action)
         else:
             _, msg = self._ai_physical_hit(enemy, power_mult=1.2)
@@ -500,12 +527,12 @@ class BattleState(BaseState):
             if turn % 2 == 0:
                 from src.systems import battle_engine as be
                 dmg = int(be.magical_damage(enemy, self.player, spell_power=30))
-                actual = self.player.take_damage(dmg)
+                self.player.take_damage(dmg)
                 self.game.audio.play_sfx("spell_cast")
                 self._fire_anim_on_player("dark")
                 self._spawn_float_on_player(dmg)
                 self._show_msg(
-                    f"{enemy.name} bellows with corrupted magic!  -{actual} HP",
+                    f"{enemy.name} bellows with corrupted magic!  -{dmg} HP",
                     callback=self._after_action,
                 )
             else:
@@ -515,7 +542,7 @@ class BattleState(BaseState):
             # Phase 3: magic + attempt sleep status
             from src.systems import battle_engine as be
             dmg = int(be.magical_damage(enemy, self.player, spell_power=35))
-            actual = self.player.take_damage(dmg)
+            self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
             self._spawn_float_on_player(dmg)
@@ -524,9 +551,9 @@ class BattleState(BaseState):
                 if not hasattr(self.player, "status"):
                     self.player.status = {}
                 self.player.status["sleep"] = 2
-                msg = f"{enemy.name} casts Nightmare!  -{actual} HP  Player falls asleep!"
+                msg = f"{enemy.name} casts Nightmare!  -{dmg} HP  Player falls asleep!"
             else:
-                msg = f"{enemy.name} casts Nightmare!  -{actual} HP"
+                msg = f"{enemy.name} casts Nightmare!  -{dmg} HP"
             self._show_msg(msg, callback=self._after_action)
 
     def _ai_boss_sentinel(self, enemy: Any) -> None:
@@ -563,12 +590,12 @@ class BattleState(BaseState):
             # Dark magic burst
             from src.systems import battle_engine as be
             dmg = int(be.magical_damage(enemy, self.player, spell_power=50))
-            actual = self.player.take_damage(dmg)
+            self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
             self._spawn_float_on_player(dmg)
             self._show_msg(
-                f"{enemy.name} casts Void Strike!  -{actual} HP",
+                f"{enemy.name} casts Void Strike!  -{dmg} HP",
                 callback=self._after_action,
             )
         elif action == 1:
@@ -580,12 +607,12 @@ class BattleState(BaseState):
             # Dark flame
             from src.systems import battle_engine as be
             dmg = int(be.magical_damage(enemy, self.player, spell_power=40))
-            actual = self.player.take_damage(dmg)
+            self.player.take_damage(dmg)
             self.game.audio.play_sfx("spell_cast")
             self._fire_anim_on_player("dark")
             self._spawn_float_on_player(dmg)
             self._show_msg(
-                f"{enemy.name} unleashes Black Flame!  -{actual} HP",
+                f"{enemy.name} unleashes Black Flame!  -{dmg} HP",
                 callback=self._after_action,
             )
         elif action == 3:
@@ -635,12 +662,12 @@ class BattleState(BaseState):
         """Magic elemental attack."""
         from src.systems import battle_engine as be
         dmg = int(be.magical_damage(enemy, self.player, spell_power=15))
-        actual = self.player.take_damage(dmg)
+        self.player.take_damage(dmg)
         self.game.audio.play_sfx("spell_cast")
         self._fire_anim_on_player("fire")
         self._spawn_float_on_player(dmg)
         self._show_msg(
-            f"{enemy.name} uses an elemental attack!  -{actual} HP",
+            f"{enemy.name} uses an elemental attack!  -{dmg} HP",
             callback=self._after_action,
         )
 
@@ -648,12 +675,12 @@ class BattleState(BaseState):
         """Random spell from the enemy's kit."""
         from src.systems import battle_engine as be
         dmg = int(be.magical_damage(enemy, self.player, spell_power=20))
-        actual = self.player.take_damage(dmg)
+        self.player.take_damage(dmg)
         self.game.audio.play_sfx("spell_cast")
         self._fire_anim_on_player("non_elemental")
         self._spawn_float_on_player(dmg)
         self._show_msg(
-            f"{enemy.name} casts a spell!  -{actual} HP",
+            f"{enemy.name} casts a spell!  -{dmg} HP",
             callback=self._after_action,
         )
 
@@ -786,7 +813,13 @@ class BattleState(BaseState):
                 on_move=lambda: self.game.audio.play_sfx("cursor"),
             )
             if result == "Attack":
-                self._execute_player_attack()
+                alive = [e for e in self.enemies if e.is_alive()]
+                if not alive:
+                    self._after_action()
+                else:
+                    self._pending_action = "attack"
+                    self._enemy_cursor = max(0, min(self._enemy_cursor, len(alive) - 1))
+                    self._phase = _Phase.TARGET_SELECT
             elif result == "Defend":
                 self._execute_player_defend()
             elif result == "Flee":
@@ -809,6 +842,32 @@ class BattleState(BaseState):
                     self._rebuild_item_menu()
                     self._phase = _Phase.PLAYER_ITEM
 
+        elif self._phase == _Phase.TARGET_SELECT:
+            if event.type == pygame.KEYDOWN:
+                alive = [e for e in self.enemies if e.is_alive()]
+                if event.key == pygame.K_ESCAPE:
+                    # Cancel target selection — return to the appropriate menu.
+                    if self._pending_action.startswith("spell:"):
+                        self._phase = _Phase.PLAYER_SPELL
+                    else:
+                        self._phase = _Phase.PLAYER_MENU
+                elif event.key in (pygame.K_LEFT, pygame.K_a, pygame.K_UP, pygame.K_w):
+                    if alive:
+                        self._enemy_cursor = (self._enemy_cursor - 1) % len(alive)
+                        self.game.audio.play_sfx("cursor")
+                elif event.key in (pygame.K_RIGHT, pygame.K_d, pygame.K_DOWN, pygame.K_s):
+                    if alive:
+                        self._enemy_cursor = (self._enemy_cursor + 1) % len(alive)
+                        self.game.audio.play_sfx("cursor")
+                elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
+                    if alive:
+                        target = alive[self._enemy_cursor % len(alive)]
+                        if self._pending_action == "attack":
+                            self._execute_player_attack(target)
+                        elif self._pending_action.startswith("spell:"):
+                            spell_id = self._pending_action[6:]
+                            self._execute_player_spell(spell_id, target)
+
         elif self._phase == _Phase.PLAYER_SPELL:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self._phase = _Phase.PLAYER_MENU
@@ -820,7 +879,22 @@ class BattleState(BaseState):
                 )
                 if result:
                     idx = self._spell_menu.selected
-                    self._execute_player_spell(self._spell_ids[idx])
+                    spell_id = self._spell_ids[idx]
+                    spell_data = self._all_spells.get(spell_id, {})
+                    target_type = spell_data.get("target", "enemy_single")
+                    if target_type.startswith("enemy"):
+                        # Route through target selection.
+                        alive = [e for e in self.enemies if e.is_alive()]
+                        if alive:
+                            self._pending_action = f"spell:{spell_id}"
+                            self._enemy_cursor = max(
+                                0, min(self._enemy_cursor, len(alive) - 1)
+                            )
+                            self._phase = _Phase.TARGET_SELECT
+                        else:
+                            self._execute_player_spell(spell_id)
+                    else:
+                        self._execute_player_spell(spell_id)
 
         elif self._phase == _Phase.PLAYER_ITEM:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -911,6 +985,12 @@ class BattleState(BaseState):
 
         if self._phase == _Phase.PLAYER_MENU:
             self._menu.draw(surface)
+        elif self._phase == _Phase.TARGET_SELECT:
+            hint = font_sm.render(
+                "Left/Right: choose target  Enter: confirm  ESC: back",
+                True, (150, 150, 180),
+            )
+            surface.blit(hint, (4, NATIVE_HEIGHT - 8))
         elif self._phase == _Phase.MSG:
             if self._message:
                 self._draw_message(surface, font, self._message)
@@ -944,10 +1024,21 @@ class BattleState(BaseState):
     ) -> None:
         ex = 16
         ey = 16
+        alive_idx = 0  # index into alive-enemy list for cursor highlighting
         for enemy in self.enemies:
             if not enemy.is_alive():
                 ex += 56
                 continue
+            # Highlight the selected target with a yellow outline.
+            if self._phase == _Phase.TARGET_SELECT:
+                alive = [e for e in self.enemies if e.is_alive()]
+                cursor_pos = self._enemy_cursor % max(1, len(alive))
+                if alive_idx == cursor_pos:
+                    pygame.draw.rect(surface, YELLOW, (ex - 2, ey - 2, 32, 32), 2)
+                    # Draw a small arrow above the targeted sprite.
+                    arrow = font_sm.render("▼", True, YELLOW)
+                    surface.blit(arrow, (ex + 10, ey - 10))
+            alive_idx += 1
             pygame.draw.rect(surface, RED, (ex, ey, 28, 28))
             name = enemy.name if len(enemy.name) <= 10 else enemy.name[:9] + "…"
             surface.blit(font_sm.render(name, True, WHITE), (ex, ey + 30))
@@ -1028,6 +1119,10 @@ class BattleState(BaseState):
             self._menu.draw(surface)
             hint = font_sm.render("W/S: move  Z/Enter: select", True, (150, 150, 180))
             surface.blit(hint, (8, NATIVE_HEIGHT - 8))
+
+        elif self._phase == _Phase.TARGET_SELECT:
+            label = font.render("Choose Target", True, YELLOW)
+            surface.blit(label, (8, NATIVE_HEIGHT - 56))
 
         elif self._phase == _Phase.PLAYER_SPELL:
             header = font.render("-- Magic --", True, CYAN)

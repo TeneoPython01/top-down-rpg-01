@@ -128,9 +128,25 @@ class OverworldState(BaseState):
             _py = sr * TILE_SIZE + _margin
             self.player.pos = pygame.Vector2(_px, _py)
             self.player.rect.topleft = (round(_px), round(_py))
+            # Reset grid movement so the player doesn't continue a stale step.
+            self.player._tile_col = sc
+            self.player._tile_row = sr
+            self.player._target_col = sc
+            self.player._target_row = sr
+            self.player._grid_moving = False
 
         # Register player with the game object for save/load access.
         game.player = self.player
+
+        # Sync game.inventory to player.inventory so that all shops, chests, and
+        # battle rewards operate on the same inventory that the pause menu reads.
+        # Only replace when game.inventory is a real Inventory (not a test stub).
+        from src.systems.inventory import Inventory as _InventoryClass
+        if isinstance(game.inventory, _InventoryClass):
+            if player is None:
+                # New game: transfer the starting gold set on game.inventory.
+                self.player.inventory.gold = game.inventory.gold
+            game.inventory = self.player.inventory
 
         self.camera = Camera(self.tilemap.pixel_width, self.tilemap.pixel_height)
 
@@ -220,7 +236,8 @@ class OverworldState(BaseState):
     # ── Update ────────────────────────────────────────────────────────────────
 
     def update(self, dt: float) -> None:
-        self.player.update(dt, self.tilemap.blocked_rects)
+        npc_rects = [npc.rect for npc in self._npcs]
+        self.player.update(dt, self.tilemap.blocked_rects + npc_rects)
         self.camera.update(self.player)
         self._check_encounter()
         self._check_quest_completions()
@@ -287,9 +304,14 @@ class OverworldState(BaseState):
                     on_close = None
                     if npc.dialog_id == "healer_npc":
                         player = self.player
+                        ow = self
                         def on_close() -> None:  # type: ignore[misc]
                             player.hp = player.max_hp
                             player.mp = player.max_mp
+                            ow._push_scene_dialog(
+                                ["Your HP and MP have been fully restored!"],
+                                speaker="Healer",
+                            )
                     self._push_npc_dialog(lines, speaker=npc.name, dialog_id=npc.dialog_id, on_close=on_close)
                     return
 
@@ -323,6 +345,12 @@ class OverworldState(BaseState):
                 _py = nr * TILE_SIZE + _margin
                 self.player.pos = pygame.Vector2(_px, _py)
                 self.player.rect.topleft = (round(_px), round(_py))
+                # Reset grid movement so no stale step carries over.
+                self.player._tile_col = nc
+                self.player._tile_row = nr
+                self.player._target_col = nc
+                self.player._target_row = nr
+                self.player._grid_moving = False
                 return
 
     def _trigger_hidden_wall(self, hw_data: Dict[str, Any]) -> None:

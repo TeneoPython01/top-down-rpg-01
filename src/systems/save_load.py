@@ -119,6 +119,10 @@ def apply_save_to_game(data: Dict[str, Any], game: Any) -> None:
     game.player = Player.from_dict(player_data)
     game.current_location = data.get("location", "overworld")
 
+    # Sync the shared inventory reference so shops, chests, and battle rewards
+    # all operate on the same inventory object that the pause menu reads.
+    game.inventory = game.player.inventory
+
     quest_flags = getattr(game, "quest_flags", None)
     if quest_flags is not None:
         quest_flags.from_dict(data.get("quest_flags", {}))
