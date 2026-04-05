@@ -1,4 +1,6 @@
-# top-down-rpg-01
+# ReThrive
+
+**The world will thrive again!**
 
 A top-down RPG built with Python and [pygame](https://www.pygame.org/) — set in a
 post-pandemic fantasy world called the Verdant Plains.
@@ -88,7 +90,7 @@ python run.py
 ## Project Structure
 
 ```
-top-down-rpg-01/
+rethrive/
 ├── run.py                   # Entry point
 ├── settings.py              # Global constants and configuration
 ├── requirements.txt         # Python dependencies
