@@ -34,8 +34,14 @@ def cast_spell(
     caster: Any,
     target: Any,
     all_spells: Dict[str, Any],
+    power_mult: float = 1.0,
 ) -> Tuple[bool, str]:
     """Cast *spell_id* from *caster* toward *target*.
+
+    Parameters
+    ----------
+    power_mult:
+        Multiplier applied to spell power (e.g. 0.5 for AoE spread).
 
     Returns
     -------
@@ -57,7 +63,7 @@ def cast_spell(
 
     caster.mp -= mp_cost
     effect = data.get("effect", "")
-    power = data.get("power", 0)
+    power = data.get("power", 0) * power_mult
     element = data.get("element")
 
     # ── Damage spells ─────────────────────────────────────────────────────────

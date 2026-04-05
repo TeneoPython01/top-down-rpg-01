@@ -164,7 +164,7 @@ WILLOWMERE_TILES: List[List[int]] = [
     [_W, _W, _W, _W, _W, _W, _W, _W, _W, _W, _G, _W, _W, _W, _W, _W, _W, _W, _W, _W],  # 14 exit
 ]
 
-WILLOWMERE_SPAWN: Tuple[int, int] = (10, 12)
+WILLOWMERE_SPAWN: Tuple[int, int] = (7, 12)
 
 WILLOWMERE_NPCS: List[Dict[str, Any]] = [
     {

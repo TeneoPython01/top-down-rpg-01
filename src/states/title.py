@@ -143,7 +143,15 @@ class TitleState(BaseState):
         if data is None:
             return
         apply_save_to_game(data, self.game)
-        self.game.change_state(OverworldState(self.game, player=self.game.player))
+
+        # Restore the correct overworld zone from the saved location string,
+        # e.g. "overworld:silverwood_forest" → zone_name="silverwood_forest".
+        location = self.game.current_location
+        zone_name = "verdant_plains"
+        if location.startswith("overworld:"):
+            zone_name = location[len("overworld:"):]
+
+        self.game.change_state(OverworldState(self.game, player=self.game.player, zone_name=zone_name))
 
     # ── Update ────────────────────────────────────────────────────────────────
 
@@ -215,18 +223,21 @@ class TitleState(BaseState):
             color = YELLOW if i == self._load_cursor else WHITE
 
             if info is not None:
+                # Truncate location and timestamp to prevent horizontal overflow.
+                location = info["location"][:18]
+                timestamp = info["timestamp"][:16]
                 label = (
-                    f"Slot {i + 1}  {info['name']}"
+                    f"Slot {i + 1}  {info['name'][:10]}"
                     f"  Lv.{info['level']}"
-                    f"  {info['location']}"
-                    f"  {info['timestamp']}"
+                    f"  {location}"
+                    f"  {timestamp}"
                 )
             else:
                 label = f"Slot {i + 1}  (empty)"
 
             prefix = "> " if i == self._load_cursor else "  "
             surf = font_sm.render(f"{prefix}{label}", True, color)
-            surface.blit(surf, surf.get_rect(centerx=cx, centery=y))
+            surface.blit(surf, surf.get_rect(left=4, centery=y))
 
         # "Back" option
         back_y = slot_start_y + NUM_SAVE_SLOTS * 16

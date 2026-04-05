@@ -149,6 +149,7 @@ class Player(pygame.sprite.Sprite):
         # Cheat-mode flags (persistent across saves)
         self.cheat_unlocked: bool = False
         self.always_crit: bool = False
+        self.no_encounters: bool = False
 
         # Zones the player has visited (used by the mini-map / world map)
         self.visited_zones: set = {"verdant_plains"}
@@ -243,6 +244,7 @@ class Player(pygame.sprite.Sprite):
             "direction": self.direction,
             "cheat_unlocked": self.cheat_unlocked,
             "always_crit": self.always_crit,
+            "no_encounters": self.no_encounters,
             "visited_zones": list(self.visited_zones),
             "collected_lore": list(self.collected_lore),
         }
@@ -292,6 +294,7 @@ class Player(pygame.sprite.Sprite):
         player.direction = data.get("direction", DIR_DOWN)
         player.cheat_unlocked = bool(data.get("cheat_unlocked", False))
         player.always_crit = bool(data.get("always_crit", False))
+        player.no_encounters = bool(data.get("no_encounters", False))
         player.visited_zones = set(data.get("visited_zones", ["verdant_plains"]))
         player.collected_lore = set(data.get("collected_lore", []))
 

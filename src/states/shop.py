@@ -238,15 +238,33 @@ class ShopState(BaseState):
             lbl = font_s.render("── Buy ──", True, WHITE)
             surface.blit(lbl, (8, 8))
             self._buy_menu.draw(surface)
-            # Item description at bottom
+            # Item description and stats at bottom
             idx = self._buy_menu.selected
             if idx < len(self._buy_items):
-                desc = self._buy_items[idx].get("description", "")
+                item = self._buy_items[idx]
+                desc = item.get("description", "")
                 if desc:
                     desc_surf = font_s.render(desc[:38], True, (180, 180, 180))
                     surface.blit(
                         desc_surf,
-                        desc_surf.get_rect(left=6, bottom=NATIVE_HEIGHT - 14),
+                        desc_surf.get_rect(left=6, bottom=NATIVE_HEIGHT - 22),
+                    )
+                # Build stat bonus string from equipment stat fields.
+                _STAT_LABELS = {
+                    "atk": "ATK", "def": "DEF", "mag": "MAG", "mdf": "MDF",
+                    "str": "STR", "lck": "LCK", "spd": "SPD", "hp": "HP", "mp": "MP",
+                }
+                stat_parts = [
+                    f"+{item[k]} {lbl}"
+                    for k, lbl in _STAT_LABELS.items()
+                    if item.get(k, 0)
+                ]
+                if stat_parts:
+                    stats_str = "  ".join(stat_parts)
+                    stats_surf = font_s.render(stats_str[:42], True, CYAN)
+                    surface.blit(
+                        stats_surf,
+                        stats_surf.get_rect(left=6, bottom=NATIVE_HEIGHT - 12),
                     )
 
         elif self._mode == _MODE_SELL:

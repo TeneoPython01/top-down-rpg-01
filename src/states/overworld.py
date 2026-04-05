@@ -110,6 +110,7 @@ class OverworldState(BaseState):
             dungeon_entries=zone_data["dungeon_entries"],
             hidden_walls=zone_data["hidden_walls"],
             chest_tiles=zone_data.get("chest_tiles", {}),
+            lore_tiles=zone_data.get("lore_tiles", {}),
             godzilla_tiles=zone_data.get("godzilla_tiles", frozenset()),
         )
 
@@ -475,6 +476,14 @@ class OverworldState(BaseState):
             self.game.audio.play_sfx("item_get")
             self._push_scene_dialog(messages, speaker="Quest Complete")
 
+        # Check whether ALL quests are now complete (show cutscene once).
+        if not self.game.quest_flags.get("all_quests_done_shown"):
+            all_quests = self.game.quest_log.all_quests()
+            from src.systems.quest_log import COMPLETE as _COMPLETE
+            if all_quests and all(state == _COMPLETE for _, _, state in all_quests):
+                self.game.quest_flags.set("all_quests_done_shown")
+                self._trigger_all_quests_cutscene()
+
     def _show_quest_notice(self, quest_id: str) -> None:
         """Push a short dialog notifying the player that a quest was accepted."""
         from src.systems.quest_log import _load_quest_data
@@ -487,6 +496,19 @@ class OverworldState(BaseState):
             lines.append(objective)
         self.game.audio.play_sfx("quest_start")
         self._push_scene_dialog(lines, speaker="New Quest")
+
+    def _trigger_all_quests_cutscene(self) -> None:
+        """Show a one-time victory cutscene when all quests are complete."""
+        self.game.audio.play_sfx("quest_complete")
+        lines = [
+            "All quests are complete!",
+            "The Verdant Plains breathe easy once more.",
+            "The ancient darkness is lifted. Nature is healing.",
+            "Magic flows freely through the land again.",
+            "The world will thrive again!",
+            "(You may continue exploring freely.)",
+        ]
+        self._push_scene_dialog(lines, speaker="★ Victory ★")
 
     def _transition_zone(self, zone_name: str, spawn: tuple = (12, 17)) -> None:
         """Replace this overworld state with a new one for the target zone.
@@ -628,6 +650,10 @@ class OverworldState(BaseState):
 
     def _check_encounter(self) -> None:
         """Count tile steps and fire a random encounter when threshold is hit."""
+        # Respect the "no encounters" cheat toggle.
+        if getattr(self.player, "no_encounters", False):
+            return
+
         col, row = self.tilemap.pixel_to_tile(self.player.pos.x, self.player.pos.y)
         new_tile = (col, row)
         if new_tile == self._last_tile:

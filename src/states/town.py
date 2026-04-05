@@ -111,7 +111,9 @@ class TownState(BaseState):
         if event.type != pygame.KEYDOWN:
             return
         if event.key == pygame.K_ESCAPE:
-            self.game.pop_state()
+            from src.states.pause_menu import PauseMenuState
+            if self.game.player is not None:
+                self.game.push_state(PauseMenuState(self.game, self.game.player))
         elif event.key in (pygame.K_z, pygame.K_RETURN, pygame.K_KP_ENTER):
             if self._near_npc is not None:
                 self._start_dialog(self._near_npc.dialog_id)
@@ -236,7 +238,7 @@ class TownState(BaseState):
         if dialog_id == "healer_npc":
             player = self.game.player
             game = self.game
-            def on_close() -> None:  # type: ignore[misc]
+            def callback() -> None:  # type: ignore[misc]
                 player.hp = player.max_hp
                 player.mp = player.max_mp
                 game.push_state(
@@ -324,6 +326,6 @@ class TownState(BaseState):
 
         # Controls hint — bottom left
         ctrl = font_sm.render(
-            "WASD: move  Z: talk  ESC: exit town", True, (160, 160, 160)
+            "WASD: move  Z: talk  ESC: menu", True, (160, 160, 160)
         )
         surface.blit(ctrl, (4, NATIVE_HEIGHT - 10))

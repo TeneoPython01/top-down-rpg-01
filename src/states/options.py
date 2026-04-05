@@ -34,6 +34,7 @@ from settings import (
     LIGHT_GRAY,
     NATIVE_HEIGHT,
     NATIVE_WIDTH,
+    RED,
     WHITE,
     YELLOW,
 )
@@ -87,7 +88,7 @@ class OptionsState(BaseState):
         if event.type != pygame.KEYDOWN:
             return
 
-        num_rows = len(_ROWS) + 1  # +1 for the "Back" row
+        num_rows = len(_ROWS) + 2  # +1 for "Back", +1 for "Reset to Title"
         if event.key in (pygame.K_UP, pygame.K_w):
             self._cursor = (self._cursor - 1) % num_rows
             self.game.audio.play_sfx("cursor")
@@ -109,6 +110,8 @@ class OptionsState(BaseState):
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
             if self._cursor == len(_ROWS):
                 self._back()
+            elif self._cursor == len(_ROWS) + 1:
+                self._reset_to_title()
             else:
                 self._adjust(_ROWS[self._cursor], +1)
                 self.game.audio.play_sfx("cursor")
@@ -136,6 +139,28 @@ class OptionsState(BaseState):
     def _back(self) -> None:
         self.game.audio.play_sfx("cancel")
         self.game.pop_state()
+
+    def _reset_to_title(self) -> None:
+        """Clear all game state and return to the title screen."""
+        from src.states.title import TitleState
+        from src.systems.inventory import Inventory
+        from src.systems.quest_flags import QuestFlags
+        from src.systems.quest_log import QuestLog
+        self.game.audio.play_sfx("cancel")
+        # Reset shared game state.
+        self.game.player = None
+        self.game.inventory = Inventory()
+        self.game.inventory.gold = 200
+        self.game.quest_flags = QuestFlags()
+        self.game.quest_log = QuestLog()
+        self.game.current_location = "overworld"
+        # Clear the state stack and go to title.
+        while len(self.game._state_stack) > 0:
+            self.game._state_stack[-1].exit()
+            self.game._state_stack.pop()
+        title = TitleState(self.game)
+        self.game._state_stack.append(title)
+        title.enter()
 
     # ── Update ────────────────────────────────────────────────────────────────
 
@@ -205,6 +230,14 @@ class OptionsState(BaseState):
         back_prefix = "> " if selected_back else "  "
         back_s = font.render(f"{back_prefix}Back", True, back_color)
         surface.blit(back_s, back_s.get_rect(centerx=cx, centery=back_y))
+
+        # "Reset to Title" row
+        reset_y = back_y + row_h
+        selected_reset = (self._cursor == len(_ROWS) + 1)
+        reset_color = RED if selected_reset else LIGHT_GRAY
+        reset_prefix = "> " if selected_reset else "  "
+        reset_s = font.render(f"{reset_prefix}Reset to Title", True, reset_color)
+        surface.blit(reset_s, reset_s.get_rect(centerx=cx, centery=reset_y))
 
     def _draw_hint(self, surface: pygame.Surface) -> None:
         font = pygame.font.SysFont(FONT_NAME, FONT_SIZE_SMALL)

@@ -34,13 +34,16 @@ class Menu:
         y: int,
         item_height: int = 12,
         padding: int = 4,
+        max_visible: int = 0,
     ) -> None:
         self.options = options
         self.x = x
         self.y = y
         self.item_height = item_height
         self.padding = padding
+        self.max_visible = max_visible  # 0 = unlimited
         self._cursor = 0
+        self._scroll = 0  # first visible index when scrolling
 
     @property
     def selected(self) -> int:
@@ -52,13 +55,25 @@ class Menu:
 
     def move_up(self) -> None:
         self._cursor = (self._cursor - 1) % len(self.options)
+        self._clamp_scroll()
 
     def move_down(self) -> None:
         self._cursor = (self._cursor + 1) % len(self.options)
+        self._clamp_scroll()
 
     def set_cursor(self, index: int) -> None:
         """Set the cursor to *index* (clamped to valid range)."""
         self._cursor = index % len(self.options)
+        self._clamp_scroll()
+
+    def _clamp_scroll(self) -> None:
+        """Adjust scroll offset so the cursor stays within the visible window."""
+        if self.max_visible <= 0:
+            return
+        if self._cursor < self._scroll:
+            self._scroll = self._cursor
+        elif self._cursor >= self._scroll + self.max_visible:
+            self._scroll = self._cursor - self.max_visible + 1
 
     def handle_input(self, event: pygame.event.Event, on_move=None) -> str | None:
         """Handle navigation keys.  Returns the selected option label on confirm.
@@ -90,11 +105,16 @@ class Menu:
         t = pygame.time.get_ticks() / 1000.0
         cursor_x_offset = int(math.sin(t * 7.0) * 1.5) + 1  # oscillates 0–3 px
 
-        for i, option in enumerate(self.options):
-            color = YELLOW if i == self._cursor else WHITE
+        visible_count = self.max_visible if self.max_visible > 0 else len(self.options)
+        start = self._scroll if self.max_visible > 0 else 0
+        end = min(start + visible_count, len(self.options))
+
+        for idx in range(start, end):
+            option = self.options[idx]
+            color = YELLOW if idx == self._cursor else WHITE
             text_surf = font.render(option, True, color)
-            iy = self.y + i * self.item_height
-            if i == self._cursor:
+            iy = self.y + (idx - start) * self.item_height
+            if idx == self._cursor:
                 bg = pygame.Rect(
                     self.x - self.padding,
                     iy - 1,
@@ -105,3 +125,11 @@ class Menu:
                 cursor_surf = font.render("▶", True, YELLOW)
                 surface.blit(cursor_surf, (self.x + cursor_x_offset, iy))
             surface.blit(text_surf, (self.x + 10, iy))
+
+        # Draw scroll indicators if list is truncated.
+        if self.max_visible > 0 and len(self.options) > self.max_visible:
+            indicator_x = self.x + 1
+            if start > 0:
+                surface.blit(font.render("▲", True, LIGHT_GRAY), (indicator_x, self.y - self.item_height))
+            if end < len(self.options):
+                surface.blit(font.render("▼", True, LIGHT_GRAY), (indicator_x, self.y + visible_count * self.item_height))

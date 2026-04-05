@@ -214,8 +214,9 @@ class BattleState(BaseState):
             for sid in self._spell_ids
         ]
         if self._spell_ids:
+            # Use max_visible=9 to prevent vertical overflow (9×12 = 108px).
             self._spell_menu = Menu(
-                self._spell_labels, x=NATIVE_WIDTH - 100, y=NATIVE_HEIGHT - 55
+                self._spell_labels, x=8, y=46, item_height=12, max_visible=9
             )
         else:
             self._spell_menu = None
@@ -365,6 +366,43 @@ class BattleState(BaseState):
                 if amount:
                     self._spawn_float_on_player(amount, is_heal=True)
         self._show_msg(msg, callback=self._after_action)
+
+    def _execute_player_spell_all(self, spell_id: str) -> None:
+        """Cast a spell on ALL alive enemies at 50% damage, then proceed to enemy turn."""
+        spell_data = self._all_spells.get(spell_id, {})
+        targets = [e for e in self.enemies if e.is_alive()]
+        if not targets:
+            self._after_action()
+            return
+        mp_cost = spell_data.get("mp", 0)
+        if self.player.mp < mp_cost:
+            self._show_msg("Not enough MP!", callback=self._after_action)
+            return
+
+        element = spell_data.get("element") or "non_elemental"
+        msgs: List[str] = []
+
+        # Deduct MP once for the whole AoE cast.
+        self.player.mp = max(0, self.player.mp - mp_cost)
+        # Build a zero-cost version of the spell data so cast_spell doesn't
+        # double-deduct MP on each individual target.
+        _free_spells = dict(self._all_spells)
+        _free_spells = {k: dict(v) for k, v in _free_spells.items()}
+        _free_spells[spell_id]["mp"] = 0
+
+        for target in targets:
+            success, msg = magic_sys.cast_spell(spell_id, self.player, target, _free_spells, power_mult=0.5)
+            if success:
+                self.game.audio.play_sfx("spell_cast")
+                self._fire_anim_on(target, element)
+                amount = _parse_amount(msg)
+                if amount:
+                    self._spawn_float_on_enemy(target, amount)
+                msgs.append(msg)
+
+        combined = msgs[0] if msgs else f"Cast {spell_data.get('name', spell_id)} on all!"
+        combined += f" (×{len(targets)} targets, 50%)"
+        self._show_msg(combined[:_MSG_LINE_LEN], callback=self._after_action)
 
     def _execute_player_item(self, item_id: str) -> None:
         """Use a battle item then proceed to enemy turn."""
@@ -846,29 +884,37 @@ class BattleState(BaseState):
         elif self._phase == _Phase.TARGET_SELECT:
             if event.type == pygame.KEYDOWN:
                 alive = [e for e in self.enemies if e.is_alive()]
+                # For spells, cursor can go to len(alive) = "All Enemies" option.
+                is_spell = self._pending_action.startswith("spell:")
+                num_targets = len(alive) + 1 if is_spell else len(alive)
                 if event.key == pygame.K_ESCAPE:
                     # Cancel target selection — return to the appropriate menu.
                     self.game.audio.play_sfx("cancel")
-                    if self._pending_action.startswith("spell:"):
+                    if is_spell:
                         self._phase = _Phase.PLAYER_SPELL
                     else:
                         self._phase = _Phase.PLAYER_MENU
                 elif event.key in (pygame.K_LEFT, pygame.K_a, pygame.K_UP, pygame.K_w):
                     if alive:
-                        self._enemy_cursor = (self._enemy_cursor - 1) % len(alive)
+                        self._enemy_cursor = (self._enemy_cursor - 1) % num_targets
                         self.game.audio.play_sfx("cursor")
                 elif event.key in (pygame.K_RIGHT, pygame.K_d, pygame.K_DOWN, pygame.K_s):
                     if alive:
-                        self._enemy_cursor = (self._enemy_cursor + 1) % len(alive)
+                        self._enemy_cursor = (self._enemy_cursor + 1) % num_targets
                         self.game.audio.play_sfx("cursor")
                 elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_z):
                     if alive:
-                        target = alive[self._enemy_cursor % len(alive)]
-                        if self._pending_action == "attack":
-                            self._execute_player_attack(target)
-                        elif self._pending_action.startswith("spell:"):
+                        if is_spell and self._enemy_cursor == len(alive):
+                            # "All Enemies" selected — cast at 50% damage.
                             spell_id = self._pending_action[6:]
-                            self._execute_player_spell(spell_id, target)
+                            self._execute_player_spell_all(spell_id)
+                        else:
+                            target = alive[self._enemy_cursor % len(alive)]
+                            if self._pending_action == "attack":
+                                self._execute_player_attack(target)
+                            elif is_spell:
+                                spell_id = self._pending_action[6:]
+                                self._execute_player_spell(spell_id, target)
 
         elif self._phase == _Phase.PLAYER_SPELL:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -987,12 +1033,6 @@ class BattleState(BaseState):
 
         if self._phase == _Phase.PLAYER_MENU:
             self._menu.draw(surface)
-        elif self._phase == _Phase.TARGET_SELECT:
-            hint = font_sm.render(
-                "Left/Right: choose target  Enter: confirm  ESC: back",
-                True, (150, 150, 180),
-            )
-            surface.blit(hint, (4, NATIVE_HEIGHT - 8))
         elif self._phase == _Phase.MSG:
             if self._message:
                 self._draw_message(surface, font, self._message)
@@ -1034,11 +1074,14 @@ class BattleState(BaseState):
             # Highlight the selected target with a yellow outline.
             if self._phase == _Phase.TARGET_SELECT:
                 alive = [e for e in self.enemies if e.is_alive()]
+                is_spell = self._pending_action.startswith("spell:")
+                all_selected = is_spell and self._enemy_cursor == len(alive)
                 cursor_pos = self._enemy_cursor % max(1, len(alive))
-                if alive_idx == cursor_pos:
-                    pygame.draw.rect(surface, YELLOW, (ex - 2, ey - 2, 32, 32), 2)
+                if all_selected or alive_idx == cursor_pos:
+                    color = CYAN if all_selected else YELLOW
+                    pygame.draw.rect(surface, color, (ex - 2, ey - 2, 32, 32), 2)
                     # Draw a small arrow above the targeted sprite.
-                    arrow = font_sm.render("▼", True, YELLOW)
+                    arrow = font_sm.render("▼", True, color)
                     surface.blit(arrow, (ex + 10, ey - 10))
             alive_idx += 1
             pygame.draw.rect(surface, RED, (ex, ey, 28, 28))
@@ -1123,12 +1166,28 @@ class BattleState(BaseState):
             surface.blit(hint, (8, NATIVE_HEIGHT - 8))
 
         elif self._phase == _Phase.TARGET_SELECT:
-            label = font.render("Choose Target", True, YELLOW)
+            alive = [e for e in self.enemies if e.is_alive()]
+            is_spell = self._pending_action.startswith("spell:")
+            if is_spell and self._enemy_cursor == len(alive):
+                label = font.render("Target: All Enemies (50% dmg)", True, CYAN)
+            else:
+                label = font.render("Choose Target", True, YELLOW)
             surface.blit(label, (8, NATIVE_HEIGHT - 56))
+            if is_spell:
+                hint_s = font_sm.render(
+                    "Left/Right: target  Enter: confirm  ESC: back  (cycle past last = All)",
+                    True, (150, 150, 180),
+                )
+            else:
+                hint_s = font_sm.render(
+                    "Left/Right: target  Enter: confirm  ESC: back",
+                    True, (150, 150, 180),
+                )
+            surface.blit(hint_s, (4, NATIVE_HEIGHT - 8))
 
         elif self._phase == _Phase.PLAYER_SPELL:
             header = font.render("-- Magic --", True, CYAN)
-            surface.blit(header, (NATIVE_WIDTH - 100, NATIVE_HEIGHT - 65))
+            surface.blit(header, (8, 34))
             if self._spell_menu:
                 self._spell_menu.draw(surface)
             hint = font_sm.render("ESC: back", True, (120, 120, 160))

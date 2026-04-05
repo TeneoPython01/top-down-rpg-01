@@ -68,7 +68,10 @@ class InnState(BaseState):
                 self._rested = True
                 self._message = "You rested well! HP and MP restored."
                 self._message_timer = 2.5
-                # TODO: wire to player HP/MP when battle stats are integrated
+                # Restore HP and MP on the player.
+                if self.game.player is not None:
+                    self.game.player.hp = self.game.player.max_hp
+                    self.game.player.mp = self.game.player.max_mp
             else:
                 self._message = "Not enough gold!"
                 self._message_timer = 2.0

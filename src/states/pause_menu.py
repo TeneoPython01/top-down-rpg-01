@@ -40,11 +40,13 @@ _KONAMI = [
 
 # Cheat definitions: (button label, description shown at bottom)
 _CHEATS = [
-    ("Give 100,000 Gold",  "Adds 100,000 gold to your wallet."),
-    ("Max Level (Lv 30)",  "Jumps level and stats to Lv 30 if currently below Lv 30."),
-    ("Endgame Equipment",  "Adds and equips the Exo Weapon and Exo Armor."),
-    ("Learn All Spells",   "Teaches every spell in the game."),
-    ("Toggle Always-Crit", "Every player attack becomes a critical hit (toggle ON/OFF)."),
+    ("Give 100,000 Gold",      "Adds 100,000 gold to your wallet."),
+    ("Max Level (Lv 30)",      "Jumps level and stats to Lv 30 if currently below Lv 30."),
+    ("Endgame Equipment",      "Adds and equips the Exo Weapon and Exo Armor."),
+    ("Learn All Spells",       "Teaches every spell in the game."),
+    ("Toggle Always-Crit",     "Every player attack becomes a critical hit (toggle ON/OFF)."),
+    ("Toggle No Encounters",   "Disable/enable random enemy encounters while exploring."),
+    ("Refill HP/MP",           "Fully restores HP and MP to maximum."),
 ]
 
 # Pixel width of one character in the small monospace font (7pt).
@@ -368,6 +370,21 @@ class PauseMenuState(BaseState):
             p.always_crit = not p.always_crit
             state = "ON" if p.always_crit else "OFF"
             self._message = f"Always-Crit: {state}"
+            self.game.audio.play_sfx("confirm")
+
+        elif index == 5:
+            # Cheat 6: Toggle no random encounters
+            current = getattr(p, "no_encounters", False)
+            p.no_encounters = not current
+            state = "ON (encounters disabled)" if p.no_encounters else "OFF (encounters enabled)"
+            self._message = f"No Encounters: {state}"
+            self.game.audio.play_sfx("confirm")
+
+        elif index == 6:
+            # Cheat 7: Refill HP and MP
+            p.hp = p.max_hp
+            p.mp = p.max_mp
+            self._message = "HP and MP fully restored!"
             self.game.audio.play_sfx("confirm")
 
         self._message_timer = 2.5
